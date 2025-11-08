@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 
 export type UserDocument = User & Document;
 
@@ -18,6 +18,7 @@ export enum UserRole {
 
 @Schema({ timestamps: true })
 export class User {
+  @Transform(({ obj }) => obj._id.toString())
   _id: string;
 
   @ApiProperty({ description: "User's full name" })
@@ -69,3 +70,23 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+UserSchema.set('toJSON', {
+  virtuals: false,
+  versionKey: false,
+  transform: function (doc, ret) {
+    const { password, __v, ...rest } = ret;
+    rest._id = rest._id.toString();
+    return rest;
+  },
+});
+
+UserSchema.set('toObject', {
+  virtuals: false,
+  versionKey: false,
+  transform: function (doc, ret) {
+    const { password, __v, ...rest } = ret;
+    rest._id = rest._id.toString();
+    return rest;
+  },
+});
