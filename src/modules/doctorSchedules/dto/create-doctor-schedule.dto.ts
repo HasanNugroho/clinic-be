@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNotEmpty, IsString, Matches } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
 import { DayOfWeek } from '../schemas/doctor-schedule.schema';
 
 export class CreateDoctorScheduleDto {
@@ -28,4 +28,10 @@ export class CreateDoctorScheduleDto {
         message: 'endTime must be in HH:mm format',
     })
     endTime: string;
+
+
+    @ApiProperty({ description: 'Quota per day', enum: DayOfWeek })
+    @IsNotEmpty()
+    @IsNumber()
+    quota: number
 }

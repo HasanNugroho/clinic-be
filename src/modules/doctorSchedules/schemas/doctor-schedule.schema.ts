@@ -35,6 +35,10 @@ export class DoctorSchedule {
     @ApiProperty({ description: 'End time of doctor shift (HH:mm format)' })
     @Prop({ required: true })
     endTime: string;
+
+    @ApiProperty({ description: 'The quota per day' })
+    @Prop({ required: true, default: 1 })
+    quota: string;
 }
 
 export const DoctorScheduleSchema = SchemaFactory.createForClass(DoctorSchedule);
