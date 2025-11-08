@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from './schemas/user.schema';
+import { User, UserDocument, UserRole } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
@@ -17,6 +17,16 @@ export class UsersService {
     });
     if (existingUser) {
       throw new ConflictException('Email already exists');
+    }
+
+    // Check if trying to create SUPERADMIN when one already exists
+    if (createUserDto.role === UserRole.SUPERADMIN) {
+      const existingSuperadmin = await this.userModel.findOne({
+        role: UserRole.SUPERADMIN,
+      });
+      if (existingSuperadmin) {
+        throw new BadRequestException('A superadmin user already exists');
+      }
     }
 
     // Hash password
@@ -57,6 +67,17 @@ export class UsersService {
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+    // Check if trying to change role to SUPERADMIN when one already exists
+    if (updateUserDto.role === UserRole.SUPERADMIN) {
+      const existingSuperadmin = await this.userModel.findOne({
+        role: UserRole.SUPERADMIN,
+      });
+      // Allow update only if the existing superadmin is the same user being updated
+      if (existingSuperadmin && existingSuperadmin._id.toString() !== id) {
+        throw new BadRequestException('A superadmin user already exists');
+      }
+    }
+
     // If password is being updated, hash it
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(updateUserDto.password, 10);

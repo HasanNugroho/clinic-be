@@ -23,7 +23,7 @@ import { HttpResponse } from '../../common/dto/http-response.dto';
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   @ApiOperation({ summary: 'Create a new user' })
@@ -36,9 +36,9 @@ export class UsersController {
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get all users (Admin only)' })
+  @ApiOperation({ summary: 'Get all users (Admin & Employee only)' })
   @ApiResponse({ status: 200, description: 'Return all users' })
   async findAll() {
     const users = await this.usersService.findAll();
@@ -48,7 +48,7 @@ export class UsersController {
   @Get('profile/me')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get current user profile' })
+  @ApiOperation({ summary: 'Get current user profile (All authenticated users)' })
   @ApiResponse({ status: 200, description: 'Return current user profile' })
   async getProfile(@Request() req) {
     const user = await this.usersService.findOne(req.user.userId);
@@ -56,9 +56,10 @@ export class UsersController {
   }
 
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE, UserRole.DOCTOR)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Get user by ID' })
+  @ApiOperation({ summary: 'Get user by ID (Admin, Employee, Doctor)' })
   @ApiResponse({ status: 200, description: 'Return user' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async findOne(@Param('id') id: string) {
@@ -67,9 +68,10 @@ export class UsersController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Update user' })
+  @ApiOperation({ summary: 'Update user (Admin & Employee only)' })
   @ApiResponse({ status: 200, description: 'User updated successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
@@ -79,9 +81,9 @@ export class UsersController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.ADMIN)
+  @Roles(UserRole.SUPERADMIN)
   @ApiBearerAuth('JWT-auth')
-  @ApiOperation({ summary: 'Delete user (Admin only)' })
+  @ApiOperation({ summary: 'Delete user (Superadmin only)' })
   @ApiResponse({ status: 200, description: 'User deleted successfully' })
   @ApiResponse({ status: 404, description: 'User not found' })
   async remove(@Param('id') id: string) {

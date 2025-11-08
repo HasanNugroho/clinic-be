@@ -5,6 +5,7 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './common/filter/http-exception.filter';
+import { DoctorSchedulesModule } from './modules/doctorSchedules/doctor-schedules.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { HttpExceptionFilter } from './common/filter/http-exception.filter';
     }),
     UsersModule,
     AuthModule,
+    DoctorSchedulesModule,
   ],
   providers: [
     {
