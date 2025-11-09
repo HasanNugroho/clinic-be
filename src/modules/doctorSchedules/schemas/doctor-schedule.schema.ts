@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
+import { User } from 'src/modules/users/schemas/user.schema';
 
 export type DoctorScheduleDocument = DoctorSchedule & Document;
 
@@ -15,28 +15,35 @@ export enum DayOfWeek {
     SUNDAY = 'sunday',
 }
 
+// Register enum for GraphQL
+registerEnumType(DayOfWeek, {
+    name: 'DayOfWeek',
+    description: 'Day of the week',
+});
+
+@ObjectType()
 @Schema({ timestamps: true })
 export class DoctorSchedule {
-    @Transform(({ obj }) => obj._id.toString())
+    @Field(() => String)
     _id: string;
 
-    @ApiProperty({ description: 'Doctor ID reference to User collection' })
+    @Field(() => User, { description: 'Doctor ID reference to User collection' })
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     doctorId: string;
 
-    @ApiProperty({ description: 'Day of the week', enum: DayOfWeek })
+    @Field(() => DayOfWeek, { description: 'Day of the week' })
     @Prop({ type: String, enum: DayOfWeek, required: true })
     dayOfWeek: DayOfWeek;
 
-    @ApiProperty({ description: 'Start time of doctor shift (HH:mm format)' })
+    @Field({ description: 'Start time of doctor shift (HH:mm format)' })
     @Prop({ required: true })
     startTime: string;
 
-    @ApiProperty({ description: 'End time of doctor shift (HH:mm format)' })
+    @Field({ description: 'End time of doctor shift (HH:mm format)' })
     @Prop({ required: true })
     endTime: string;
 
-    @ApiProperty({ description: 'The quota per day' })
+    @Field({ description: 'The quota per day' })
     @Prop({ required: true, default: 1 })
     quota: string;
 }

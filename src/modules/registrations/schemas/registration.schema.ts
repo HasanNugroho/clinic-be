@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { ObjectType, Field, registerEnumType, Int } from '@nestjs/graphql';
+import { User } from 'src/modules/users/schemas/user.schema';
+import { DoctorSchedule } from 'src/modules/doctorSchedules/schemas/doctor-schedule.schema';
 
 export type RegistrationDocument = Registration & Document;
 
@@ -16,43 +17,55 @@ export enum RegistrationStatus {
     COMPLETED = 'completed',
 }
 
+// Register enums for GraphQL
+registerEnumType(RegistrationMethod, {
+    name: 'RegistrationMethod',
+    description: 'Method of registration',
+});
+
+registerEnumType(RegistrationStatus, {
+    name: 'RegistrationStatus',
+    description: 'Current status of registration',
+});
+
+@ObjectType()
 @Schema({ timestamps: true })
 export class Registration {
-    @Transform(({ obj }) => obj._id.toString())
+    @Field(() => String)
     _id: string;
 
-    @ApiProperty({ description: 'Patient ID reference to User collection' })
+    @Field(() => User, { description: 'Patient ID reference to User collection' })
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     patientId: string;
 
-    @ApiProperty({ description: 'Doctor ID reference to User collection' })
+    @Field(() => User, { description: 'Doctor ID reference to User collection' })
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     doctorId: string;
 
-    @ApiProperty({ description: 'Schedule ID reference to DoctorSchedule collection' })
+    @Field(() => DoctorSchedule, { description: 'Schedule ID reference to DoctorSchedule collection' })
     @Prop({ type: Types.ObjectId, ref: 'DoctorSchedule', required: true })
     scheduleId: string;
 
-    @ApiProperty({ description: 'Date of registration' })
+    @Field({ description: 'Date of registration' })
     @Prop({ type: Date, required: true })
     registrationDate: Date;
 
-    @ApiProperty({ description: 'Registration method', enum: RegistrationMethod })
+    @Field(() => RegistrationMethod, { description: 'Registration method' })
     @Prop({ type: String, enum: RegistrationMethod, required: true })
     registrationMethod: RegistrationMethod;
 
-    @ApiProperty({ description: 'Current patient status', enum: RegistrationStatus })
+    @Field(() => RegistrationStatus, { description: 'Current patient status' })
     @Prop({ type: String, enum: RegistrationStatus, default: RegistrationStatus.WAITING })
     status: RegistrationStatus;
 
-    @ApiProperty({ description: 'Auto-generated queue number' })
+    @Field(() => Int, { description: 'Auto-generated queue number' })
     @Prop({ required: true })
     queueNumber: number;
 
-    @ApiProperty({ description: 'Record creation timestamp' })
+    @Field({ nullable: true, description: 'Record creation timestamp' })
     createdAt?: Date;
 
-    @ApiProperty({ description: 'Record update timestamp' })
+    @Field({ nullable: true, description: 'Record update timestamp' })
     updatedAt?: Date;
 }
 

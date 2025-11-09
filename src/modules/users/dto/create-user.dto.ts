@@ -1,4 +1,3 @@
-import { ApiProperty } from '@nestjs/swagger';
 import {
     IsEmail,
     IsEnum,
@@ -8,56 +7,58 @@ import {
     MinLength,
     IsDateString,
 } from 'class-validator';
+import { InputType, Field } from '@nestjs/graphql';
 import { Gender, UserRole } from '../schemas/user.schema';
 
+@InputType()
 export class CreateUserDto {
-    @ApiProperty({ example: 'John Doe' })
+    @Field({ description: 'User full name' })
     @IsString()
     @IsNotEmpty()
     fullName: string;
 
-    @ApiProperty({ example: 'john@example.com' })
+    @Field({ description: 'User email address' })
     @IsEmail()
     @IsNotEmpty()
     email: string;
 
-    @ApiProperty({ example: 'Password123!' })
+    @Field({ description: 'User password (min 6 characters)' })
     @IsString()
     @MinLength(6)
     @IsNotEmpty()
     password: string;
 
-    @ApiProperty({ example: '08123456789' })
+    @Field({ description: 'User phone number' })
     @IsString()
     @IsNotEmpty()
     phoneNumber: string;
 
-    @ApiProperty({ example: 'Jakarta, Indonesia' })
+    @Field({ description: 'User address' })
     @IsString()
     @IsNotEmpty()
     address: string;
 
-    @ApiProperty({ example: 'M', enum: Gender })
+    @Field(() => Gender, { description: 'User gender' })
     @IsEnum(Gender)
     @IsNotEmpty()
     gender: Gender;
 
-    @ApiProperty({ example: 'patient', enum: UserRole })
+    @Field(() => UserRole, { description: 'User role' })
     @IsEnum(UserRole)
     @IsNotEmpty()
     role: UserRole;
 
-    @ApiProperty({ example: '1234567890123456', required: false })
+    @Field({ nullable: true, description: 'National ID number (optional)' })
     @IsString()
     @IsOptional()
     nik?: string;
 
-    @ApiProperty({ example: '1990-01-01', required: false })
+    @Field({ nullable: true, description: 'Birth date (optional)' })
     @IsDateString()
     @IsOptional()
     birthDate?: string;
 
-    @ApiProperty({ example: 'Cardiology', required: false })
+    @Field({ nullable: true, description: 'Doctor specialization (optional)' })
     @IsString()
     @IsOptional()
     specialization?: string;

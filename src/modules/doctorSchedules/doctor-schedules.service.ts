@@ -5,7 +5,9 @@ import { Model, Types } from 'mongoose';
 import { DoctorSchedule, DoctorScheduleDocument } from './schemas/doctor-schedule.schema';
 import { CreateDoctorScheduleDto } from './dto/create-doctor-schedule.dto';
 import { UpdateDoctorScheduleDto } from './dto/update-doctor-schedule.dto';
+import { QueryDoctorScheduleDto } from './dto/query-doctor-schedule.dto';
 import { UserRole } from '../users/schemas/user.schema';
+import { PaginatedResponse } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class DoctorSchedulesService {
@@ -33,8 +35,35 @@ export class DoctorSchedulesService {
         return createdSchedule.save();
     }
 
-    async findAll(): Promise<DoctorSchedule[]> {
-        return this.doctorScheduleModel.find().populate('doctorId', 'fullName specialization').exec();
+    async findAll(queryDto: QueryDoctorScheduleDto): Promise<InstanceType<ReturnType<typeof PaginatedResponse<DoctorSchedule>>>> {
+        const { page = 1, limit = 10, sortBy = 'createdAt', sortOrder = 'desc', search, dayOfWeek } = queryDto;
+
+        // Build filter query
+        const filter: any = {};
+
+        if (dayOfWeek) {
+            filter.dayOfWeek = dayOfWeek;
+        }
+
+        // Calculate pagination
+        const skip = (page - 1) * limit;
+        const sortOptions: any = {};
+        sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+
+        // Execute query with pagination
+        const [data, total] = await Promise.all([
+            this.doctorScheduleModel
+                .find(filter)
+                .populate('doctorId', 'fullName specialization')
+                .sort(sortOptions)
+                .skip(skip)
+                .limit(limit)
+                .exec(),
+            this.doctorScheduleModel.countDocuments(filter).exec(),
+        ]);
+
+        const PaginatedDoctorScheduleResponse = PaginatedResponse(DoctorSchedule);
+        return new PaginatedDoctorScheduleResponse(data, total, page, limit);
     }
 
     async findOne(id: string): Promise<DoctorSchedule> {

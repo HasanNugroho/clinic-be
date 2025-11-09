@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { ApiProperty } from '@nestjs/swagger';
-import { Exclude, Transform } from 'class-transformer';
+import { Exclude } from 'class-transformer';
+import { ObjectType, Field, registerEnumType, ID } from '@nestjs/graphql';
 
 export type UserDocument = User & Document;
 
@@ -14,58 +14,63 @@ export enum UserRole {
   PATIENT = 'patient',
   DOCTOR = 'doctor',
   EMPLOYEE = 'employee',
-  SUPERADMIN = 'superadmin'
+  SUPERADMIN = 'superadmin',
 }
 
+// Register enums for GraphQL
+registerEnumType(Gender, {
+  name: 'Gender',
+  description: 'User gender',
+});
+
+registerEnumType(UserRole, {
+  name: 'UserRole',
+  description: 'User role in the system',
+});
+
+@ObjectType()
 @Schema({ timestamps: true })
 export class User {
-  @Transform(({ obj }) => obj._id.toString())
+  @Field(() => ID)
   _id: string;
 
-  @ApiProperty({ description: "User's full name" })
+  @Field({ description: "User's full name" })
   @Prop({ required: true })
   fullName: string;
 
-  @ApiProperty({
-    description: 'National ID number (optional for doctor/admin)',
-    required: false,
-  })
+  @Field({ nullable: true, description: 'National ID number (optional for doctor/admin)' })
   @Prop({ required: false })
   nik?: string;
 
-  @ApiProperty({ description: 'Birth date (for patients)', required: false })
+  @Field({ nullable: true, description: 'Birth date (for patients)' })
   @Prop({ type: Date, required: false })
   birthDate?: Date;
 
-  @ApiProperty({ description: 'Gender', enum: Gender })
+  @Field(() => Gender, { description: 'Gender' })
   @Prop({ type: String, enum: Gender, required: true })
   gender: Gender;
 
-  @ApiProperty({ description: 'Address of user' })
+  @Field({ description: 'Address of user' })
   @Prop({ required: true })
   address: string;
 
-  @ApiProperty({ description: 'Contact number' })
+  @Field({ description: 'Contact number' })
   @Prop({ required: true })
   phoneNumber: string;
 
-  @ApiProperty({ description: 'Email for login' })
+  @Field({ description: 'Email for login' })
   @Prop({ required: true, unique: true })
   email: string;
 
-  @ApiProperty({ description: 'Encrypted password' })
   @Exclude()
   @Prop({ required: true })
   password: string;
 
-  @ApiProperty({ description: 'Role type', enum: UserRole })
+  @Field(() => UserRole, { description: 'Role type' })
   @Prop({ type: String, enum: UserRole, required: true })
   role: UserRole;
 
-  @ApiProperty({
-    description: "Doctor's specialization (nullable)",
-    required: false,
-  })
+  @Field({ nullable: true, description: "Doctor's specialization (nullable)" })
   @Prop({ required: false })
   specialization?: string;
 }

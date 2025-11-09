@@ -4,9 +4,11 @@ import { Model, Types } from 'mongoose';
 import { Registration, RegistrationDocument, RegistrationStatus } from './schemas/registration.schema';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { UpdateRegistrationDto } from './dto/update-registration.dto';
+import { QueryRegistrationDto } from './dto/query-registration.dto';
 import { UsersService } from '../users/users.service';
 import { DoctorSchedulesService } from '../doctorSchedules/doctor-schedules.service';
 import { UserRole } from '../users/schemas/user.schema';
+import { PaginatedResponse } from '../../common/dto/pagination.dto';
 
 @Injectable()
 export class RegistrationsService {
@@ -77,14 +79,57 @@ export class RegistrationsService {
         return createdRegistration.save();
     }
 
-    async findAll(): Promise<Registration[]> {
-        return this.registrationModel
-            .find()
-            .populate('patientId', 'fullName email phoneNumber')
-            .populate('doctorId', 'fullName specialization')
-            .populate('scheduleId', 'dayOfWeek startTime endTime')
-            .sort({ registrationDate: -1, queueNumber: 1 })
-            .exec();
+    async findAll(queryDto: QueryRegistrationDto): Promise<InstanceType<ReturnType<typeof PaginatedResponse<Registration>>>> {
+        const { page = 1, limit = 10, sortBy = 'registrationDate', sortOrder = 'desc', search, status, registrationMethod, dateFrom, dateTo } = queryDto;
+
+        // Build filter query
+        const filter: any = {};
+
+        if (status) {
+            filter.status = status;
+        }
+
+        if (registrationMethod) {
+            filter.registrationMethod = registrationMethod;
+        }
+
+        if (dateFrom || dateTo) {
+            filter.registrationDate = {};
+            if (dateFrom) {
+                filter.registrationDate.$gte = new Date(dateFrom);
+            }
+            if (dateTo) {
+                const toDate = new Date(dateTo);
+                toDate.setHours(23, 59, 59, 999);
+                filter.registrationDate.$lte = toDate;
+            }
+        }
+
+        // Calculate pagination
+        const skip = (page - 1) * limit;
+        const sortOptions: any = {};
+        sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+        // Add secondary sort by queueNumber for same dates
+        if (sortBy === 'registrationDate') {
+            sortOptions.queueNumber = 1;
+        }
+
+        // Execute query with pagination
+        const [data, total] = await Promise.all([
+            this.registrationModel
+                .find(filter)
+                .populate('patientId', 'fullName email phoneNumber')
+                .populate('doctorId', 'fullName specialization')
+                .populate('scheduleId', 'dayOfWeek startTime endTime')
+                .sort(sortOptions)
+                .skip(skip)
+                .limit(limit)
+                .exec(),
+            this.registrationModel.countDocuments(filter).exec(),
+        ]);
+
+        const PaginatedRegistrationResponse = PaginatedResponse(Registration);
+        return new PaginatedRegistrationResponse(data, total, page, limit);
     }
 
     async findOne(id: string): Promise<Registration> {

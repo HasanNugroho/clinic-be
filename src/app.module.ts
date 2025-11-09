@@ -1,12 +1,16 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { join } from 'path';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { APP_FILTER } from '@nestjs/core';
-import { HttpExceptionFilter } from './common/filter/http-exception.filter';
 import { DoctorSchedulesModule } from './modules/doctorSchedules/doctor-schedules.module';
 import { RegistrationsModule } from './modules/registrations/registrations.module';
+import { ExaminationsModule } from './modules/examinations/examinations.module';
+import { CommonModule } from './common/common.module';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 
 @Module({
   imports: [
@@ -19,16 +23,27 @@ import { RegistrationsModule } from './modules/registrations/registrations.modul
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    GraphQLModule.forRoot<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      sortSchema: true,
+      playground: false,
+      introspection: true,
+      plugins: [ApolloServerPluginLandingPageLocalDefault()],
+      context: ({ req }) => ({ req }),
+      csrfPrevention: true,
+      subscriptions: {
+        'graphql-ws': true, // modern
+        'subscriptions-transport-ws': true, // legacy,
+      },
+    }),
+    CommonModule,
     UsersModule,
     AuthModule,
     DoctorSchedulesModule,
     RegistrationsModule,
+    ExaminationsModule,
   ],
-  providers: [
-    {
-      provide: APP_FILTER,
-      useClass: HttpExceptionFilter,
-    },
-  ],
+  providers: [],
 })
-export class AppModule { }
+export class AppModule {}
