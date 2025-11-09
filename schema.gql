@@ -1,0 +1,521 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type User {
+  _id: ID!
+
+  """User's full name"""
+  fullName: String!
+
+  """National ID number (optional for doctor/admin)"""
+  nik: String
+
+  """Birth date (for patients)"""
+  birthDate: DateTime
+
+  """Gender"""
+  gender: Gender!
+
+  """Address of user"""
+  address: String!
+
+  """Contact number"""
+  phoneNumber: String!
+
+  """Email for login"""
+  email: String!
+
+  """Role type"""
+  role: UserRole!
+
+  """Doctor's specialization (nullable)"""
+  specialization: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""User gender"""
+enum Gender {
+  MALE
+  FEMALE
+}
+
+"""User role in the system"""
+enum UserRole {
+  PATIENT
+  DOCTOR
+  EMPLOYEE
+  SUPERADMIN
+}
+
+type PaginationMetaDto {
+  """Current page number"""
+  page: Float!
+
+  """Number of items per page"""
+  limit: Float!
+
+  """Total number of items"""
+  total: Float!
+
+  """Total number of pages"""
+  totalPages: Float!
+
+  """Has previous page"""
+  hasPrevPage: Boolean!
+
+  """Has next page"""
+  hasNextPage: Boolean!
+}
+
+type UserPaginatedResponse {
+  """Array of items"""
+  data: [User!]!
+
+  """Pagination metadata"""
+  meta: PaginationMetaDto!
+}
+
+type DoctorSchedule {
+  _id: ID!
+
+  """Doctor ID reference to User collection"""
+  doctorId: User!
+
+  """Day of the week"""
+  dayOfWeek: DayOfWeek!
+
+  """Start time of doctor shift (HH:mm format)"""
+  startTime: String!
+
+  """End time of doctor shift (HH:mm format)"""
+  endTime: String!
+
+  """The quota per day"""
+  quota: String!
+
+  """Get doctor information"""
+  doctor: User
+}
+
+"""Day of the week"""
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+type Registration {
+  _id: ID!
+
+  """Patient ID reference to User collection"""
+  patientId: User!
+
+  """Doctor ID reference to User collection"""
+  doctorId: User!
+
+  """Schedule ID reference to DoctorSchedule collection"""
+  scheduleId: DoctorSchedule!
+
+  """Date of registration"""
+  registrationDate: DateTime!
+
+  """Registration method"""
+  registrationMethod: RegistrationMethod!
+
+  """Current patient status"""
+  status: RegistrationStatus!
+
+  """Auto-generated queue number"""
+  queueNumber: Int!
+
+  """Record creation timestamp"""
+  createdAt: DateTime
+
+  """Record update timestamp"""
+  updatedAt: DateTime
+
+  """Get patient information"""
+  patient: User
+
+  """Get doctor information"""
+  doctor: User
+
+  """Get schedule information"""
+  schedule: DoctorSchedule
+}
+
+"""Method of registration"""
+enum RegistrationMethod {
+  ONLINE
+  OFFLINE
+}
+
+"""Current status of registration"""
+enum RegistrationStatus {
+  WAITING
+  EXAMINING
+  COMPLETED
+}
+
+type Examination {
+  _id: ID!
+
+  """Registration ID reference to Registration collection"""
+  registrationId: Registration!
+
+  """Doctor ID reference to User collection"""
+  doctorId: User!
+
+  """Patient ID reference to User collection"""
+  patientId: User!
+
+  """Date of examination"""
+  examinationDate: DateTime!
+
+  """Brief diagnosis summary"""
+  diagnosisSummary: String!
+
+  """Additional notes from doctor"""
+  doctorNotes: String!
+
+  """Examination status"""
+  status: ExaminationStatus!
+
+  """Record creation timestamp"""
+  createdAt: DateTime
+
+  """Record update timestamp"""
+  updatedAt: DateTime
+
+  """Get patient information"""
+  patient: User
+
+  """Get doctor information"""
+  doctor: User
+
+  """Get registration information"""
+  registration: Registration
+}
+
+"""Status of examination"""
+enum ExaminationStatus {
+  COMPLETED
+  PENDING
+}
+
+type UserResponse {
+  """User ID"""
+  userId: String!
+
+  """User email"""
+  email: String!
+
+  """User full name"""
+  fullName: String!
+
+  """User role"""
+  role: String!
+}
+
+type LoginResponse {
+  """JWT access token"""
+  access_token: String!
+
+  """User information"""
+  user: UserResponse!
+}
+
+type Query {
+  getUsers(filter: QueryUserDto): UserPaginatedResponse!
+  getUser(id: ID!): User!
+
+  """Get current user profile"""
+  me: User
+
+  """Get user by email"""
+  userByEmail(email: String!): User
+
+  """Get all doctors"""
+  doctors: [User!]!
+
+  """Get all patients"""
+  patients: [User!]!
+
+  """Get current authenticated user"""
+  currentUser: User
+
+  """Get all doctor schedules"""
+  doctorSchedules: [DoctorSchedule!]!
+
+  """Get doctor schedule by ID"""
+  doctorSchedule(id: ID!): DoctorSchedule
+
+  """Get schedules by doctor ID"""
+  doctorSchedulesByDoctor(doctorId: ID!): [DoctorSchedule!]!
+
+  """Get all registrations"""
+  registrations: [Registration!]!
+
+  """Get registration by ID"""
+  registration(id: ID!): Registration
+
+  """Get registrations by patient ID"""
+  registrationsByPatient(patientId: ID!): [Registration!]!
+
+  """Get registrations by doctor ID"""
+  registrationsByDoctor(doctorId: ID!): [Registration!]!
+
+  """Get all examinations"""
+  examinations: [Examination!]!
+
+  """Get examination by ID"""
+  examination(id: ID!): Examination
+
+  """Get examinations by patient ID"""
+  examinationsByPatient(patientId: ID!): [Examination!]!
+
+  """Get examinations by doctor ID"""
+  examinationsByDoctor(doctorId: ID!): [Examination!]!
+}
+
+input QueryUserDto {
+  """Page number (starts from 1)"""
+  page: Float = 1
+
+  """Number of items per page"""
+  limit: Float = 10
+
+  """Field to sort by"""
+  sortBy: String
+
+  """Sort order"""
+  sortOrder: SortOrder = DESC
+
+  """Search query"""
+  search: String
+  role: UserRole
+}
+
+"""Sort order"""
+enum SortOrder {
+  ASC
+  DESC
+}
+
+type Mutation {
+  """Create a new user"""
+  createUser(createUserInput: CreateUserDto!): User!
+
+  """Update an existing user"""
+  updateUser(id: ID!, updateUserInput: UpdateUserDto!): User!
+
+  """Delete a user"""
+  deleteUser(id: ID!): Boolean!
+
+  """Register a new user"""
+  register(input: CreateUserDto!): User!
+
+  """Login user and get access token"""
+  login(input: LoginDto!): LoginResponse!
+
+  """Create a new doctor schedule"""
+  createDoctorSchedule(input: CreateDoctorScheduleDto!): DoctorSchedule!
+
+  """Update an existing doctor schedule"""
+  updateDoctorSchedule(id: ID!, input: UpdateDoctorScheduleDto!): DoctorSchedule!
+
+  """Delete a doctor schedule"""
+  deleteDoctorSchedule(id: ID!): Boolean!
+
+  """Create a new registration"""
+  createRegistration(input: CreateRegistrationDto!): Registration!
+
+  """Update an existing registration"""
+  updateRegistration(id: ID!, input: UpdateRegistrationDto!): Registration!
+
+  """Delete a registration"""
+  deleteRegistration(id: ID!): Boolean!
+
+  """Create a new examination"""
+  createExamination(input: CreateExaminationDto!): Examination!
+
+  """Update an existing examination"""
+  updateExamination(id: ID!, input: UpdateExaminationDto!): Examination!
+
+  """Delete an examination"""
+  deleteExamination(id: ID!): Boolean!
+}
+
+input CreateUserDto {
+  """User full name"""
+  fullName: String!
+
+  """User email address"""
+  email: String!
+
+  """User password (min 6 characters)"""
+  password: String!
+
+  """User phone number"""
+  phoneNumber: String!
+
+  """User address"""
+  address: String!
+
+  """User gender"""
+  gender: Gender!
+
+  """User role"""
+  role: UserRole!
+
+  """National ID number (optional)"""
+  nik: String
+
+  """Birth date (optional)"""
+  birthDate: String
+
+  """Doctor specialization (optional)"""
+  specialization: String
+}
+
+input UpdateUserDto {
+  """User full name"""
+  fullName: String
+
+  """User email address"""
+  email: String
+
+  """User password (min 6 characters)"""
+  password: String
+
+  """User phone number"""
+  phoneNumber: String
+
+  """User address"""
+  address: String
+
+  """User gender"""
+  gender: Gender
+
+  """User role"""
+  role: UserRole
+
+  """National ID number (optional)"""
+  nik: String
+
+  """Birth date (optional)"""
+  birthDate: String
+
+  """Doctor specialization (optional)"""
+  specialization: String
+}
+
+input LoginDto {
+  """User email address"""
+  email: String!
+
+  """User password"""
+  password: String!
+}
+
+input CreateDoctorScheduleDto {
+  """Doctor ID (MongoDB ObjectId)"""
+  doctorId: String!
+
+  """Day of the week"""
+  dayOfWeek: DayOfWeek!
+
+  """Start time in HH:mm format"""
+  startTime: String!
+
+  """End time in HH:mm format"""
+  endTime: String!
+
+  """Quota per day"""
+  quota: Float!
+}
+
+input UpdateDoctorScheduleDto {
+  """Doctor ID (MongoDB ObjectId)"""
+  doctorId: String
+
+  """Day of the week"""
+  dayOfWeek: DayOfWeek
+
+  """Start time in HH:mm format"""
+  startTime: String
+
+  """End time in HH:mm format"""
+  endTime: String
+
+  """Quota per day"""
+  quota: Float
+}
+
+input CreateRegistrationDto {
+  """Patient ID"""
+  patientId: String!
+
+  """Doctor ID"""
+  doctorId: String!
+
+  """Schedule ID"""
+  scheduleId: String!
+
+  """Date of registration"""
+  registrationDate: String!
+
+  """Registration method"""
+  registrationMethod: RegistrationMethod!
+}
+
+input UpdateRegistrationDto {
+  """Current patient status"""
+  status: RegistrationStatus
+}
+
+input CreateExaminationDto {
+  """Registration ID"""
+  registrationId: String!
+
+  """Doctor ID"""
+  doctorId: String!
+
+  """Patient ID"""
+  patientId: String!
+
+  """Examination date"""
+  examinationDate: String!
+
+  """Diagnosis summary"""
+  diagnosisSummary: String!
+
+  """Doctor notes"""
+  doctorNotes: String!
+
+  """Examination status"""
+  status: ExaminationStatus
+}
+
+input UpdateExaminationDto {
+  """Date of examination"""
+  examinationDate: DateTime
+
+  """Brief diagnosis summary"""
+  diagnosisSummary: String
+
+  """Additional notes from doctor"""
+  doctorNotes: String
+
+  """Examination status"""
+  status: ExaminationStatus
+}

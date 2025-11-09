@@ -21,20 +21,17 @@ export class UsersResolver {
   /**
    * Query to get all users with pagination (Admin & Employee only)
    */
-  @Query(() => UserPaginatedResponse, { name: 'users', description: 'Get all users with pagination' })
+  @Query(() => UserPaginatedResponse)
   @UseGuards(GqlAuthGuard, GqlRolesGuard)
   @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
   async getUsers(@Args('filter', { nullable: true }) queryDto?: QueryUserDto) {
-
-    const users = await this.usersService.findAll(queryDto);
-    console.dir(users, { depth: null })
-    return users
+    return this.usersService.findAll(queryDto);
   }
 
   /**
    * Query to get a single user by ID (Admin, Employee, Doctor)
    */
-  @Query(() => User, { name: 'user', description: 'Get user by ID', nullable: true })
+  @Query(() => User)
   @UseGuards(GqlAuthGuard, GqlRolesGuard)
   @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE, UserRole.DOCTOR)
   async getUser(@Args('id', { type: () => ID }) id: string) {

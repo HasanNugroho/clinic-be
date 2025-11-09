@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Examination, ExaminationDocument } from './schemas/examination.schema';
+import { Examination } from './schemas/examination.schema';
 import { CreateExaminationDto } from './dto/create-examination.dto';
 import { UpdateExaminationDto } from './dto/update-examination.dto';
 import { QueryExaminationDto } from './dto/query-examination.dto';
@@ -14,7 +14,7 @@ import { PaginatedResponse } from '../../common/dto/pagination.dto';
 export class ExaminationsService {
     constructor(
         @InjectModel(Examination.name)
-        private examinationModel: Model<ExaminationDocument>,
+        private examinationModel: Model<Examination>,
         private usersService: UsersService,
         private registrationsService: RegistrationsService,
     ) { }
@@ -195,7 +195,7 @@ export class ExaminationsService {
         }
 
         const updateData: any = { ...updateExaminationDto };
-        
+
         if (updateExaminationDto.examinationDate) {
             updateData.examinationDate = new Date(updateExaminationDto.examinationDate);
         }

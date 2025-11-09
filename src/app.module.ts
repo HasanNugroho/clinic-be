@@ -11,6 +11,12 @@ import { RegistrationsModule } from './modules/registrations/registrations.modul
 import { ExaminationsModule } from './modules/examinations/examinations.module';
 import { CommonModule } from './common/common.module';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
+import mongoose from 'mongoose';
+
+const { ObjectId } = mongoose.Types;
+ObjectId.prototype.valueOf = function () {
+  return this.toString();
+};
 
 @Module({
   imports: [
@@ -25,8 +31,8 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      sortSchema: true,
+      autoSchemaFile: 'schema.gql',
+      installSubscriptionHandlers: true,
       playground: false,
       introspection: true,
       plugins: [ApolloServerPluginLandingPageLocalDefault()],
@@ -46,4 +52,4 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
   ],
   providers: [],
 })
-export class AppModule {}
+export class AppModule { }

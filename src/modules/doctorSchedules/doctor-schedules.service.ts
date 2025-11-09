@@ -2,7 +2,7 @@ import { Injectable, NotFoundException, BadRequestException } from '@nestjs/comm
 import { UsersService } from '../users/users.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { DoctorSchedule, DoctorScheduleDocument } from './schemas/doctor-schedule.schema';
+import { DoctorSchedule } from './schemas/doctor-schedule.schema';
 import { CreateDoctorScheduleDto } from './dto/create-doctor-schedule.dto';
 import { UpdateDoctorScheduleDto } from './dto/update-doctor-schedule.dto';
 import { QueryDoctorScheduleDto } from './dto/query-doctor-schedule.dto';
@@ -13,7 +13,7 @@ import { PaginatedResponse } from '../../common/dto/pagination.dto';
 export class DoctorSchedulesService {
     constructor(
         @InjectModel(DoctorSchedule.name)
-        private doctorScheduleModel: Model<DoctorScheduleDocument>,
+        private doctorScheduleModel: Model<DoctorSchedule>,
         private usersService: UsersService,
     ) { }
 

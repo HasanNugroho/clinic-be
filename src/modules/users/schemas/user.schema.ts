@@ -1,9 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import { Exclude } from 'class-transformer';
 import { ObjectType, Field, registerEnumType, ID } from '@nestjs/graphql';
-
-export type UserDocument = User & Document;
 
 export enum Gender {
   MALE = 'M',
@@ -77,22 +74,28 @@ export class User {
 
 export const UserSchema = SchemaFactory.createForClass(User);
 
-UserSchema.set('toJSON', {
-  virtuals: false,
-  versionKey: false,
-  transform: function (doc, ret) {
-    const { password, __v, ...rest } = ret;
-    rest._id = rest._id.toString();
-    return rest;
-  },
-});
+// Add indexes for better query performance
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ role: 1 });
+UserSchema.index({ nik: 1 }, { sparse: true });
+UserSchema.index({ phoneNumber: 1 });
 
-UserSchema.set('toObject', {
-  virtuals: false,
-  versionKey: false,
-  transform: function (doc, ret) {
-    const { password, __v, ...rest } = ret;
-    rest._id = rest._id.toString();
-    return rest;
-  },
-});
+// UserSchema.set('toJSON', {
+//   virtuals: false,
+//   versionKey: false,
+//   transform: function (doc, ret) {
+//     const { password, __v, ...rest } = ret;
+//     rest._id = rest._id.toString();
+//     return rest;
+//   },
+// });
+
+// UserSchema.set('toObject', {
+//   virtuals: false,
+//   versionKey: false,
+//   transform: function (doc, ret) {
+//     const { password, __v, ...rest } = ret;
+//     rest._id = rest._id.toString();
+//     return rest;
+//   },
+// });

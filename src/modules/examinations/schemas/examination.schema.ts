@@ -1,10 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType, ID } from '@nestjs/graphql';
 import { User } from 'src/modules/users/schemas/user.schema';
 import { Registration } from 'src/modules/registrations/schemas/registration.schema';
-
-export type ExaminationDocument = Examination & Document;
 
 export enum ExaminationStatus {
     COMPLETED = 'completed',
@@ -20,10 +18,12 @@ registerEnumType(ExaminationStatus, {
 @ObjectType()
 @Schema({ timestamps: true })
 export class Examination {
-    @Field(() => String)
+    @Field(() => ID)
     _id: string;
 
-    @Field(() => Registration, { description: 'Registration ID reference to Registration collection' })
+    @Field(() => Registration, {
+        description: 'Registration ID reference to Registration collection',
+    })
     @Prop({ type: Types.ObjectId, ref: 'Registration', required: true })
     registrationId: string;
 

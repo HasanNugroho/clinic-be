@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Registration, RegistrationDocument, RegistrationStatus } from './schemas/registration.schema';
+import { Registration, RegistrationStatus } from './schemas/registration.schema';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { UpdateRegistrationDto } from './dto/update-registration.dto';
 import { QueryRegistrationDto } from './dto/query-registration.dto';
@@ -14,7 +14,7 @@ import { PaginatedResponse } from '../../common/dto/pagination.dto';
 export class RegistrationsService {
     constructor(
         @InjectModel(Registration.name)
-        private registrationModel: Model<RegistrationDocument>,
+        private registrationModel: Model<Registration>,
         private usersService: UsersService,
         private doctorSchedulesService: DoctorSchedulesService,
     ) { }
