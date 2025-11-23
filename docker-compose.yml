@@ -1,0 +1,13 @@
+services:
+  app:
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
+    image: devnug/clinic-be:latest
+    container_name: clinic-be
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      # update to be .env.production for production mode
+      - .env
