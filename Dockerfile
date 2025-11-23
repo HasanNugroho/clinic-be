@@ -29,4 +29,4 @@ COPY --from=builder /app/package*.json ./
 RUN npm ci --omit=dev
 
 # Start the application
-CMD ["node", "dist/src/main.js"]
+CMD ["node", "dist/main.js"]
