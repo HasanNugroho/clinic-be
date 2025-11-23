@@ -1,0 +1,156 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
+import { QueuesService } from './queues.service';
+import { Queue } from './schemas/queue.schema';
+import { CreateQueueDto } from './dto/create-queue.dto';
+import { QueryQueueDto } from './dto/query-queue.dto';
+import { NextQueueDto } from './dto/next-queue.dto';
+import { UserRole } from '../users/schemas/user.schema';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import {
+  ApiHttpResponse,
+  ApiHttpArrayResponse,
+  ApiHttpErrorResponse,
+} from '../../common/decorators/api-response.decorator';
+
+/**
+ * REST Controller for Queue operations
+ * Provides endpoints for queue management
+ */
+@ApiTags('queues')
+@Controller('queues')
+export class QueuesController {
+  constructor(private readonly queuesService: QueuesService) { }
+
+  /**
+   * Create a new queue (Employee/Admin only)
+   */
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Create a new queue' })
+  @ApiHttpResponse(201, 'Queue created successfully', Queue)
+  @ApiHttpErrorResponse(400, 'Invalid input')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async createQueue(@Body() createQueueDto: CreateQueueDto) {
+    return this.queuesService.create(createQueueDto);
+  }
+
+  /**
+   * Get all queues with pagination
+   */
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get all queues with pagination' })
+  @ApiHttpArrayResponse(200, 'Queues retrieved successfully', Queue)
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  async getQueues(@Query() queryDto?: QueryQueueDto) {
+    const result = await this.queuesService.findAll(queryDto || {});
+    return result.data;
+  }
+
+  /**
+   * Get a single queue by ID
+   */
+  @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get queue by ID' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiHttpResponse(200, 'Queue retrieved successfully', Queue)
+  @ApiHttpErrorResponse(404, 'Queue not found')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  async getQueue(@Param('id') id: string) {
+    return this.queuesService.findOne(id);
+  }
+
+  /**
+   * Get current queue for a doctor
+   */
+  @Get('doctor/:doctorId/current')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get current queue for a doctor' })
+  @ApiParam({ name: 'doctorId', type: String })
+  @ApiQuery({ name: 'queueDate', type: String })
+  @ApiHttpResponse(200, 'Current queue retrieved successfully', Queue)
+  @ApiHttpErrorResponse(404, 'Queue not found')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  async getCurrentQueue(
+    @Param('doctorId') doctorId: string,
+    @Query('queueDate') queueDate: string,
+  ) {
+    return this.queuesService.getCurrentQueue(doctorId, queueDate);
+  }
+
+  /**
+   * Get all queues for a doctor on a specific date
+   */
+  @Get('doctor/:doctorId/date/:queueDate')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get all queues for a doctor on a specific date' })
+  @ApiParam({ name: 'doctorId', type: String })
+  @ApiParam({ name: 'queueDate', type: String })
+  @ApiHttpArrayResponse(200, 'Queues retrieved successfully', Queue)
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  async getQueuesByDoctor(
+    @Param('doctorId') doctorId: string,
+    @Param('queueDate') queueDate: string,
+  ) {
+    return this.queuesService.getQueuesByDoctor(doctorId, queueDate);
+  }
+
+  /**
+   * Call next queue (Doctor only)
+   */
+  @Post('next')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.DOCTOR)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Call next queue' })
+  @ApiHttpResponse(200, 'Next queue called successfully', Queue)
+  @ApiHttpErrorResponse(400, 'Invalid input')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async callNextQueue(@Body() nextQueueDto: NextQueueDto) {
+    return this.queuesService.callNextQueue(nextQueueDto);
+  }
+
+  /**
+   * Skip a queue (Doctor/Employee/Admin only)
+   */
+  @Post(':id/skip')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE, UserRole.DOCTOR)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Skip a queue' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiHttpResponse(200, 'Queue skipped successfully', Queue)
+  @ApiHttpErrorResponse(404, 'Queue not found')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async skipQueue(@Param('id') id: string) {
+    return this.queuesService.skipQueue(id);
+  }
+}

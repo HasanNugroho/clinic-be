@@ -1,26 +1,25 @@
 import { IsOptional, IsEnum, IsDateString } from 'class-validator';
 import { PaginationQueryDto } from '../../../common/dto/pagination.dto';
 import { RegistrationStatus, RegistrationMethod } from '../schemas/registration.schema';
-import { InputType, Field } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
-@InputType()
 export class QueryRegistrationDto extends PaginationQueryDto {
-    @Field(() => RegistrationStatus, { description: 'Filter by status', nullable: true })
+    @ApiProperty({ enum: RegistrationStatus, required: false, description: 'Filter by status' })
     @IsOptional()
     @IsEnum(RegistrationStatus)
     status?: RegistrationStatus;
 
-    @Field(() => RegistrationMethod, { description: 'Filter by registration method', nullable: true })
+    @ApiProperty({ enum: RegistrationMethod, required: false, description: 'Filter by registration method' })
     @IsOptional()
     @IsEnum(RegistrationMethod)
     registrationMethod?: RegistrationMethod;
 
-    @Field(() => String, { description: 'Filter by registration date (from)', nullable: true })
+    @ApiProperty({ required: false, description: 'Filter by registration date (from)' })
     @IsOptional()
     @IsDateString()
     dateFrom?: string;
 
-    @Field(() => String, { description: 'Filter by registration date (to)', nullable: true })
+    @ApiProperty({ required: false, description: 'Filter by registration date (to)' })
     @IsOptional()
     @IsDateString()
     dateTo?: string;

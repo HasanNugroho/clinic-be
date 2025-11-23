@@ -1,5 +1,4 @@
 import { CreateDoctorScheduleDto } from './create-doctor-schedule.dto';
-import { InputType, PartialType } from '@nestjs/graphql';
+import { PartialType } from '@nestjs/swagger';
 
-@InputType()
 export class UpdateDoctorScheduleDto extends PartialType(CreateDoctorScheduleDto) { }

@@ -1,10 +1,9 @@
 import { IsEnum, IsOptional } from 'class-validator';
 import { RegistrationStatus } from '../schemas/registration.schema';
-import { InputType, Field } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
-@InputType()
 export class UpdateRegistrationDto {
-    @Field(() => RegistrationStatus, { description: 'Current patient status', nullable: true })
+    @ApiProperty({ enum: RegistrationStatus, required: false, description: 'Current patient status' })
     @IsOptional()
     @IsEnum(RegistrationStatus)
     status?: RegistrationStatus;

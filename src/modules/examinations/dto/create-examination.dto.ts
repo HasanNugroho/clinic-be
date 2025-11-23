@@ -1,40 +1,39 @@
 import { IsNotEmpty, IsString, IsDateString, IsEnum, IsOptional } from 'class-validator';
 import { ExaminationStatus } from '../schemas/examination.schema';
-import { InputType, Field } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
-@InputType()
 export class CreateExaminationDto {
-    @Field(() => String, { description: 'Registration ID', nullable: false })
+    @ApiProperty({ description: 'Registration ID' })
     @IsNotEmpty()
     @IsString()
     registrationId: string;
 
-    @Field(() => String, { description: 'Doctor ID', nullable: false })
+    @ApiProperty({ description: 'Doctor ID' })
     @IsNotEmpty()
     @IsString()
     doctorId: string;
 
-    @Field(() => String, { description: 'Patient ID', nullable: false })
+    @ApiProperty({ description: 'Patient ID' })
     @IsNotEmpty()
     @IsString()
     patientId: string;
 
-    @Field(() => String, { description: 'Examination date', nullable: false })
+    @ApiProperty({ description: 'Examination date' })
     @IsNotEmpty()
     @IsDateString()
     examinationDate: string;
 
-    @Field(() => String, { description: 'Diagnosis summary', nullable: false })
+    @ApiProperty({ description: 'Diagnosis summary' })
     @IsNotEmpty()
     @IsString()
     diagnosisSummary: string;
 
-    @Field(() => String, { description: 'Doctor notes', nullable: false })
+    @ApiProperty({ description: 'Doctor notes' })
     @IsNotEmpty()
     @IsString()
     doctorNotes: string;
 
-    @Field(() => ExaminationStatus, { description: 'Examination status', nullable: true })
+    @ApiProperty({ enum: ExaminationStatus, required: false, description: 'Examination status' })
     @IsOptional()
     @IsEnum(ExaminationStatus)
     status?: ExaminationStatus;

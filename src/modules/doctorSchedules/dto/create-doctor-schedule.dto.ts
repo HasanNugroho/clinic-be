@@ -1,20 +1,19 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
 import { DayOfWeek } from '../schemas/doctor-schedule.schema';
-import { Field, InputType } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
-@InputType()
 export class CreateDoctorScheduleDto {
-    @Field(() => String, { description: 'Doctor ID (MongoDB ObjectId)' })
+    @ApiProperty({ description: 'Doctor ID (MongoDB ObjectId)' })
     @IsNotEmpty()
     @IsString()
     doctorId: string;
 
-    @Field(() => DayOfWeek, { description: 'Day of the week', })
+    @ApiProperty({ enum: DayOfWeek, description: 'Day of the week' })
     @IsNotEmpty()
     @IsEnum(DayOfWeek)
     dayOfWeek: DayOfWeek;
 
-    @Field(() => String, { description: 'Start time in HH:mm format', })
+    @ApiProperty({ description: 'Start time in HH:mm format' })
     @IsNotEmpty()
     @IsString()
     @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
@@ -22,7 +21,7 @@ export class CreateDoctorScheduleDto {
     })
     startTime: string;
 
-    @Field(() => String, { description: 'End time in HH:mm format' })
+    @ApiProperty({ description: 'End time in HH:mm format' })
     @IsNotEmpty()
     @IsString()
     @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
@@ -30,9 +29,8 @@ export class CreateDoctorScheduleDto {
     })
     endTime: string;
 
-
-    @Field(() => Number, { description: 'Quota per day' })
+    @ApiProperty({ description: 'Quota per day' })
     @IsNotEmpty()
     @IsNumber()
-    quota: number
+    quota: number;
 }

@@ -8,6 +8,7 @@ import {
   Examination,
   ExaminationSchema,
 } from 'src/modules/examinations/schemas/examination.schema';
+import { Queue, QueueSchema } from 'src/modules/queues/schemas/queue.schema';
 import {
   Registration,
   RegistrationSchema,
@@ -21,8 +22,9 @@ import { User, UserSchema } from 'src/modules/users/schemas/user.schema';
       { name: DoctorSchedule.name, schema: DoctorScheduleSchema },
       { name: Registration.name, schema: RegistrationSchema },
       { name: Examination.name, schema: ExaminationSchema },
+      { name: Queue.name, schema: QueueSchema },
     ]),
   ],
   exports: [MongooseModule],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }

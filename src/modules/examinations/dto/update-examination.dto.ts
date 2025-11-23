@@ -1,25 +1,24 @@
 import { IsEnum, IsOptional, IsString, IsDateString } from 'class-validator';
 import { ExaminationStatus } from '../schemas/examination.schema';
-import { InputType, Field } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
-@InputType()
 export class UpdateExaminationDto {
-    @Field(() => Date, { description: 'Date of examination', nullable: true })
+    @ApiProperty({ required: false, description: 'Date of examination' })
     @IsOptional()
     @IsDateString()
     examinationDate?: string;
 
-    @Field(() => String, { description: 'Brief diagnosis summary', nullable: true })
+    @ApiProperty({ required: false, description: 'Brief diagnosis summary' })
     @IsOptional()
     @IsString()
     diagnosisSummary?: string;
 
-    @Field(() => String, { description: 'Additional notes from doctor', nullable: true })
+    @ApiProperty({ required: false, description: 'Additional notes from doctor' })
     @IsOptional()
     @IsString()
     doctorNotes?: string;
 
-    @Field(() => ExaminationStatus, { description: 'Examination status', nullable: true })
+    @ApiProperty({ enum: ExaminationStatus, required: false, description: 'Examination status' })
     @IsOptional()
     @IsEnum(ExaminationStatus)
     status?: ExaminationStatus;

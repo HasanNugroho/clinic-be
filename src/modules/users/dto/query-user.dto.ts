@@ -1,15 +1,13 @@
 import { IsOptional, IsEnum } from 'class-validator';
 import { PaginatedResponse, PaginationQueryDto } from '../../../common/dto/pagination.dto';
 import { User, UserRole } from '../schemas/user.schema';
-import { Field, InputType, ObjectType } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
-@InputType()
 export class QueryUserDto extends PaginationQueryDto {
-  @Field(() => UserRole, { nullable: true })
+  @ApiProperty({ enum: UserRole, required: false })
   @IsOptional()
   @IsEnum(UserRole)
   role?: UserRole;
 }
 
-@ObjectType()
 export class UserPaginatedResponse extends PaginatedResponse(User) {}

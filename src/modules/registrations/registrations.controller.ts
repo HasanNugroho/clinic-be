@@ -1,0 +1,159 @@
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Put,
+  Delete,
+  UseGuards,
+  Query,
+} from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
+import { RegistrationsService } from './registrations.service';
+import { Registration } from './schemas/registration.schema';
+import { CreateRegistrationDto } from './dto/create-registration.dto';
+import { UpdateRegistrationDto } from './dto/update-registration.dto';
+import { UserRole } from '../users/schemas/user.schema';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles } from '../../common/decorators/roles.decorator';
+import {
+  ApiHttpResponse,
+  ApiHttpArrayResponse,
+  ApiHttpErrorResponse,
+} from '../../common/decorators/api-response.decorator';
+
+/**
+ * REST Controller for Registration operations
+ * Provides endpoints for registration management
+ */
+@ApiTags('registrations')
+@Controller('registrations')
+export class RegistrationsController {
+  constructor(private readonly registrationsService: RegistrationsService) {}
+
+  /**
+   * Get all registrations (Employee, Doctor, Superadmin)
+   */
+  @Get()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get all registrations' })
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  @ApiHttpArrayResponse(200, 'Registrations retrieved successfully', Registration)
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async getRegistrations() {
+    const result = await this.registrationsService.findAll({});
+    return result.data;
+  }
+
+  /**
+   * Get a single registration by ID (Patient, Employee, Doctor, Superadmin)
+   */
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PATIENT, UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get registration by ID' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiHttpResponse(200, 'Registration retrieved successfully', Registration)
+  @ApiHttpErrorResponse(404, 'Registration not found')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  async getRegistration(@Param('id') id: string) {
+    return this.registrationsService.findOne(id);
+  }
+
+  /**
+   * Get registrations by patient ID (Patient, Employee, Doctor, Superadmin)
+   */
+  @Get('patient/:patientId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PATIENT, UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get registrations by patient ID' })
+  @ApiParam({ name: 'patientId', type: String })
+  @ApiHttpArrayResponse(200, 'Registrations retrieved successfully', Registration)
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  async getRegistrationsByPatient(@Param('patientId') patientId: string) {
+    return this.registrationsService.findByPatientId(patientId);
+  }
+
+  /**
+   * Get registrations by doctor ID (Employee, Doctor, Superadmin)
+   */
+  @Get('doctor/:doctorId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Get registrations by doctor ID' })
+  @ApiParam({ name: 'doctorId', type: String })
+  @ApiHttpArrayResponse(200, 'Registrations retrieved successfully', Registration)
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  async getRegistrationsByDoctor(@Param('doctorId') doctorId: string) {
+    return this.registrationsService.findByDoctorId(doctorId);
+  }
+
+  /**
+   * Create a new registration (Patient, Employee, Superadmin)
+   */
+  @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.PATIENT, UserRole.EMPLOYEE, UserRole.SUPERADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Create a new registration' })
+  @ApiHttpResponse(201, 'Registration created successfully', Registration)
+  @ApiHttpErrorResponse(400, 'Invalid input')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async createRegistration(@Body() createDto: CreateRegistrationDto) {
+    return await this.registrationsService.create(createDto);
+  }
+
+  /**
+   * Update a registration (Employee, Doctor, Superadmin)
+   */
+  @Put(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Update an existing registration' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiHttpResponse(200, 'Registration updated successfully', Registration)
+  @ApiHttpErrorResponse(404, 'Registration not found')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async updateRegistration(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateRegistrationDto,
+  ) {
+    return await this.registrationsService.update(id, updateDto);
+  }
+
+  /**
+   * Delete a registration (Employee, Superadmin)
+   */
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.EMPLOYEE, UserRole.SUPERADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Delete a registration' })
+  @ApiParam({ name: 'id', type: String })
+  @ApiHttpResponse(200, 'Registration deleted successfully')
+  @ApiHttpErrorResponse(404, 'Registration not found')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async deleteRegistration(@Param('id') id: string) {
+    await this.registrationsService.remove(id);
+    return { message: 'Registration deleted successfully' };
+  }
+}

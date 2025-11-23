@@ -1,77 +1,154 @@
-import { Field, InputType, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { IsOptional, IsInt, Min, IsString, IsEnum } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum SortOrder {
     ASC = 'asc',
     DESC = 'desc',
 }
 
-registerEnumType(SortOrder, {
-    name: 'SortOrder',
-    description: 'Sort order',
-});
-
-@InputType()
 export class PaginationQueryDto {
-    @Field(() => Number, { nullable: true, description: 'Page number (starts from 1)' })
+    @ApiProperty({
+        type: Number,
+        required: false,
+        description: 'Page number (starts from 1)',
+        example: 1,
+    })
     @IsOptional()
     @Type(() => Number)
     @IsInt()
     @Min(1)
     page?: number = 1;
 
-    @Field(() => Number, { nullable: true, description: 'Number of items per page' })
+    @ApiProperty({
+        type: Number,
+        required: false,
+        description: 'Number of items per page',
+        example: 10,
+    })
     @IsOptional()
     @Type(() => Number)
     @IsInt()
     @Min(1)
     limit?: number = 10;
 
-    @Field(() => String, { nullable: true, description: 'Field to sort by' })
+    @ApiProperty({
+        type: String,
+        required: false,
+        description: 'Field to sort by',
+        example: 'createdAt',
+    })
     @IsOptional()
     @IsString()
     sortBy?: string;
 
-    @Field(() => SortOrder, { nullable: true, description: 'Sort order' })
+    @ApiProperty({
+        enum: SortOrder,
+        required: false,
+        description: 'Sort order',
+        example: SortOrder.DESC,
+    })
     @IsOptional()
     @IsEnum(SortOrder)
     sortOrder?: SortOrder = SortOrder.DESC;
 
-    @Field(() => String, { nullable: true, description: 'Search query' })
+    @ApiProperty({
+        type: String,
+        required: false,
+        description: 'Search query',
+        example: 'search text',
+    })
     @IsOptional()
     @IsString()
     search?: string;
 }
 
-@ObjectType()
 export class PaginationMetaDto {
-    @Field(() => Number, { description: 'Current page number' })
+    @ApiProperty({
+        type: Number,
+        description: 'Current page number',
+        example: 1,
+    })
     page: number;
 
-    @Field(() => Number, { description: 'Number of items per page' })
+    @ApiProperty({
+        type: Number,
+        description: 'Number of items per page',
+        example: 10,
+    })
     limit: number;
 
-    @Field(() => Number, { description: 'Total number of items' })
+    @ApiProperty({
+        type: Number,
+        description: 'Total number of items',
+        example: 150,
+    })
     total: number;
 
-    @Field(() => Number, { description: 'Total number of pages' })
+    @ApiProperty({
+        type: Number,
+        description: 'Total number of pages',
+        example: 15,
+    })
     totalPages: number;
 
-    @Field(() => Boolean, { description: 'Has previous page' })
+    @ApiProperty({
+        type: Boolean,
+        description: 'Has previous page',
+        example: false,
+    })
     hasPrevPage: boolean;
 
-    @Field(() => Boolean, { description: 'Has next page' })
+    @ApiProperty({
+        type: Boolean,
+        description: 'Has next page',
+        example: true,
+    })
     hasNextPage: boolean;
 }
 
+export class HttpResponse<T> {
+    success: boolean;
+    statusCode: number;
+    message: string | string[];
+    data?: T;
+    meta?: any;
+
+    constructor(
+        statusCode: number,
+        success: boolean,
+        message: string | string[],
+        data?: T,
+        meta?: any,
+    ) {
+        this.statusCode = statusCode;
+        this.success = success;
+        this.message = message;
+        this.data = data;
+        this.meta = meta;
+    }
+}
+
 export function PaginatedResponse<T>(classRef: new (...args: any[]) => T) {
-    @ObjectType()
     class PaginatedResponseClass {
-        @Field(() => [classRef], { description: 'Array of items' })
+        @ApiProperty({
+            type: [classRef],
+            description: 'Array of items',
+        })
         data: T[];
 
-        @Field(() => PaginationMetaDto, { description: 'Pagination metadata' })
+        @ApiProperty({
+            type: PaginationMetaDto,
+            description: 'Pagination metadata',
+            example: {
+                page: 1,
+                limit: 10,
+                total: 150,
+                totalPages: 15,
+                hasPrevPage: false,
+                hasNextPage: true,
+            },
+        })
         meta: PaginationMetaDto;
 
         constructor(data: T[], total: number, page: number, limit: number) {

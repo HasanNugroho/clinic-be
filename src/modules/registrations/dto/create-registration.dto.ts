@@ -1,34 +1,29 @@
 import { IsEnum, IsNotEmpty, IsString, IsDateString } from 'class-validator';
 import { RegistrationMethod } from '../schemas/registration.schema';
-import { InputType, Field } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
-@InputType()
 export class CreateRegistrationDto {
-    @Field(() => String, { description: 'Patient ID' })
+    @ApiProperty({ description: 'Patient ID' })
     @IsNotEmpty()
     @IsString()
     patientId: string;
 
-    @Field(() => String, { description: 'Doctor ID' })
+    @ApiProperty({ description: 'Doctor ID' })
     @IsNotEmpty()
     @IsString()
     doctorId: string;
 
-    @Field(() => String, { description: 'Schedule ID' })
+    @ApiProperty({ description: 'Schedule ID' })
     @IsNotEmpty()
     @IsString()
     scheduleId: string;
 
-    @Field(() => String, {
-        description: 'Date of registration',
-    })
+    @ApiProperty({ description: 'Date of registration' })
     @IsNotEmpty()
     @IsDateString()
     registrationDate: string;
 
-    @Field(() => RegistrationMethod, {
-        description: 'Registration method',
-    })
+    @ApiProperty({ enum: RegistrationMethod, description: 'Registration method' })
     @IsNotEmpty()
     @IsEnum(RegistrationMethod)
     registrationMethod: RegistrationMethod;

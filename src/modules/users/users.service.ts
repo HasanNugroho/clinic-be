@@ -11,6 +11,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { QueryUserDto, UserPaginatedResponse } from './dto/query-user.dto';
 import * as bcrypt from 'bcrypt';
+import { transformObjectId } from '../../common/utils/transform-objectid.util';
 
 @Injectable()
 export class UsersService {

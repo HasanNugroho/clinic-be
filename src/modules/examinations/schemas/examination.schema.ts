@@ -1,60 +1,80 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
-import { ObjectType, Field, registerEnumType, ID } from '@nestjs/graphql';
-import { User } from 'src/modules/users/schemas/user.schema';
-import { Registration } from 'src/modules/registrations/schemas/registration.schema';
+import { Types } from 'mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum ExaminationStatus {
     COMPLETED = 'completed',
     PENDING = 'pending',
 }
 
-// Register enum for GraphQL
-registerEnumType(ExaminationStatus, {
-    name: 'ExaminationStatus',
-    description: 'Status of examination',
-});
-
-@ObjectType()
 @Schema({ timestamps: true })
 export class Examination {
-    @Field(() => ID)
+    @ApiProperty({
+        example: '507f1f77bcf86cd799439011',
+        description: 'Examination ID (MongoDB ObjectId)',
+    })
     _id: string;
 
-    @Field(() => Registration, {
-        description: 'Registration ID reference to Registration collection',
+    @ApiProperty({
+        example: '507f1f77bcf86cd799439012',
+        description: 'Registration ID reference',
     })
     @Prop({ type: Types.ObjectId, ref: 'Registration', required: true })
     registrationId: string;
 
-    @Field(() => User, { description: 'Doctor ID reference to User collection' })
+    @ApiProperty({
+        example: '507f1f77bcf86cd799439013',
+        description: 'Doctor ID reference',
+    })
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     doctorId: string;
 
-    @Field(() => User, { description: 'Patient ID reference to User collection' })
+    @ApiProperty({
+        example: '507f1f77bcf86cd799439014',
+        description: 'Patient ID reference',
+    })
     @Prop({ type: Types.ObjectId, ref: 'User', required: true })
     patientId: string;
 
-    @Field({ description: 'Date of examination' })
+    @ApiProperty({
+        example: '2024-01-21',
+        description: 'Examination date',
+    })
     @Prop({ type: Date, required: true })
     examinationDate: Date;
 
-    @Field({ description: 'Brief diagnosis summary' })
+    @ApiProperty({
+        example: 'Patient has hypertension. Recommended medication and lifestyle changes.',
+        description: 'Diagnosis summary',
+    })
     @Prop({ type: String, required: true })
     diagnosisSummary: string;
 
-    @Field({ description: 'Additional notes from doctor' })
+    @ApiProperty({
+        example: 'Blood pressure: 140/90. Heart rate: 78 bpm. No abnormalities detected.',
+        description: 'Doctor notes',
+    })
     @Prop({ type: String, required: true })
     doctorNotes: string;
 
-    @Field(() => ExaminationStatus, { description: 'Examination status' })
+    @ApiProperty({
+        enum: ExaminationStatus,
+        example: ExaminationStatus.PENDING,
+        description: 'Examination status',
+    })
     @Prop({ type: String, enum: ExaminationStatus, default: ExaminationStatus.PENDING })
     status: ExaminationStatus;
 
-    @Field({ nullable: true, description: 'Record creation timestamp' })
+    @ApiProperty({
+        example: '2024-01-21T09:00:00Z',
+        description: 'Created timestamp',
+    })
     createdAt?: Date;
 
-    @Field({ nullable: true, description: 'Record update timestamp' })
+    @ApiProperty({
+        example: '2024-01-21T09:00:00Z',
+        description: 'Updated timestamp',
+    })
     updatedAt?: Date;
 }
 

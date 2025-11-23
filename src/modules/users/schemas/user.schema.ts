@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Exclude } from 'class-transformer';
-import { ObjectType, Field, registerEnumType, ID } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum Gender {
   MALE = 'M',
@@ -14,48 +14,63 @@ export enum UserRole {
   SUPERADMIN = 'superadmin',
 }
 
-// Register enums for GraphQL
-registerEnumType(Gender, {
-  name: 'Gender',
-  description: 'User gender',
-});
-
-registerEnumType(UserRole, {
-  name: 'UserRole',
-  description: 'User role in the system',
-});
-
-@ObjectType()
 @Schema({ timestamps: true })
 export class User {
-  @Field(() => ID)
+  @ApiProperty({
+    example: '507f1f77bcf86cd799439011',
+    description: 'User ID (MongoDB ObjectId)',
+  })
   _id: string;
 
-  @Field({ description: "User's full name" })
+  @ApiProperty({
+    example: 'John Doe',
+    description: 'User full name',
+  })
   @Prop({ required: true })
   fullName: string;
 
-  @Field({ nullable: true, description: 'National ID number (optional for doctor/admin)' })
+  @ApiProperty({
+    example: '1234567890123456',
+    description: 'National ID number',
+    required: false,
+  })
   @Prop({ required: false })
   nik?: string;
 
-  @Field({ nullable: true, description: 'Birth date (for patients)' })
+  @ApiProperty({
+    example: '1990-01-15',
+    description: 'Birth date',
+    required: false,
+  })
   @Prop({ type: Date, required: false })
   birthDate?: Date;
 
-  @Field(() => Gender, { description: 'Gender' })
+  @ApiProperty({
+    enum: Gender,
+    example: Gender.MALE,
+    description: 'User gender (M or F)',
+  })
   @Prop({ type: String, enum: Gender, required: true })
   gender: Gender;
 
-  @Field({ description: 'Address of user' })
+  @ApiProperty({
+    example: '123 Main St, City, Country',
+    description: 'User address',
+  })
   @Prop({ required: true })
   address: string;
 
-  @Field({ description: 'Contact number' })
+  @ApiProperty({
+    example: '+62812345678',
+    description: 'User phone number',
+  })
   @Prop({ required: true })
   phoneNumber: string;
 
-  @Field({ description: 'Email for login' })
+  @ApiProperty({
+    example: 'john@example.com',
+    description: 'User email address (unique)',
+  })
   @Prop({ required: true, unique: true })
   email: string;
 
@@ -63,11 +78,19 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Field(() => UserRole, { description: 'Role type' })
+  @ApiProperty({
+    enum: UserRole,
+    example: UserRole.PATIENT,
+    description: 'User role',
+  })
   @Prop({ type: String, enum: UserRole, required: true })
   role: UserRole;
 
-  @Field({ nullable: true, description: "Doctor's specialization (nullable)" })
+  @ApiProperty({
+    example: 'Cardiology',
+    description: 'Doctor specialization',
+    required: false,
+  })
   @Prop({ required: false })
   specialization?: string;
 }
@@ -80,22 +103,22 @@ UserSchema.index({ role: 1 });
 UserSchema.index({ nik: 1 }, { sparse: true });
 UserSchema.index({ phoneNumber: 1 });
 
-// UserSchema.set('toJSON', {
-//   virtuals: false,
-//   versionKey: false,
-//   transform: function (doc, ret) {
-//     const { password, __v, ...rest } = ret;
-//     rest._id = rest._id.toString();
-//     return rest;
-//   },
-// });
+UserSchema.set('toJSON', {
+  virtuals: false,
+  versionKey: false,
+  transform: function (doc, ret) {
+    const { password, __v, ...rest } = ret;
+    rest._id = rest._id.toString();
+    return rest;
+  },
+});
 
-// UserSchema.set('toObject', {
-//   virtuals: false,
-//   versionKey: false,
-//   transform: function (doc, ret) {
-//     const { password, __v, ...rest } = ret;
-//     rest._id = rest._id.toString();
-//     return rest;
-//   },
-// });
+UserSchema.set('toObject', {
+  virtuals: false,
+  versionKey: false,
+  transform: function (doc, ret) {
+    const { password, __v, ...rest } = ret;
+    rest._id = rest._id.toString();
+    return rest;
+  },
+});
