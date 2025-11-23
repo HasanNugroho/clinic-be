@@ -58,7 +58,7 @@ jobs:
     name: Deploy to VPS
     needs: build-and-push
     runs-on: ubuntu-latest
-    environment: dev
+    environment: deploy
     steps:
       - name: Deploy via SSH with docker compose
         uses: appleboy/ssh-action@v1.0.3
