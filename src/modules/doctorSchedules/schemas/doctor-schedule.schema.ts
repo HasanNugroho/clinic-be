@@ -3,13 +3,15 @@ import { Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 
 export enum DayOfWeek {
-  MONDAY = 'monday',
-  TUESDAY = 'tuesday',
-  WEDNESDAY = 'wednesday',
-  THURSDAY = 'thursday',
-  FRIDAY = 'friday',
-  SATURDAY = 'saturday',
-  SUNDAY = 'sunday',
+  SENIN = 'senin',
+  SELASA = 'selasa',
+  RABU = 'rabu',
+  KAMIS = 'kamis',
+  JUMAT = 'jumat',
+  SABTU = 'sabtu',
+  MINGGU = 'minggu',
+  HARI_KERJA = 'hari kerja',
+  AKHIR_PEKAN = 'akhir pekan'
 }
 
 @Schema({ timestamps: true })
@@ -29,7 +31,7 @@ export class DoctorSchedule {
 
   @ApiProperty({
     enum: DayOfWeek,
-    example: DayOfWeek.MONDAY,
+    example: DayOfWeek.SENIN,
     description: 'Day of week',
   })
   @Prop({ type: String, enum: DayOfWeek, required: true })
@@ -55,6 +57,15 @@ export class DoctorSchedule {
   })
   @Prop({ required: true, default: 1 })
   quota: string;
+
+  @Prop({ type: [Number], required: false, select: false })
+  embedding?: number[];
+
+  @Prop({ required: false, select: false })
+  embeddingText?: string;
+
+  @Prop({ required: false })
+  embeddingUpdatedAt?: Date;
 }
 
 export const DoctorScheduleSchema = SchemaFactory.createForClass(DoctorSchedule);

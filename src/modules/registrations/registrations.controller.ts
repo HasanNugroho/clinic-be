@@ -37,7 +37,7 @@ import {
 @ApiTags('registrations')
 @Controller('registrations')
 export class RegistrationsController {
-  constructor(private readonly registrationsService: RegistrationsService) {}
+  constructor(private readonly registrationsService: RegistrationsService) { }
 
   /**
    * Get all registrations (Employee, Doctor, Superadmin)
@@ -115,7 +115,7 @@ export class RegistrationsController {
   @ApiHttpErrorResponse(400, 'Invalid input')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async createRegistration(@Body() createDto: CreateRegistrationDto) {
+  async createRegistration(@Body() createDto: CreateRegistrationDto): Promise<Registration> {
     return await this.registrationsService.create(createDto);
   }
 

@@ -8,7 +8,8 @@ import { QueryRegistrationDto } from './dto/query-registration.dto';
 import { UsersService } from '../users/users.service';
 import { DoctorSchedulesService } from '../doctorSchedules/doctor-schedules.service';
 import { UserRole } from '../users/schemas/user.schema';
-import { PaginatedResponse } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '../../common/dtos/pagination.dto';
+import { EmbeddingService } from '../../common/services/embedding/embedding.service';
 
 @Injectable()
 export class RegistrationsService {
@@ -17,6 +18,7 @@ export class RegistrationsService {
         private registrationModel: Model<Registration>,
         private usersService: UsersService,
         private doctorSchedulesService: DoctorSchedulesService,
+        private embeddingService: EmbeddingService,
     ) { }
 
     async create(createRegistrationDto: CreateRegistrationDto): Promise<Registration> {
@@ -76,7 +78,12 @@ export class RegistrationsService {
             queueNumber: queueNumber,
         });
 
-        return createdRegistration.save();
+        const savedRegistration = await createdRegistration.save();
+
+        // Generate embedding asynchronously
+        await this.generateAndSaveEmbedding(savedRegistration._id.toString())
+
+        return savedRegistration;
     }
 
     async findAll(queryDto: QueryRegistrationDto): Promise<InstanceType<ReturnType<typeof PaginatedResponse<Registration>>>> {
@@ -207,6 +214,9 @@ export class RegistrationsService {
             throw new NotFoundException(`Registration with ID ${id} not found`);
         }
 
+        // Regenerate embedding asynchronously
+        await this.generateAndSaveEmbedding(id);
+
         return updatedRegistration;
     }
 
@@ -235,5 +245,100 @@ export class RegistrationsService {
         });
 
         return count + 1;
+    }
+
+    /**
+     * Build embedding text for a registration
+     * Combines registration metadata for RAG indexing
+     * @param registration - Registration document with populated references
+     * @returns Embedding text string
+     */
+    buildEmbeddingText(registration: any): string {
+        const fields: Record<string, any> = {};
+
+        // Add registration metadata
+        if (registration.registrationDate) {
+            fields['registration_date'] = registration.registrationDate.toISOString().split('T')[0];
+        }
+        if (registration.registrationMethod) {
+            fields['registration_method'] = registration.registrationMethod;
+        }
+        if (registration.status) {
+            fields['status'] = registration.status;
+        }
+        if (registration.queueNumber) {
+            fields['queue_number'] = registration.queueNumber;
+        }
+
+        // Add doctor information (if populated)
+        if (registration.doctorId && typeof registration.doctorId === 'object') {
+            if (registration.doctorId.fullName) {
+                fields['doctor_name'] = registration.doctorId.fullName;
+            }
+            if (registration.doctorId.specialization) {
+                fields['doctor_specialization'] = registration.doctorId.specialization;
+            }
+        }
+
+        // Add schedule information (if populated)
+        if (registration.scheduleId && typeof registration.scheduleId === 'object') {
+            if (registration.scheduleId.dayOfWeek) {
+                fields['schedule_day'] = registration.scheduleId.dayOfWeek;
+            }
+            if (registration.scheduleId.startTime) {
+                fields['schedule_start'] = registration.scheduleId.startTime;
+            }
+            if (registration.scheduleId.endTime) {
+                fields['schedule_end'] = registration.scheduleId.endTime;
+            }
+        }
+
+        return this.embeddingService.buildEmbeddingText(fields);
+    }
+
+    /**
+     * Generate and save embedding for a registration
+     * @param registrationId - ID of registration to embed
+     */
+    async generateAndSaveEmbedding(registrationId: string): Promise<void> {
+        try {
+            const registration = await this.registrationModel
+                .findById(registrationId)
+                .populate('doctorId', 'fullName specialization')
+                .populate('scheduleId', 'dayOfWeek startTime endTime')
+                .exec();
+
+            if (!registration) {
+                throw new NotFoundException(`Registration with ID ${registrationId} not found`);
+            }
+
+            const embeddingText = this.buildEmbeddingText(registration);
+            const embedding = await this.embeddingService.generateEmbedding(embeddingText);
+
+            await this.registrationModel.findByIdAndUpdate(
+                registrationId,
+                {
+                    embedding,
+                    embeddingText,
+                    embeddingUpdatedAt: new Date(),
+                },
+            ).exec();
+        } catch (error) {
+            throw new Error(`Failed to generate embedding for registration ${registrationId}: ${error.message}`);
+        }
+    }
+
+    /**
+     * Generate embeddings for multiple registrations
+     * @param registrationIds - Array of registration IDs
+     */
+    async generateBatchEmbeddings(registrationIds: string[]): Promise<void> {
+        for (const registrationId of registrationIds) {
+            try {
+                await this.generateAndSaveEmbedding(registrationId);
+            } catch (error) {
+                console.error(`Error generating embedding for registration ${registrationId}:`, error);
+            }
+        }
     }
 }

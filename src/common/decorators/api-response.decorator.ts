@@ -1,6 +1,6 @@
 import { applyDecorators, Type } from '@nestjs/common';
 import { ApiResponse, getSchemaPath } from '@nestjs/swagger';
-import { HttpResponse } from '../dto/response.dto';
+import { HttpResponse } from '../dtos/response.dto';
 
 /**
  * Decorator to wrap API responses with HttpResponse format

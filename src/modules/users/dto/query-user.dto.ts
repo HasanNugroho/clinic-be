@@ -1,5 +1,5 @@
 import { IsOptional, IsEnum } from 'class-validator';
-import { PaginatedResponse, PaginationQueryDto } from '../../../common/dto/pagination.dto';
+import { PaginatedResponse, PaginationQueryDto } from '../../../common/dtos/pagination.dto';
 import { User, UserRole } from '../schemas/user.schema';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -10,4 +10,4 @@ export class QueryUserDto extends PaginationQueryDto {
   role?: UserRole;
 }
 
-export class UserPaginatedResponse extends PaginatedResponse(User) {}
+export class UserPaginatedResponse extends PaginatedResponse(User) { }

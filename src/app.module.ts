@@ -7,6 +7,7 @@ import { DoctorSchedulesModule } from './modules/doctorSchedules/doctor-schedule
 import { RegistrationsModule } from './modules/registrations/registrations.module';
 import { ExaminationsModule } from './modules/examinations/examinations.module';
 import { QueuesModule } from './modules/queues/queues.module';
+import { RagModule } from './modules/rag/rag.module';
 import { BullModule } from '@nestjs/bullmq';
 import mongoose from 'mongoose';
 
@@ -51,6 +52,7 @@ ObjectId.prototype.valueOf = function () {
     RegistrationsModule,
     ExaminationsModule,
     QueuesModule,
+    RagModule,
   ],
   providers: [],
 })

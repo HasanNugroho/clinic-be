@@ -8,7 +8,8 @@ import { QueryExaminationDto } from './dto/query-examination.dto';
 import { UsersService } from '../users/users.service';
 import { RegistrationsService } from '../registrations/registrations.service';
 import { UserRole } from '../users/schemas/user.schema';
-import { PaginatedResponse } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '../../common/dtos/pagination.dto';
+import { EmbeddingService } from '../../common/services/embedding/embedding.service';
 
 @Injectable()
 export class ExaminationsService {
@@ -17,6 +18,7 @@ export class ExaminationsService {
         private examinationModel: Model<Examination>,
         private usersService: UsersService,
         private registrationsService: RegistrationsService,
+        private embeddingService: EmbeddingService,
     ) { }
 
     async create(createExaminationDto: CreateExaminationDto): Promise<Examination> {
@@ -61,7 +63,14 @@ export class ExaminationsService {
             status: createExaminationDto.status,
         });
 
-        return createdExamination.save();
+        const savedExamination = await createdExamination.save();
+
+        // Generate embedding asynchronously
+        this.generateAndSaveEmbedding(savedExamination._id.toString()).catch(error => {
+            console.error(`Failed to generate embedding for examination ${savedExamination._id}:`, error);
+        });
+
+        return savedExamination;
     }
 
     async findAll(queryDto: QueryExaminationDto): Promise<InstanceType<ReturnType<typeof PaginatedResponse<Examination>>>> {
@@ -211,6 +220,11 @@ export class ExaminationsService {
             throw new NotFoundException(`Examination with ID ${id} not found`);
         }
 
+        // Regenerate embedding asynchronously
+        this.generateAndSaveEmbedding(id).catch(error => {
+            console.error(`Failed to regenerate embedding for examination ${id}:`, error);
+        });
+
         return updatedExamination;
     }
 
@@ -223,6 +237,91 @@ export class ExaminationsService {
 
         if (!result) {
             throw new NotFoundException(`Examination with ID ${id} not found`);
+        }
+    }
+
+    /**
+     * Build embedding text for an examination
+     * Combines diagnosis and doctor notes for RAG indexing
+     * @param examination - Examination document with populated references
+     * @returns Embedding text string
+     */
+    buildEmbeddingText(examination: any): string {
+        const fields: Record<string, any> = {};
+
+        // Add examination metadata
+        if (examination.examinationDate) {
+            fields['examination_date'] = examination.examinationDate.toISOString().split('T')[0];
+        }
+        if (examination.status) {
+            fields['status'] = examination.status;
+        }
+
+        // Add diagnosis and notes (core medical data)
+        if (examination.diagnosisSummary) {
+            fields['diagnosis_summary'] = examination.diagnosisSummary;
+        }
+        if (examination.doctorNotes) {
+            fields['doctor_notes'] = examination.doctorNotes;
+        }
+
+        // Add doctor information (if populated)
+        if (examination.doctorId && typeof examination.doctorId === 'object') {
+            if (examination.doctorId.fullName) {
+                fields['doctor_name'] = examination.doctorId.fullName;
+            }
+            if (examination.doctorId.specialization) {
+                fields['doctor_specialization'] = examination.doctorId.specialization;
+            }
+        }
+
+        return this.embeddingService.buildEmbeddingText(fields);
+    }
+
+    /**
+     * Generate and save embedding for an examination
+     * @param examinationId - ID of examination to embed
+     */
+    async generateAndSaveEmbedding(examinationId: string): Promise<void> {
+        try {
+            const examination = await this.examinationModel
+                .findById(examinationId)
+                .populate('doctorId', 'fullName specialization')
+                .populate('registrationId')
+                .exec();
+
+            if (!examination) {
+                throw new NotFoundException(`Examination with ID ${examinationId} not found`);
+            }
+
+            const embeddingText = this.buildEmbeddingText(examination);
+            const embedding = await this.embeddingService.generateEmbedding(embeddingText);
+
+            await this.examinationModel.findByIdAndUpdate(
+                examinationId,
+                {
+                    embedding,
+                    embeddingText,
+                    embeddingUpdatedAt: new Date(),
+                },
+                { new: true }
+            ).exec();
+        } catch (error) {
+            throw new Error(`Failed to generate embedding for examination ${examinationId}: ${error.message}`);
+        }
+    }
+
+    /**
+     * Generate embeddings for multiple examinations
+     * @param examinationIds - Array of examination IDs
+     */
+    async generateBatchEmbeddings(examinationIds: string[]): Promise<void> {
+        for (const examinationId of examinationIds) {
+            try {
+                await this.generateAndSaveEmbedding(examinationId);
+            } catch (error) {
+                console.error(`Error generating embedding for examination ${examinationId}:`, error);
+            }
         }
     }
 }

@@ -7,7 +7,8 @@ import { CreateDoctorScheduleDto } from './dto/create-doctor-schedule.dto';
 import { UpdateDoctorScheduleDto } from './dto/update-doctor-schedule.dto';
 import { QueryDoctorScheduleDto } from './dto/query-doctor-schedule.dto';
 import { UserRole } from '../users/schemas/user.schema';
-import { PaginatedResponse } from '../../common/dto/pagination.dto';
+import { PaginatedResponse } from '../../common/dtos/pagination.dto';
+import { EmbeddingService } from '../../common/services/embedding/embedding.service';
 
 @Injectable()
 export class DoctorSchedulesService {
@@ -15,6 +16,7 @@ export class DoctorSchedulesService {
     @InjectModel(DoctorSchedule.name)
     private doctorScheduleModel: Model<DoctorSchedule>,
     private usersService: UsersService,
+    private embeddingService: EmbeddingService,
   ) { }
 
   async create(createDoctorScheduleDto: CreateDoctorScheduleDto): Promise<DoctorSchedule> {
@@ -32,7 +34,15 @@ export class DoctorSchedulesService {
       ...createDoctorScheduleDto,
       doctorId: new Types.ObjectId(createDoctorScheduleDto.doctorId),
     });
-    return await createdSchedule.save();
+
+    const savedSchedule = await createdSchedule.save();
+
+    // Generate embedding asynchronously
+    this.generateAndSaveEmbedding(savedSchedule._id.toString()).catch(error => {
+      console.error(`Failed to generate embedding for schedule ${savedSchedule._id}:`, error);
+    });
+
+    return savedSchedule;
   }
 
   async findAll(
@@ -129,6 +139,11 @@ export class DoctorSchedulesService {
       throw new NotFoundException(`Doctor schedule with ID ${id} not found`);
     }
 
+    // Regenerate embedding asynchronously
+    this.generateAndSaveEmbedding(id).catch(error => {
+      console.error(`Failed to regenerate embedding for schedule ${id}:`, error);
+    });
+
     return updatedSchedule;
   }
 
@@ -138,9 +153,87 @@ export class DoctorSchedulesService {
     }
 
     const result = await this.doctorScheduleModel.findByIdAndDelete(id).exec();
+  }
 
-    if (!result) {
-      throw new NotFoundException(`Doctor schedule with ID ${id} not found`);
+  /**
+   * Build embedding text for a doctor schedule
+   * Combines schedule metadata and doctor information for RAG indexing
+   * @param schedule - Doctor schedule document with populated references
+   * @returns Embedding text string
+   */
+  buildEmbeddingText(schedule: any): string {
+    const fields: Record<string, any> = {};
+
+    // Add schedule metadata
+    if (schedule.dayOfWeek) {
+      fields['hari praktik'] = schedule.dayOfWeek;
+    }
+    if (schedule.startTime) {
+      fields['jam mulai'] = schedule.startTime;
+    }
+    if (schedule.endTime) {
+      fields['jam berakhir'] = schedule.endTime;
+    }
+    if (schedule.quota) {
+      fields['kuota'] = schedule.quota;
+    }
+
+    // Add doctor information (if populated)
+    if (schedule.doctorId && typeof schedule.doctorId === 'object') {
+      if (schedule.doctorId.fullName) {
+        fields['nama dokter'] = schedule.doctorId.fullName;
+      }
+      if (schedule.doctorId.specialization) {
+        fields['dokter spesialis'] = schedule.doctorId.specialization;
+      }
+    }
+
+    return this.embeddingService.buildEmbeddingText(fields);
+  }
+
+  /**
+   * Generate and save embedding for a doctor schedule
+   * @param scheduleId - ID of schedule to embed
+   */
+  async generateAndSaveEmbedding(scheduleId: string): Promise<void> {
+    try {
+      const schedule = await this.doctorScheduleModel
+        .findById(scheduleId)
+        .populate('doctorId', 'fullName specialization')
+        .exec();
+
+      if (!schedule) {
+        throw new NotFoundException(`Doctor schedule with ID ${scheduleId} not found`);
+      }
+
+      const embeddingText = this.buildEmbeddingText(schedule);
+      const embedding = await this.embeddingService.generateEmbedding(embeddingText);
+
+      await this.doctorScheduleModel.findByIdAndUpdate(
+        scheduleId,
+        {
+          embedding,
+          embeddingText,
+          embeddingUpdatedAt: new Date(),
+        },
+        { new: true }
+      ).exec();
+    } catch (error) {
+      throw new Error(`Failed to generate embedding for schedule ${scheduleId}: ${error.message}`);
+    }
+  }
+
+  /**
+   * Generate embeddings for multiple doctor schedules
+   * @param scheduleIds - Array of schedule IDs
+   */
+  async generateBatchEmbeddings(scheduleIds: string[]): Promise<void> {
+    for (const scheduleId of scheduleIds) {
+      try {
+        await this.generateAndSaveEmbedding(scheduleId);
+      } catch (error) {
+        console.error(`Error generating embedding for schedule ${scheduleId}:`, error);
+      }
     }
   }
 }

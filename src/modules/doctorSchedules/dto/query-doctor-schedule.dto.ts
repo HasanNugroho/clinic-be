@@ -1,5 +1,5 @@
 import { IsOptional, IsEnum } from 'class-validator';
-import { PaginationQueryDto } from '../../../common/dto/pagination.dto';
+import { PaginationQueryDto } from '../../../common/dtos/pagination.dto';
 import { DayOfWeek } from '../schemas/doctor-schedule.schema';
 import { ApiProperty } from '@nestjs/swagger';
 

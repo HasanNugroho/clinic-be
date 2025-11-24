@@ -1,5 +1,5 @@
 import { IsOptional, IsEnum, IsDateString } from 'class-validator';
-import { PaginationQueryDto } from '../../../common/dto/pagination.dto';
+import { PaginationQueryDto } from '../../../common/dtos/pagination.dto';
 import { RegistrationStatus, RegistrationMethod } from '../schemas/registration.schema';
 import { ApiProperty } from '@nestjs/swagger';
 

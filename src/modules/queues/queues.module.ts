@@ -4,7 +4,7 @@ import { QueuesService } from './queues.service';
 import { QueuesController } from './queues.controller';
 import { QueuesProcessor } from './queues.processor';
 import { WebSocketGateway } from './websocket/queue.gateway';
-import { DatabaseModule } from 'src/common/service/database.module';
+import { DatabaseModule } from 'src/common/services/database.module';
 
 @Module({
   imports: [

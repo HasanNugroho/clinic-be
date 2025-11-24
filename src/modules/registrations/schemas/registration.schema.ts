@@ -83,6 +83,15 @@ export class Registration {
     description: 'Updated timestamp',
   })
   updatedAt?: Date;
+
+  @Prop({ type: [Number], required: false, select: false })
+  embedding?: number[];
+
+  @Prop({ required: false, select: false })
+  embeddingText?: string;
+
+  @Prop({ required: false })
+  embeddingUpdatedAt?: Date;
 }
 
 export const RegistrationSchema = SchemaFactory.createForClass(Registration);

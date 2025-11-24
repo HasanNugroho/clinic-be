@@ -76,6 +76,15 @@ export class Examination {
         description: 'Updated timestamp',
     })
     updatedAt?: Date;
+
+    @Prop({ type: [Number], required: false, select: false })
+    embedding?: number[];
+
+    @Prop({ required: false, select: false })
+    embeddingText?: string;
+
+    @Prop({ required: false })
+    embeddingUpdatedAt?: Date;
 }
 
 export const ExaminationSchema = SchemaFactory.createForClass(Examination);
