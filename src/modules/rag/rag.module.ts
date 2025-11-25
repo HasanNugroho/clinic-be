@@ -7,6 +7,7 @@ import { Examination, ExaminationSchema } from '../examinations/schemas/examinat
 import { DoctorSchedule, DoctorScheduleSchema } from '../doctorSchedules/schemas/doctor-schedule.schema';
 import { User, UserSchema } from '../users/schemas/user.schema';
 import { EmbeddingModule } from '../../common/services/embedding/embedding.modul';
+import { RedisModule } from 'src/common/services/redis/redis.modul';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { EmbeddingModule } from '../../common/services/embedding/embedding.modul
       { name: User.name, schema: UserSchema },
     ]),
     EmbeddingModule,
+    RedisModule
   ],
   controllers: [RagController],
   providers: [RagService],
