@@ -9,6 +9,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { Queue as BullQueue } from 'bullmq';
 import { transformObjectId } from '../../common/utils/transform-objectid.util';
 import { WebSocketGateway } from './websocket/queue.gateway';
+import { SortOrder } from '../../common/dtos/pagination.dto';
 
 @Injectable()
 export class QueuesService {
@@ -18,7 +19,7 @@ export class QueuesService {
     @InjectQueue('checkup-queue')
     private checkupQueue: BullQueue,
     private queueGateway: WebSocketGateway,
-  ) {}
+  ) { }
 
   async create(createQueueDto: CreateQueueDto): Promise<Queue> {
     // Check if queue already exists for this registration
@@ -68,52 +69,94 @@ export class QueuesService {
     return populatedQueue;
   }
 
-  async findAll(queryDto?: QueryQueueDto): Promise<QueuePaginatedResponse> {
-    const { page = 1, limit = 10, doctorId, patientId, queueDate, status } = queryDto || {};
+  async findAll(queryDto: QueryQueueDto = {}): Promise<{ data: Queue[]; total: number }> {
+    const { page = 1, limit = 10, doctorId, patientId, queueDate, status, sortBy, sortOrder = SortOrder.DESC } = queryDto;
 
-    const filter: any = {};
+    const pipeline: any[] = [];
 
-    if (doctorId) {
-      filter.doctorId = new Types.ObjectId(doctorId);
-    }
+    // === MATCH FILTER ===
+    const match: any = {};
 
-    if (patientId) {
-      filter.patientId = new Types.ObjectId(patientId);
-    }
+    if (doctorId) match.doctorId = new Types.ObjectId(doctorId);
+    if (patientId) match.patientId = new Types.ObjectId(patientId);
+    if (status) match.status = status;
 
     if (queueDate) {
       const date = new Date(queueDate);
-      const startOfDay = new Date(date.setHours(0, 0, 0, 0));
-      const endOfDay = new Date(date.setHours(23, 59, 59, 999));
-      filter.queueDate = { $gte: startOfDay, $lte: endOfDay };
+      const start = new Date(date.setHours(0, 0, 0, 0));
+      const end = new Date(date.setHours(23, 59, 59, 999));
+      match.queueDate = { $gte: start, $lte: end };
     }
 
-    if (status) {
-      filter.status = status;
+    if (Object.keys(match).length > 0) {
+      pipeline.push({ $match: match });
     }
 
+    // === SORT ===
+    const sortDirection = sortOrder === SortOrder.DESC ? -1 : 1;
+    const sort = sortBy
+      ? { [sortBy]: sortDirection }
+      : { queueDate: -1, queueNumber: 1 };
+
+    // === PAGINATION CALC ===
     const skip = (page - 1) * limit;
 
-    const [data, total] = await Promise.all([
-      this.queueModel
-        .find(filter)
-        .sort({ queueDate: -1, queueNumber: 1 })
-        .skip(skip)
-        .limit(limit)
-        .populate('patientId', 'fullName email phoneNumber')
-        .populate('doctorId', 'fullName specialization')
-        .populate('registrationId')
-        .lean()
-        .exec(),
-      this.queueModel.countDocuments(filter).exec(),
-    ]);
+    // === FACET ===
+    pipeline.push({
+      $facet: {
+        data: [
+          { $sort: sort },
+          { $skip: skip },
+          { $limit: limit },
+          // lookup/ populate manual
+          {
+            $lookup: {
+              from: 'patients',
+              localField: 'patientId',
+              foreignField: '_id',
+              as: 'patientId',
+            },
+          },
+          { $unwind: { path: '$patientId', preserveNullAndEmptyArrays: true } },
+
+          {
+            $lookup: {
+              from: 'doctors',
+              localField: 'doctorId',
+              foreignField: '_id',
+              as: 'doctorId',
+            },
+          },
+          { $unwind: { path: '$doctorId', preserveNullAndEmptyArrays: true } },
+
+          {
+            $lookup: {
+              from: 'registrations',
+              localField: 'registrationId',
+              foreignField: '_id',
+              as: 'registrationId',
+            },
+          },
+          { $unwind: { path: '$registrationId', preserveNullAndEmptyArrays: true } },
+        ],
+        totalData: [{ $count: 'count' }],
+      },
+    });
+
+    // === PROJECT ===
+    pipeline.push({
+      $project: {
+        data: 1,
+        total: { $ifNull: [{ $arrayElemAt: ['$totalData.count', 0] }, 0] },
+      },
+    });
+
+    // EXECUTE
+    const result = await this.queueModel.aggregate(pipeline);
 
     return {
-      data: transformObjectId<Queue[]>(data),
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      data: result[0]?.data || [],
+      total: result[0]?.total || 0,
     };
   }
 
@@ -273,7 +316,7 @@ export class QueuesService {
       .populate('registrationId')
       .lean()
       .exec();
-    
+
     return transformObjectId<Queue>(populated);
   }
 }

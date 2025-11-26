@@ -1,20 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  UseGuards,
-  Query,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { QueuesService } from './queues.service';
 import { Queue } from './schemas/queue.schema';
 import { CreateQueueDto } from './dto/create-queue.dto';
@@ -27,8 +12,10 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import {
   ApiHttpResponse,
   ApiHttpArrayResponse,
+  ApiHttpPaginatedResponse,
   ApiHttpErrorResponse,
 } from '../../common/decorators/api-response.decorator';
+import { generatePaginationMeta } from 'src/common/utils/pagination.util';
 
 /**
  * REST Controller for Queue operations
@@ -37,7 +24,7 @@ import {
 @ApiTags('queues')
 @Controller('queues')
 export class QueuesController {
-  constructor(private readonly queuesService: QueuesService) { }
+  constructor(private readonly queuesService: QueuesService) {}
 
   /**
    * Create a new queue (Employee/Admin only)
@@ -62,11 +49,14 @@ export class QueuesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all queues with pagination' })
-  @ApiHttpArrayResponse(200, 'Queues retrieved successfully', Queue)
+  @ApiHttpPaginatedResponse(200, 'Queues retrieved successfully', Queue)
   @ApiHttpErrorResponse(401, 'Unauthorized')
-  async getQueues(@Query() queryDto?: QueryQueueDto) {
-    const result = await this.queuesService.findAll(queryDto || {});
-    return result.data;
+  async getQueues(@Query() queryDto: QueryQueueDto) {
+    const { data, total } = await this.queuesService.findAll(queryDto);
+
+    // Generate pagination meta
+    const meta = generatePaginationMeta(total, queryDto);
+    return { data, meta };
   }
 
   /**

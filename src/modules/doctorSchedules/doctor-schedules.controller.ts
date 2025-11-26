@@ -1,21 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Put,
-  Delete,
-  UseGuards,
-  Query,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { DoctorSchedulesService } from './doctor-schedules.service';
 import { DoctorSchedule } from './schemas/doctor-schedule.schema';
 import { CreateDoctorScheduleDto } from './dto/create-doctor-schedule.dto';
@@ -28,8 +12,10 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import {
   ApiHttpResponse,
   ApiHttpArrayResponse,
+  ApiHttpPaginatedResponse,
   ApiHttpErrorResponse,
 } from '../../common/decorators/api-response.decorator';
+import { generatePaginationMeta } from '../../common/utils/pagination.util';
 
 /**
  * REST Controller for DoctorSchedule operations
@@ -47,16 +33,14 @@ export class DoctorSchedulesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all doctor schedules' })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiQuery({ name: 'dayOfWeek', required: false, type: String })
-  @ApiQuery({ name: 'sortBy', required: false, type: String })
-  @ApiQuery({ name: 'sortOrder', required: false, type: String })
-  @ApiHttpArrayResponse(200, 'Doctor schedules retrieved successfully', DoctorSchedule)
+  @ApiHttpPaginatedResponse(200, 'Doctor schedules retrieved successfully', DoctorSchedule)
   @ApiHttpErrorResponse(401, 'Unauthorized')
-  async getDoctorSchedules(@Query() queryDto?: QueryDoctorScheduleDto) {
-    const result = await this.doctorSchedulesService.findAll(queryDto || {});
-    return result.data;
+  async getDoctorSchedules(@Query() queryDto: QueryDoctorScheduleDto) {
+    const { data, total } = await this.doctorSchedulesService.findAll(queryDto);
+
+    // Generate pagination meta
+    const meta = generatePaginationMeta(total, queryDto);
+    return { data: data, meta };
   }
 
   /**
@@ -117,10 +101,7 @@ export class DoctorSchedulesController {
   @ApiHttpErrorResponse(404, 'Doctor schedule not found')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async updateDoctorSchedule(
-    @Param('id') id: string,
-    @Body() updateDto: UpdateDoctorScheduleDto,
-  ) {
+  async updateDoctorSchedule(@Param('id') id: string, @Body() updateDto: UpdateDoctorScheduleDto) {
     return await this.doctorSchedulesService.update(id, updateDto);
   }
 
@@ -133,7 +114,7 @@ export class DoctorSchedulesController {
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete a doctor schedule' })
   @ApiParam({ name: 'id', type: String })
-  @ApiHttpResponse(200, 'Doctor schedule deleted successfully')
+  @ApiHttpResponse(200, 'Doctor schedule deleted successfully', DoctorSchedule)
   @ApiHttpErrorResponse(404, 'Doctor schedule not found')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')

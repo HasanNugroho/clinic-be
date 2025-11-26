@@ -1,19 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Put,
-  Delete,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-  ApiParam,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { ExaminationsService } from './examinations.service';
 import { Examination } from './schemas/examination.schema';
 import { CreateExaminationDto } from './dto/create-examination.dto';
@@ -25,8 +11,11 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import {
   ApiHttpResponse,
   ApiHttpArrayResponse,
+  ApiHttpPaginatedResponse,
   ApiHttpErrorResponse,
 } from '../../common/decorators/api-response.decorator';
+import { QueryExaminationDto } from './dto/query-examination.dto';
+import { generatePaginationMeta } from 'src/common/utils/pagination.util';
 
 /**
  * REST Controller for Examination operations
@@ -35,7 +24,7 @@ import {
 @ApiTags('examinations')
 @Controller('examinations')
 export class ExaminationsController {
-  constructor(private readonly examinationsService: ExaminationsService) {}
+  constructor(private readonly examinationsService: ExaminationsService) { }
 
   /**
    * Get all examinations (Employee, Doctor, Superadmin)
@@ -45,12 +34,15 @@ export class ExaminationsController {
   @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all examinations' })
-  @ApiHttpArrayResponse(200, 'Examinations retrieved successfully', Examination)
+  @ApiHttpPaginatedResponse(200, 'Examinations retrieved successfully', Examination)
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async getExaminations() {
-    const result = await this.examinationsService.findAll({});
-    return result.data;
+  async getExaminations(@Query() queryDto: QueryExaminationDto) {
+    const { data, total } = await this.examinationsService.findAll(queryDto);
+
+    // Generate pagination meta
+    const meta = generatePaginationMeta(total, queryDto);
+    return { data, meta };
   }
 
   /**
@@ -128,10 +120,7 @@ export class ExaminationsController {
   @ApiHttpErrorResponse(404, 'Examination not found')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async updateExamination(
-    @Param('id') id: string,
-    @Body() updateDto: UpdateExaminationDto,
-  ) {
+  async updateExamination(@Param('id') id: string, @Body() updateDto: UpdateExaminationDto) {
     return await this.examinationsService.update(id, updateDto);
   }
 
@@ -144,7 +133,7 @@ export class ExaminationsController {
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete an examination' })
   @ApiParam({ name: 'id', type: String })
-  @ApiHttpResponse(200, 'Examination deleted successfully')
+  @ApiHttpResponse(200, 'Examination deleted successfully', Examination)
   @ApiHttpErrorResponse(404, 'Examination not found')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')

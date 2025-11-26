@@ -7,7 +7,6 @@ import { CreateDoctorScheduleDto } from './dto/create-doctor-schedule.dto';
 import { UpdateDoctorScheduleDto } from './dto/update-doctor-schedule.dto';
 import { QueryDoctorScheduleDto } from './dto/query-doctor-schedule.dto';
 import { UserRole } from '../users/schemas/user.schema';
-import { PaginatedResponse } from '../../common/dtos/pagination.dto';
 import { EmbeddingService } from '../../common/services/embedding/embedding.service';
 
 @Injectable()
@@ -17,10 +16,12 @@ export class DoctorSchedulesService {
     private doctorScheduleModel: Model<DoctorSchedule>,
     private usersService: UsersService,
     private embeddingService: EmbeddingService,
-  ) { }
+  ) {}
 
+  /* -------------------------------------------
+     CREATE
+  ------------------------------------------- */
   async create(createDoctorScheduleDto: CreateDoctorScheduleDto): Promise<DoctorSchedule> {
-    // Validate that end time is after start time
     if (createDoctorScheduleDto.startTime >= createDoctorScheduleDto.endTime) {
       throw new BadRequestException('End time must be after start time');
     }
@@ -30,24 +31,21 @@ export class DoctorSchedulesService {
       throw new BadRequestException('Invalid doctor ID or user is not a doctor');
     }
 
-    const createdSchedule = new this.doctorScheduleModel({
+    const created = await this.doctorScheduleModel.create({
       ...createDoctorScheduleDto,
       doctorId: new Types.ObjectId(createDoctorScheduleDto.doctorId),
     });
 
-    const savedSchedule = await createdSchedule.save();
+    // async generate embedding
+    this.generateAndSaveEmbedding(created._id.toString()).catch(() => null);
 
-    // Generate embedding asynchronously
-    this.generateAndSaveEmbedding(savedSchedule._id.toString()).catch(error => {
-      console.error(`Failed to generate embedding for schedule ${savedSchedule._id}:`, error);
-    });
-
-    return savedSchedule;
+    return created.toJSON();
   }
 
-  async findAll(
-    queryDto: QueryDoctorScheduleDto,
-  ): Promise<InstanceType<ReturnType<typeof PaginatedResponse<DoctorSchedule>>>> {
+  /* -------------------------------------------
+     FIND ALL → FACET MODE (UNIFORM)
+  ------------------------------------------- */
+  async findAll(queryDto: QueryDoctorScheduleDto) {
     const {
       page = 1,
       limit = 10,
@@ -57,34 +55,101 @@ export class DoctorSchedulesService {
       dayOfWeek,
     } = queryDto;
 
-    // Build filter query
-    const filter: any = {};
+    const skip = (page - 1) * limit;
 
-    if (dayOfWeek) {
-      filter.dayOfWeek = dayOfWeek;
+    const pipeline: any[] = [];
+
+    // MATCH FILTERS
+    const match: any = {};
+    if (dayOfWeek) match.dayOfWeek = dayOfWeek;
+    pipeline.push({ $match: match });
+
+    // LOOKUP WITH SAFE PROJECTION
+    pipeline.push({
+      $lookup: {
+        from: 'users',
+        localField: 'doctorId',
+        foreignField: '_id',
+        as: 'doctor',
+        pipeline: [
+          {
+            $project: {
+              password: 0,
+              nik: 0,
+              birthDate: 0,
+              embedding: 0,
+              embeddingText: 0,
+              embeddingUpdatedAt: 0,
+              __v: 0,
+            },
+          },
+        ],
+      },
+    });
+
+    pipeline.push({ $unwind: '$doctor' });
+
+    // SEARCH
+    if (search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { 'doctor.fullName': { $regex: search, $options: 'i' } },
+            { 'doctor.specialization': { $regex: search, $options: 'i' } },
+            { dayOfWeek: { $regex: search, $options: 'i' } },
+          ],
+        },
+      });
     }
 
-    // Calculate pagination
-    const skip = (page - 1) * limit;
-    const sortOptions: any = {};
-    sortOptions[sortBy] = sortOrder === 'asc' ? 1 : -1;
+    pipeline.push({
+      $project: {
+        embedding: 0,
+        embeddingText: 0,
+        embeddingUpdatedAt: 0,
+        __v: 0,
+      },
+    });
 
-    // Execute query with pagination
-    const [data, total] = await Promise.all([
-      this.doctorScheduleModel
-        .find(filter)
-        .populate('doctorId', 'fullName specialization')
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(limit)
-        .exec(),
-      this.doctorScheduleModel.countDocuments(filter).exec(),
-    ]);
+    // CONVERT IDs TO STRING
+    pipeline.push({
+      $addFields: {
+        _id: { $toString: '$_id' },
+        doctorId: { $toString: '$doctorId' },
+        'doctor._id': { $toString: '$doctor._id' },
+      },
+    });
 
-    const PaginatedDoctorScheduleResponse = PaginatedResponse(DoctorSchedule);
-    return new PaginatedDoctorScheduleResponse(data, total, page, limit);
+    // FACET (pagination + total)
+    pipeline.push({
+      $facet: {
+        data: [
+          { $sort: { [sortBy]: sortOrder === 'asc' ? 1 : -1 } },
+          { $skip: skip },
+          { $limit: limit },
+        ],
+        totalData: [{ $count: 'count' }],
+      },
+    });
+
+    pipeline.push({
+      $project: {
+        data: 1,
+        total: { $ifNull: [{ $arrayElemAt: ['$totalData.count', 0] }, 0] },
+      },
+    });
+
+    const result = await this.doctorScheduleModel.aggregate(pipeline);
+
+    return {
+      data: result[0]?.data || [],
+      total: result[0]?.total || 0,
+    };
   }
 
+  /* -------------------------------------------
+     FIND ONE
+  ------------------------------------------- */
   async findOne(id: string): Promise<DoctorSchedule> {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid schedule ID');
@@ -92,148 +157,104 @@ export class DoctorSchedulesService {
 
     const schedule = await this.doctorScheduleModel
       .findById(id)
-      .populate('doctorId', 'fullName specialization')
+      .populate('doctor') // virtual populate
       .exec();
 
     if (!schedule) {
-      throw new NotFoundException(`Doctor schedule with ID ${id} not found`);
+      throw new NotFoundException('Schedule not found');
     }
 
-    return schedule;
+    return schedule.toJSON();
   }
 
+  /* -------------------------------------------
+     FIND BY DOCTOR ID
+  ------------------------------------------- */
   async findByDoctorId(doctorId: string): Promise<DoctorSchedule[]> {
     if (!Types.ObjectId.isValid(doctorId)) {
       throw new BadRequestException('Invalid doctor ID');
     }
 
-    return this.doctorScheduleModel.find({ doctorId: new Types.ObjectId(doctorId) }).exec();
+    const data = await this.doctorScheduleModel
+      .find({ doctorId: new Types.ObjectId(doctorId) })
+      .populate('doctor')
+      .exec();
+
+    return data.map((item) => item.toObject());
   }
 
-  async update(
-    id: string,
-    updateDoctorScheduleDto: UpdateDoctorScheduleDto,
-  ): Promise<DoctorSchedule> {
+  /* -------------------------------------------
+     UPDATE
+  ------------------------------------------- */
+  async update(id: string, dto: UpdateDoctorScheduleDto): Promise<DoctorSchedule> {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid schedule ID');
     }
 
-    // Validate time if both are provided
-    if (updateDoctorScheduleDto.startTime && updateDoctorScheduleDto.endTime) {
-      if (updateDoctorScheduleDto.startTime >= updateDoctorScheduleDto.endTime) {
-        throw new BadRequestException('End time must be after start time');
-      }
+    if (dto.startTime && dto.endTime && dto.startTime >= dto.endTime) {
+      throw new BadRequestException('End time must be after start time');
     }
 
-    const updateData: any = { ...updateDoctorScheduleDto };
-    if (updateDoctorScheduleDto.doctorId) {
-      updateData.doctorId = new Types.ObjectId(updateDoctorScheduleDto.doctorId);
-    }
+    const updateData: any = { ...dto };
+    if (dto.doctorId) updateData.doctorId = new Types.ObjectId(dto.doctorId);
 
-    const updatedSchedule = await this.doctorScheduleModel
+    const updated = await this.doctorScheduleModel
       .findByIdAndUpdate(id, updateData, { new: true })
-      .populate('doctorId', 'fullName specialization')
+      .populate('doctor')
       .exec();
 
-    if (!updatedSchedule) {
-      throw new NotFoundException(`Doctor schedule with ID ${id} not found`);
+    if (!updated) {
+      throw new NotFoundException('Schedule not found');
     }
 
-    // Regenerate embedding asynchronously
-    this.generateAndSaveEmbedding(id).catch(error => {
-      console.error(`Failed to regenerate embedding for schedule ${id}:`, error);
-    });
+    this.generateAndSaveEmbedding(id).catch(() => null);
 
-    return updatedSchedule;
+    return updated.toJSON();
   }
 
+  /* -------------------------------------------
+     DELETE
+  ------------------------------------------- */
   async remove(id: string): Promise<void> {
     if (!Types.ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid schedule ID');
     }
-
-    const result = await this.doctorScheduleModel.findByIdAndDelete(id).exec();
+    await this.doctorScheduleModel.findByIdAndDelete(id).exec();
   }
 
-  /**
-   * Build embedding text for a doctor schedule
-   * Combines schedule metadata and doctor information for RAG indexing
-   * @param schedule - Doctor schedule document with populated references
-   * @returns Embedding text string
-   */
+  /* -------------------------------------------
+     EMBEDDING BUILDER
+  ------------------------------------------- */
   buildEmbeddingText(schedule: any): string {
-    const fields: Record<string, any> = {};
+    const fields: any = {
+      'hari praktik': schedule.dayOfWeek,
+      'jam mulai': schedule.startTime,
+      'jam berakhir': schedule.endTime,
+      kuota: schedule.quota,
+    };
 
-    // Add schedule metadata
-    if (schedule.dayOfWeek) {
-      fields['hari praktik'] = schedule.dayOfWeek;
-    }
-    if (schedule.startTime) {
-      fields['jam mulai'] = schedule.startTime;
-    }
-    if (schedule.endTime) {
-      fields['jam berakhir'] = schedule.endTime;
-    }
-    if (schedule.quota) {
-      fields['kuota'] = schedule.quota;
-    }
-
-    // Add doctor information (if populated)
-    if (schedule.doctorId && typeof schedule.doctorId === 'object') {
-      if (schedule.doctorId.fullName) {
-        fields['nama dokter'] = schedule.doctorId.fullName;
-      }
-      if (schedule.doctorId.specialization) {
-        fields['dokter spesialis'] = schedule.doctorId.specialization;
-      }
-    }
+    if (schedule.doctorId?.fullName) fields['nama dokter'] = schedule.doctorId.fullName;
+    if (schedule.doctorId?.specialization)
+      fields['dokter spesialis'] = schedule.doctorId.specialization;
 
     return this.embeddingService.buildEmbeddingText(fields);
   }
 
-  /**
-   * Generate and save embedding for a doctor schedule
-   * @param scheduleId - ID of schedule to embed
-   */
   async generateAndSaveEmbedding(scheduleId: string): Promise<void> {
-    try {
-      const schedule = await this.doctorScheduleModel
-        .findById(scheduleId)
-        .populate('doctorId', 'fullName specialization')
-        .exec();
+    const schedule = await this.doctorScheduleModel
+      .findById(scheduleId)
+      .populate('doctorId', 'fullName specialization')
+      .exec();
 
-      if (!schedule) {
-        throw new NotFoundException(`Doctor schedule with ID ${scheduleId} not found`);
-      }
+    if (!schedule) return;
 
-      const embeddingText = this.buildEmbeddingText(schedule);
-      const embedding = await this.embeddingService.generateEmbedding(embeddingText);
+    const embeddingText = this.buildEmbeddingText(schedule);
+    const embedding = await this.embeddingService.generateEmbedding(embeddingText);
 
-      await this.doctorScheduleModel.findByIdAndUpdate(
-        scheduleId,
-        {
-          embedding,
-          embeddingText,
-          embeddingUpdatedAt: new Date(),
-        },
-        { new: true }
-      ).exec();
-    } catch (error) {
-      throw new Error(`Failed to generate embedding for schedule ${scheduleId}: ${error.message}`);
-    }
-  }
-
-  /**
-   * Generate embeddings for multiple doctor schedules
-   * @param scheduleIds - Array of schedule IDs
-   */
-  async generateBatchEmbeddings(scheduleIds: string[]): Promise<void> {
-    for (const scheduleId of scheduleIds) {
-      try {
-        await this.generateAndSaveEmbedding(scheduleId);
-      } catch (error) {
-        console.error(`Error generating embedding for schedule ${scheduleId}:`, error);
-      }
-    }
+    await this.doctorScheduleModel.findByIdAndUpdate(scheduleId, {
+      embedding,
+      embeddingText,
+      embeddingUpdatedAt: new Date(),
+    });
   }
 }

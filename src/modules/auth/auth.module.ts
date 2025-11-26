@@ -6,22 +6,24 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../users/users.module';
+import { DatabaseModule } from 'src/common/services/database.module';
 
 @Module({
-    imports: [
-        UsersModule,
-        PassportModule,
-        JwtModule.registerAsync({
-            global: true,
-            imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.get<string>('JWT_SECRET'),
-            }),
-            inject: [ConfigService],
-        }),
-    ],
-    controllers: [AuthController],
-    providers: [AuthService, JwtStrategy],
-    exports: [AuthService],
+  imports: [
+    UsersModule,
+    PassportModule,
+    JwtModule.registerAsync({
+      global: true,
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('JWT_SECRET'),
+      }),
+      inject: [ConfigService],
+    }),
+    DatabaseModule,
+  ],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

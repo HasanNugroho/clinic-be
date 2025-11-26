@@ -1,10 +1,5 @@
 import { Controller, Post, Body, UseGuards, Get } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-  ApiResponse,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -24,7 +19,7 @@ import {
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) { }
+  constructor(private readonly authService: AuthService) {}
 
   /**
    * Register a new user
@@ -43,10 +38,7 @@ export class AuthController {
    */
   @Post('login')
   @ApiOperation({ summary: 'Login user and get access token' })
-  @ApiResponse({
-    status: 200,
-    type: LoginResponse
-  })
+  @ApiHttpResponse(200, 'Login successful', LoginResponse)
   @ApiHttpErrorResponse(401, 'Invalid credentials')
   @ApiHttpErrorResponse(400, 'Invalid input data')
   async login(@Body() loginDto: LoginDto): Promise<LoginResponse> {

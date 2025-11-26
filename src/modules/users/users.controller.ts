@@ -1,27 +1,15 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Put,
-  Delete,
-  UseGuards,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiBearerAuth,
   ApiParam,
-  ApiQuery,
-  ApiResponse,
 } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { User, UserRole } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { QueryUserDto, UserPaginatedResponse } from './dto/query-user.dto';
+import { QueryUserDto } from './dto/query-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -32,6 +20,8 @@ import {
   ApiHttpPaginatedResponse,
   ApiHttpErrorResponse,
 } from '../../common/decorators/api-response.decorator';
+import { generatePaginationMeta } from 'src/common/utils/pagination.util';
+import { PaginationQueryDto } from 'src/common/dtos/pagination.dto';
 
 /**
  * REST Controller for User operations
@@ -50,15 +40,15 @@ export class UsersController {
   @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all users with pagination' })
-  @ApiResponse({
-    status: 200,
-    description: 'Users retrieved successfully',
-    type: UserPaginatedResponse,
-  })
+  @ApiHttpPaginatedResponse(200, 'Users retrieved successfully', User)
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async getUsers(@Query() queryDto?: QueryUserDto): Promise<UserPaginatedResponse> {
-    return this.usersService.findAll(queryDto);
+  async getUsers(@Query() queryDto: QueryUserDto) {
+    const { data, total } = await this.usersService.findAll(queryDto);
+
+    // Generate pagination meta
+    const meta = generatePaginationMeta(total, queryDto);
+    return { data: data, meta };
   }
 
   /**
@@ -99,8 +89,12 @@ export class UsersController {
   @ApiOperation({ summary: 'Get all doctors' })
   @ApiHttpPaginatedResponse(200, 'Doctors retrieved successfully', User)
   @ApiHttpErrorResponse(401, 'Unauthorized')
-  async getDoctors(): Promise<UserPaginatedResponse> {
-    return await this.usersService.findAll({ role: UserRole.DOCTOR });
+  async getDoctors(@Query() queryDto: PaginationQueryDto) {
+    const { data, total } = await this.usersService.findAll({ ...queryDto, role: UserRole.DOCTOR });
+
+    // Generate pagination meta
+    const meta = generatePaginationMeta(total, queryDto);
+    return { data: data, meta };
   }
 
   /**
@@ -114,8 +108,15 @@ export class UsersController {
   @ApiHttpPaginatedResponse(200, 'Patients retrieved successfully', User)
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async getPatients(): Promise<UserPaginatedResponse> {
-    return await this.usersService.findAll({ role: UserRole.PATIENT });
+  async getPatients(@Query() queryDto: PaginationQueryDto) {
+    const { data, total } = await this.usersService.findAll({
+      ...queryDto,
+      role: UserRole.PATIENT,
+    });
+
+    // Generate pagination meta
+    const meta = generatePaginationMeta(total, queryDto);
+    return { data: data, meta };
   }
 
   /**
@@ -143,10 +144,7 @@ export class UsersController {
   @ApiHttpErrorResponse(404, 'User not found')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async updateUser(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<User> {
+  async updateUser(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     return await this.usersService.update(id, updateUserDto);
   }
 

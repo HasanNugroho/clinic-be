@@ -178,7 +178,7 @@ export class RagService {
       // 2. Prepare query for vector search
       const searchQuery = previousTopic ? `${previousTopic} ${query}` : query;
 
-      const retrievalResults = await this.hybridRetrieval(query, userContext);
+      const retrievalResults = await this.hybridRetrieval(searchQuery, userContext);
 
       const rankedResults = this.reRankResults(retrievalResults);
       const history = await this.loadHistory(effectiveSessionId);
@@ -189,6 +189,7 @@ export class RagService {
 
       // 7. Prepare response
       const response: AiAssistantResponse = {
+        query,
         answer: this.sanitizeAnswer(llmPayload.answer || 'No response generated.'),
         sources: rankedResults.slice(0, 5),
         processingTimeMs: Date.now() - startTime,

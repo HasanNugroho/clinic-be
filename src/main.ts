@@ -2,6 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import { HttpResponseInterceptor } from './common/Interceptors/http-response.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,6 +22,7 @@ async function bootstrap() {
     }),
   );
 
+  app.useGlobalInterceptors(new HttpResponseInterceptor());
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   // Setup Swagger

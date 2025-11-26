@@ -1,21 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Put,
-  Delete,
-  UseGuards,
-  Query,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiBearerAuth,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { RegistrationsService } from './registrations.service';
 import { Registration } from './schemas/registration.schema';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
@@ -27,8 +11,11 @@ import { Roles } from '../../common/decorators/roles.decorator';
 import {
   ApiHttpResponse,
   ApiHttpArrayResponse,
+  ApiHttpPaginatedResponse,
   ApiHttpErrorResponse,
 } from '../../common/decorators/api-response.decorator';
+import { QueryRegistrationDto } from './dto/query-registration.dto';
+import { generatePaginationMeta } from 'src/common/utils/pagination.util';
 
 /**
  * REST Controller for Registration operations
@@ -37,7 +24,7 @@ import {
 @ApiTags('registrations')
 @Controller('registrations')
 export class RegistrationsController {
-  constructor(private readonly registrationsService: RegistrationsService) { }
+  constructor(private readonly registrationsService: RegistrationsService) {}
 
   /**
    * Get all registrations (Employee, Doctor, Superadmin)
@@ -47,14 +34,15 @@ export class RegistrationsController {
   @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all registrations' })
-  @ApiQuery({ name: 'page', required: false, type: Number })
-  @ApiQuery({ name: 'limit', required: false, type: Number })
-  @ApiHttpArrayResponse(200, 'Registrations retrieved successfully', Registration)
+  @ApiHttpPaginatedResponse(200, 'Registrations retrieved successfully', Registration)
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async getRegistrations() {
-    const result = await this.registrationsService.findAll({});
-    return result.data;
+  async getRegistrations(@Query() queryDto: QueryRegistrationDto) {
+    const { data, total } = await this.registrationsService.findAll(queryDto);
+
+    // Generate pagination meta
+    const meta = generatePaginationMeta(total, queryDto);
+    return { data, meta };
   }
 
   /**
@@ -132,10 +120,7 @@ export class RegistrationsController {
   @ApiHttpErrorResponse(404, 'Registration not found')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async updateRegistration(
-    @Param('id') id: string,
-    @Body() updateDto: UpdateRegistrationDto,
-  ) {
+  async updateRegistration(@Param('id') id: string, @Body() updateDto: UpdateRegistrationDto) {
     return await this.registrationsService.update(id, updateDto);
   }
 
@@ -148,7 +133,7 @@ export class RegistrationsController {
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete a registration' })
   @ApiParam({ name: 'id', type: String })
-  @ApiHttpResponse(200, 'Registration deleted successfully')
+  @ApiHttpResponse(200, 'Registration deleted successfully', Registration)
   @ApiHttpErrorResponse(404, 'Registration not found')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')

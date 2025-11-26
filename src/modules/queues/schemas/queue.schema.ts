@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { User } from '../../users/schemas/user.schema';
 
 export enum QueueStatus {
   WAITING = 'waiting',
@@ -77,6 +78,39 @@ export class Queue {
   completedAt?: Date;
 
   @ApiProperty({
+    type: Object,
+    description: 'Populated doctor data (from populate)',
+    required: false,
+    example: {
+      _id: '507f1f77bcf86cd799439012',
+      fullName: 'Dr. John Doe',
+      email: 'john.doe@example.com',
+      phoneNumber: '+62812345678',
+      gender: 'M',
+      address: '123 Main St, City, Country',
+      role: 'doctor',
+      specialization: 'Cardiology',
+    },
+  })
+  doctor?: User;
+
+  @ApiProperty({
+    type: Object,
+    description: 'Populated patient data (from populate)',
+    required: false,
+    example: {
+      _id: '507f1f77bcf86cd799439013',
+      fullName: 'Jane Smith',
+      email: 'jane.smith@example.com',
+      phoneNumber: '+62812345679',
+      gender: 'F',
+      address: '456 Oak Ave, City, Country',
+      role: 'patient',
+    },
+  })
+  patient?: User;
+
+  @ApiProperty({
     example: '2024-01-21T09:00:00Z',
     description: 'Created timestamp',
   })
@@ -101,12 +135,24 @@ QueueSchema.index({ doctorId: 1, queueDate: 1, queueNumber: 1 });
 QueueSchema.set('toJSON', {
   virtuals: false,
   versionKey: false,
-  transform: function (doc, ret) {
+  transform: function (doc, ret: any) {
     const { __v, ...rest } = ret;
     rest._id = rest._id.toString();
     if (rest.registrationId) rest.registrationId = rest.registrationId.toString();
     if (rest.doctorId) rest.doctorId = rest.doctorId.toString();
     if (rest.patientId) rest.patientId = rest.patientId.toString();
+    // Remove sensitive fields from populated doctor data
+    if (rest.doctor) {
+      const { password, nik, birthDate, embedding, embeddingText, embeddingUpdatedAt, ...doctorData } = rest.doctor;
+      if (doctorData._id) doctorData._id = doctorData._id.toString();
+      rest.doctor = doctorData as any;
+    }
+    // Remove sensitive fields from populated patient data
+    if (rest.patient) {
+      const { password, nik, birthDate, embedding, embeddingText, embeddingUpdatedAt, ...patientData } = rest.patient;
+      if (patientData._id) patientData._id = patientData._id.toString();
+      rest.patient = patientData as any;
+    }
     return rest;
   },
 });
@@ -114,12 +160,24 @@ QueueSchema.set('toJSON', {
 QueueSchema.set('toObject', {
   virtuals: false,
   versionKey: false,
-  transform: function (doc, ret) {
+  transform: function (doc, ret: any) {
     const { __v, ...rest } = ret;
     rest._id = rest._id.toString();
     if (rest.registrationId) rest.registrationId = rest.registrationId.toString();
     if (rest.doctorId) rest.doctorId = rest.doctorId.toString();
     if (rest.patientId) rest.patientId = rest.patientId.toString();
+    // Remove sensitive fields from populated doctor data
+    if (rest.doctor) {
+      const { password, nik, birthDate, embedding, embeddingText, embeddingUpdatedAt, ...doctorData } = rest.doctor;
+      if (doctorData._id) doctorData._id = doctorData._id.toString();
+      rest.doctor = doctorData as any;
+    }
+    // Remove sensitive fields from populated patient data
+    if (rest.patient) {
+      const { password, nik, birthDate, embedding, embeddingText, embeddingUpdatedAt, ...patientData } = rest.patient;
+      if (patientData._id) patientData._id = patientData._id.toString();
+      rest.patient = patientData as any;
+    }
     return rest;
   },
 });

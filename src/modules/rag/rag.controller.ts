@@ -1,12 +1,12 @@
-import { Controller, Post, Get, Body, UseGuards, Req } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiProperty } from '@nestjs/swagger';
+import { Controller, Post, Body, UseGuards, Req } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation, } from '@nestjs/swagger';
 import { RagService } from './rag.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   ApiHttpResponse,
   ApiHttpErrorResponse,
 } from '../../common/decorators/api-response.decorator';
-import { RagQueryDto } from './rag.dto';
+import { AiAssistantResponse, RagQueryDto } from './rag.dto';
 
 
 @ApiTags('RAG - Retrieval Augmented Generation')
@@ -27,7 +27,7 @@ export class RagController {
   @ApiOperation({
     summary: 'Query RAG system with vector similarity search',
   })
-  @ApiHttpResponse(200, 'Query results retrieved successfully')
+  @ApiHttpResponse(200, 'Query results retrieved successfully', AiAssistantResponse)
   @ApiHttpErrorResponse(400, 'Invalid query - query string is required')
   @ApiHttpErrorResponse(401, 'Unauthorized - JWT token required')
   @ApiHttpErrorResponse(500, 'Server error - embedding generation failed')
@@ -35,13 +35,7 @@ export class RagController {
   async query(@Body() body: RagQueryDto, @Req() request: any): Promise<any> {
     const user = request.user;
 
-    const results = await this.ragService.query(body, user);
+    return await this.ragService.query(body, user);
 
-    return {
-      success: true,
-      statusCode: 200,
-      message: 'Query results retrieved successfully',
-      data: results,
-    };
   }
 }

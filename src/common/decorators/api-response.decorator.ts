@@ -1,229 +1,147 @@
 import { applyDecorators, Type } from '@nestjs/common';
-import { ApiResponse, getSchemaPath } from '@nestjs/swagger';
+import { ApiResponse, getSchemaPath, ApiExtraModels } from '@nestjs/swagger';
 import { HttpResponse } from '../dtos/response.dto';
+import { PaginationMetaDto } from '../dtos/pagination.dto';
 
 /**
- * Decorator to wrap API responses with HttpResponse format
- * Automatically generates Swagger schema with success/statusCode/message/data structure
+ * Decorator for single object responses
+ * @param statusCode HTTP status code
+ * @param message Response message
+ * @param model Data model type
  */
-export function ApiHttpResponse<T extends Type<any>>(
-  statusCode: number,
-  description: string,
-  dataType?: T,
-) {
-  const isSuccess = statusCode >= 200 && statusCode < 300;
-
-  const schemaObject: any = {
-    type: 'object',
-    properties: {
-      success: {
-        type: 'boolean',
-        example: isSuccess,
-        description: 'Indicates if the request was successful',
-      },
-      statusCode: {
-        type: 'number',
-        example: statusCode,
-        description: 'HTTP status code',
-      },
-      message: {
-        type: 'string',
-        example: description,
-        description: 'Response message',
-      },
-      meta: {
-        type: 'object',
-        nullable: true,
-        example: null,
-        description: 'Optional metadata',
-      },
-    },
-    required: ['success', 'statusCode', 'message'],
-  };
-
-  if (dataType) {
-    schemaObject.properties.data = {
-      allOf: [{ $ref: getSchemaPath(dataType) }],
-      description: 'Response data',
-    };
-    schemaObject.required.push('data');
-  } else {
-    schemaObject.properties.data = {
-      type: 'object',
-      nullable: true,
-      example: null,
-      description: 'Response data',
-    };
-  }
+export const ApiHttpResponse = <TModel extends Type<any>>(
+  statusCode: number = 200,
+  message: string = 'Success',
+  model?: TModel,
+) => {
+  const dataSchema = model
+    ? { $ref: getSchemaPath(model) }
+    : { type: 'null' };
 
   return applyDecorators(
+    model ? ApiExtraModels(HttpResponse, model) : ApiExtraModels(HttpResponse),
     ApiResponse({
       status: statusCode,
-      description,
-      schema: schemaObject,
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(HttpResponse) },
+          {
+            properties: {
+              success: { example: true },
+              statusCode: { example: statusCode },
+              message: { example: message },
+              data: dataSchema,
+              meta: { type: 'null', example: null },
+            },
+          },
+        ],
+      },
     }),
   );
-}
+};
 
 /**
- * Decorator for array responses wrapped in HttpResponse
+ * Decorator for array responses
+ * @param statusCode HTTP status code
+ * @param message Response message
+ * @param model Data model type
  */
-export function ApiHttpArrayResponse<T extends Type<any>>(
-  statusCode: number,
-  description: string,
-  dataType: T,
-) {
-  const isSuccess = statusCode >= 200 && statusCode < 300;
-
-  const schemaObject: any = {
-    type: 'object',
-    properties: {
-      success: {
-        type: 'boolean',
-        example: isSuccess,
-        description: 'Indicates if the request was successful',
-      },
-      statusCode: {
-        type: 'number',
-        example: statusCode,
-        description: 'HTTP status code',
-      },
-      message: {
-        type: 'string',
-        example: description,
-        description: 'Response message',
-      },
-      data: {
-        type: 'array',
-        items: {
-          $ref: `#/components/schemas/${dataType.name}`,
-        },
-        description: 'Array of items',
-      },
-      meta: {
-        type: 'object',
-        nullable: true,
-        example: null,
-        description: 'Optional metadata',
-      },
-    },
-    required: ['success', 'statusCode', 'message', 'data'],
-  };
-
+export const ApiHttpArrayResponse = <TModel extends Type<any>>(
+  statusCode: number = 200,
+  message: string = 'Success',
+  model: TModel,
+) => {
   return applyDecorators(
+    ApiExtraModels(HttpResponse, model),
     ApiResponse({
       status: statusCode,
-      description,
-      schema: schemaObject,
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(HttpResponse) },
+          {
+            properties: {
+              success: { example: true },
+              statusCode: { example: statusCode },
+              message: { example: message },
+              data: {
+                type: 'array',
+                items: { $ref: getSchemaPath(model) },
+              },
+              meta: { type: 'null', example: null },
+            },
+          },
+        ],
+      },
     }),
   );
-}
+};
 
 /**
- * Decorator for paginated responses wrapped in HttpResponse
+ * Decorator for paginated responses
+ * @param statusCode HTTP status code
+ * @param message Response message
+ * @param model Data model type
  */
-export function ApiHttpPaginatedResponse<T extends Type<any>>(
-  statusCode: number,
-  description: string,
-  dataType: T,
-) {
-  const schemaObject: any = {
-    type: 'object',
-    properties: {
-      success: {
-        type: 'boolean',
-        example: true,
-        description: 'Indicates if the request was successful',
-      },
-      statusCode: {
-        type: 'number',
-        example: statusCode,
-        description: 'HTTP status code',
-      },
-      message: {
-        type: 'string',
-        example: description,
-        description: 'Response message',
-      },
-      data: {
-        type: 'array',
-        items: {
-          $ref: `#/components/schemas/${dataType.name}`,
-        },
-        description: 'Array of items',
-      },
-      meta: {
-        type: 'object',
-        description: 'Pagination metadata',
-        properties: {
-          page: { type: 'number', example: 1, description: 'Current page number' },
-          limit: { type: 'number', example: 10, description: 'Items per page' },
-          total: { type: 'number', example: 100, description: 'Total items count' },
-          totalPages: { type: 'number', example: 10, description: 'Total pages' },
-          hasPrevPage: { type: 'boolean', example: false, description: 'Has previous page' },
-          hasNextPage: { type: 'boolean', example: true, description: 'Has next page' },
-        },
-        required: ['page', 'limit', 'total', 'totalPages', 'hasPrevPage', 'hasNextPage'],
-      },
-    },
-    required: ['success', 'statusCode', 'message', 'data', 'meta'],
-  };
+export const ApiHttpPaginatedResponse = <TModel extends Type<any>>(
+  statusCode: number = 200,
+  message: string = 'Success',
+  model?: TModel,
+) => {
+  const dataSchema = model
+    ? {
+      type: 'array',
+      items: { $ref: getSchemaPath(model) },
+    }
+    : { type: 'null' };
 
   return applyDecorators(
+    ApiExtraModels(HttpResponse, PaginationMetaDto, ...(model ? [model] : [])),
     ApiResponse({
       status: statusCode,
-      description,
-      schema: schemaObject,
+      schema: {
+        allOf: [
+          { $ref: getSchemaPath(HttpResponse) },
+          {
+            properties: {
+              success: { example: true },
+              statusCode: { example: statusCode },
+              message: { example: message },
+              data: dataSchema,
+              meta: {
+                oneOf: [{ $ref: getSchemaPath(PaginationMetaDto) }, { type: 'null' }],
+              },
+            },
+          },
+        ],
+      },
     }),
   );
-}
+};
 
 /**
  * Decorator for error responses
+ * @param statusCode HTTP status code
+ * @param message Error message
  */
-export function ApiHttpErrorResponse(
-  statusCode: number,
-  description: string,
-) {
-  const schemaObject: any = {
-    type: 'object',
-    properties: {
-      success: {
-        type: 'boolean',
-        example: false,
-        description: 'Indicates if the request was successful',
-      },
-      statusCode: {
-        type: 'number',
-        example: statusCode,
-        description: 'HTTP status code',
-      },
-      message: {
-        type: 'string',
-        example: description,
-        description: 'Error message',
-      },
-      data: {
-        type: 'object',
-        nullable: true,
-        example: null,
-        description: 'Error data (usually null)',
-      },
-      meta: {
-        type: 'object',
-        nullable: true,
-        example: null,
-        description: 'Error metadata (usually null)',
-      },
+export const ApiHttpErrorResponse = (
+  statusCode: number = 400,
+  message: string = 'Error',
+) => {
+  return ApiResponse({
+    status: statusCode,
+    schema: {
+      allOf: [
+        { $ref: getSchemaPath(HttpResponse) },
+        {
+          properties: {
+            success: { example: false },
+            statusCode: { example: statusCode },
+            message: { example: message },
+            data: { type: 'null', example: null },
+            meta: { type: 'null', example: null },
+          },
+        },
+      ],
     },
-    required: ['success', 'statusCode', 'message'],
-  };
-
-  return applyDecorators(
-    ApiResponse({
-      status: statusCode,
-      description,
-      schema: schemaObject,
-    }),
-  );
-}
+  });
+};

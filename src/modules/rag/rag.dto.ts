@@ -1,4 +1,3 @@
-
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsInt, Min, Max } from 'class-validator';
 
@@ -29,6 +28,7 @@ export interface RetrievalResult {
 }
 
 export class AiAssistantResponse {
+  query: string;
   answer: string;
   sources: RetrievalResult[];
   processingTimeMs: number;

@@ -5,10 +5,15 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginResponse } from './dto/auth-response.dto';
+import { Model } from 'mongoose';
+import { User } from '../users/schemas/user.schema';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+
     private usersService: UsersService,
     private jwtService: JwtService,
   ) {}
@@ -18,7 +23,7 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto): Promise<LoginResponse> {
-    const user = await this.usersService.findByEmail(loginDto.email);
+    const user = await this.userModel.findOne({ email: loginDto.email }).exec();
 
     if (!user || !(await bcrypt.compare(loginDto.password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
