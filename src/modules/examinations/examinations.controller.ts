@@ -27,11 +27,11 @@ export class ExaminationsController {
   constructor(private readonly examinationsService: ExaminationsService) { }
 
   /**
-   * Get all examinations (Employee, Doctor, Superadmin)
+   * Get all examinations (Admin, Doctor)
    */
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all examinations' })
   @ApiHttpPaginatedResponse(200, 'Examinations retrieved successfully', Examination)
@@ -46,11 +46,11 @@ export class ExaminationsController {
   }
 
   /**
-   * Get a single examination by ID (Patient, Employee, Doctor, Superadmin)
+   * Get a single examination by ID (Patient, Admin, Doctor)
    */
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.PATIENT, UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.PATIENT, UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get examination by ID' })
   @ApiParam({ name: 'id', type: String })
@@ -62,11 +62,11 @@ export class ExaminationsController {
   }
 
   /**
-   * Get examinations by patient ID (Patient, Employee, Doctor, Superadmin)
+   * Get examinations by patient ID (Patient, Admin, Doctor)
    */
   @Get('patient/:patientId')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.PATIENT, UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.PATIENT, UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get examinations by patient ID' })
   @ApiParam({ name: 'patientId', type: String })
@@ -77,11 +77,11 @@ export class ExaminationsController {
   }
 
   /**
-   * Get examinations by doctor ID (Employee, Doctor, Superadmin)
+   * Get examinations by doctor ID (Admin, Doctor)
    */
   @Get('doctor/:doctorId')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get examinations by doctor ID' })
   @ApiParam({ name: 'doctorId', type: String })
@@ -92,11 +92,11 @@ export class ExaminationsController {
   }
 
   /**
-   * Create a new examination (Doctor, Superadmin)
+   * Create a new examination (Doctor, Admin)
    */
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.DOCTOR, UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create a new examination' })
   @ApiHttpResponse(201, 'Examination created successfully', Examination)
@@ -108,11 +108,11 @@ export class ExaminationsController {
   }
 
   /**
-   * Update an examination (Doctor, Superadmin)
+   * Update an examination (Doctor, Admin)
    */
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.DOCTOR, UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Update an existing examination' })
   @ApiParam({ name: 'id', type: String })
@@ -125,11 +125,11 @@ export class ExaminationsController {
   }
 
   /**
-   * Delete an examination (Superadmin only)
+   * Delete an examination (Admin only)
    */
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete an examination' })
   @ApiParam({ name: 'id', type: String })

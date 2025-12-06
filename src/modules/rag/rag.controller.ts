@@ -21,7 +21,7 @@ export class RagController {
    * Role-based access control:
    * - Patient: Can search doctor schedules and their own examinations
    * - Doctor: Can search their own examinations and registrations
-   * - Employee/Superadmin: Can search all data
+   * - Admin: Can search all data
    */
   @Post('query')
   @ApiOperation({

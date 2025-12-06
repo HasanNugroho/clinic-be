@@ -33,11 +33,11 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
   /**
-   * Get all users with pagination (Admin & Employee only)
+   * Get all users with pagination (Admin only)
    */
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all users with pagination' })
   @ApiHttpPaginatedResponse(200, 'Users retrieved successfully', User)
@@ -52,11 +52,11 @@ export class UsersController {
   }
 
   /**
-   * Get a single user by ID (Admin, Employee, Doctor)
+   * Get a single user by ID (Admin, Doctor)
    */
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE, UserRole.DOCTOR)
+  @Roles(UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({ name: 'id', type: String })
@@ -98,11 +98,11 @@ export class UsersController {
   }
 
   /**
-   * Get all patients (Admin & Employee only)
+   * Get all patients (Admin only)
    */
   @Get('role/patients')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all patients' })
   @ApiHttpPaginatedResponse(200, 'Patients retrieved successfully', User)
@@ -132,11 +132,11 @@ export class UsersController {
   }
 
   /**
-   * Update a user (Admin & Employee only)
+   * Update a user (Admin only)
    */
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Update an existing user' })
   @ApiParam({ name: 'id', type: String })
@@ -149,11 +149,11 @@ export class UsersController {
   }
 
   /**
-   * Delete a user (Superadmin only)
+   * Delete a user (Admin only)
    */
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete a user' })
   @ApiParam({ name: 'id', type: String })

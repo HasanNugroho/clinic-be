@@ -24,7 +24,7 @@ import { generatePaginationMeta } from '../../common/utils/pagination.util';
 @ApiTags('doctor-schedules')
 @Controller('doctor-schedules')
 export class DoctorSchedulesController {
-  constructor(private readonly doctorSchedulesService: DoctorSchedulesService) {}
+  constructor(private readonly doctorSchedulesService: DoctorSchedulesService) { }
 
   /**
    * Get all doctor schedules (All authenticated users)
@@ -73,11 +73,11 @@ export class DoctorSchedulesController {
   }
 
   /**
-   * Create a new doctor schedule (Admin & Employee only)
+   * Create a new doctor schedule (Admin only)
    */
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create a new doctor schedule' })
   @ApiHttpResponse(201, 'Doctor schedule created successfully', DoctorSchedule)
@@ -89,11 +89,11 @@ export class DoctorSchedulesController {
   }
 
   /**
-   * Update a doctor schedule (Admin & Employee only)
+   * Update a doctor schedule (Admin only)
    */
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Update an existing doctor schedule' })
   @ApiParam({ name: 'id', type: String })
@@ -106,11 +106,11 @@ export class DoctorSchedulesController {
   }
 
   /**
-   * Delete a doctor schedule (Admin & Employee only)
+   * Delete a doctor schedule (Admin only)
    */
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete a doctor schedule' })
   @ApiParam({ name: 'id', type: String })

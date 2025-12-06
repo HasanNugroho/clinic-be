@@ -388,13 +388,7 @@ export class RagService {
         doctorschedules: [],
       },
 
-      employee: {
-        examinations: ['diagnosisSummary', 'doctorNotes', 'patientId', "'patient.fullName'"],
-        registrations: ['patientId', "'patient.fullName'"],
-        doctorschedules: [],
-      },
-
-      superadmin: {
+      admin: {
         examinations: ['diagnosisSummary', 'doctorNotes', 'patientId', "'patient.fullName'"],
         registrations: ['patientId', "'patient.fullName'"],
         doctorschedules: [],
@@ -454,23 +448,16 @@ Your responsibilities:
 - Focus purely on supporting analysis, education, and professional reference.
   `,
 
-      employee: `
-You are an AI assistant assisting clinic operational staff.
+      admin: `
+You are an AI assistant supporting clinic administrators and operational staff.
 Your responsibilities:
 - Provide administrative insights about schedules, queues, and service performance.
+- Provide high-level insights, aggregated trends, and operational summaries.
 - Explain non-medical, non-sensitive information related to clinic operations.
 - Do NOT provide or infer personal medical information about any patient.
+- Do NOT access or reveal individual medical details or personal information.
 - Do NOT generate diagnosis, medical interpretation, or treatment suggestions.
 - Keep responses focused on administrative and operational context only.
-  `,
-
-      superadmin: `
-You are an AI assistant supporting system administrators.
-Your responsibilities:
-- Provide high-level insights, aggregated trends, and operational summaries.
-- Do NOT access or reveal individual medical details or personal information.
-- Do NOT provide medical interpretations, diagnoses, or treatment suggestions.
-- Focus on system-level, aggregated, and anonymized information only.
   `,
     };
 
@@ -497,8 +484,7 @@ You are an AI assistant operating inside a medical information system and must a
 ROLE BEHAVIOR:
 - Patient: Provide clear, simple, empathetic educational explanations. No medical judgment.
 - Doctor: Provide concise, clinical, data-focused explanations. Do not add patient-identifying details beyond the snippet.
-- Employee: Provide administrative/operational explanations only.
-- Superadmin: Provide broader operational summaries, but still strictly limited to snippet information.
+- Admin: Provide administrative/operational explanations and broader operational summaries, strictly limited to snippet information.
 - Default: Communicate with patient-friendly clarity.
 
 OUTPUT LANGUAGE:
@@ -524,14 +510,13 @@ You MUST respond in this exact JSON structure with no extra text:
 }
 
 TOPIC CHANGE LOGIC:
-${
-  previousTopic
-    ? `- Previous topic: "${previousTopic}"
+${previousTopic
+        ? `- Previous topic: "${previousTopic}"
 - Current query: "${query}"
 - Set isTopicChanged=false if the user is continuing, refining, or clarifying the same topic.
 - Set isTopicChanged=true ONLY if the user switches to a fundamentally different topic.`
-    : `- First query → isTopicChanged=false.`
-}
+        : `- First query → isTopicChanged=false.`
+      }
 
 
     `;
@@ -557,8 +542,7 @@ ${
     const builders: Record<UserRole, (c: string, d: any[]) => string> = {
       patient: this.buildPatientSnippet.bind(this),
       doctor: this.buildDoctorSnippet.bind(this),
-      employee: this.buildAdminSnippet.bind(this),
-      superadmin: this.buildAdminSnippet.bind(this),
+      admin: this.buildAdminSnippet.bind(this),
     };
 
     const builder = builders[role];

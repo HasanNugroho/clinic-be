@@ -24,14 +24,14 @@ import { generatePaginationMeta } from 'src/common/utils/pagination.util';
 @ApiTags('queues')
 @Controller('queues')
 export class QueuesController {
-  constructor(private readonly queuesService: QueuesService) {}
+  constructor(private readonly queuesService: QueuesService) { }
 
   /**
-   * Create a new queue (Employee/Admin only)
+   * Create a new queue (Admin only)
    */
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create a new queue' })
   @ApiHttpResponse(201, 'Queue created successfully', Queue)
@@ -128,11 +128,11 @@ export class QueuesController {
   }
 
   /**
-   * Skip a queue (Doctor/Employee/Admin only)
+   * Skip a queue (Doctor/Admin only)
    */
   @Post(':id/skip')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.SUPERADMIN, UserRole.EMPLOYEE, UserRole.DOCTOR)
+  @Roles(UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Skip a queue' })
   @ApiParam({ name: 'id', type: String })

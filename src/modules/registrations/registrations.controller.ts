@@ -24,14 +24,14 @@ import { generatePaginationMeta } from 'src/common/utils/pagination.util';
 @ApiTags('registrations')
 @Controller('registrations')
 export class RegistrationsController {
-  constructor(private readonly registrationsService: RegistrationsService) {}
+  constructor(private readonly registrationsService: RegistrationsService) { }
 
   /**
-   * Get all registrations (Employee, Doctor, Superadmin)
+   * Get all registrations (Admin, Doctor)
    */
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get all registrations' })
   @ApiHttpPaginatedResponse(200, 'Registrations retrieved successfully', Registration)
@@ -46,11 +46,11 @@ export class RegistrationsController {
   }
 
   /**
-   * Get a single registration by ID (Patient, Employee, Doctor, Superadmin)
+   * Get a single registration by ID (Patient, Admin, Doctor)
    */
   @Get(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.PATIENT, UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.PATIENT, UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get registration by ID' })
   @ApiParam({ name: 'id', type: String })
@@ -62,11 +62,11 @@ export class RegistrationsController {
   }
 
   /**
-   * Get registrations by patient ID (Patient, Employee, Doctor, Superadmin)
+   * Get registrations by patient ID (Patient, Admin, Doctor)
    */
   @Get('patient/:patientId')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.PATIENT, UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.PATIENT, UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get registrations by patient ID' })
   @ApiParam({ name: 'patientId', type: String })
@@ -77,11 +77,11 @@ export class RegistrationsController {
   }
 
   /**
-   * Get registrations by doctor ID (Employee, Doctor, Superadmin)
+   * Get registrations by doctor ID (Admin, Doctor)
    */
   @Get('doctor/:doctorId')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Get registrations by doctor ID' })
   @ApiParam({ name: 'doctorId', type: String })
@@ -92,11 +92,11 @@ export class RegistrationsController {
   }
 
   /**
-   * Create a new registration (Patient, Employee, Superadmin)
+   * Create a new registration (Patient, Admin)
    */
   @Post()
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.PATIENT, UserRole.EMPLOYEE, UserRole.SUPERADMIN)
+  @Roles(UserRole.PATIENT, UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Create a new registration' })
   @ApiHttpResponse(201, 'Registration created successfully', Registration)
@@ -108,11 +108,11 @@ export class RegistrationsController {
   }
 
   /**
-   * Update a registration (Employee, Doctor, Superadmin)
+   * Update a registration (Admin, Doctor)
    */
   @Put(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.EMPLOYEE, UserRole.DOCTOR, UserRole.SUPERADMIN)
+  @Roles(UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Update an existing registration' })
   @ApiParam({ name: 'id', type: String })
@@ -125,11 +125,11 @@ export class RegistrationsController {
   }
 
   /**
-   * Delete a registration (Employee, Superadmin)
+   * Delete a registration (Admin)
    */
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(UserRole.EMPLOYEE, UserRole.SUPERADMIN)
+  @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Delete a registration' })
   @ApiParam({ name: 'id', type: String })

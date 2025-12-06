@@ -7,6 +7,7 @@ import { AuthController } from './auth.controller';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { UsersModule } from '../users/users.module';
 import { DatabaseModule } from 'src/common/services/database.module';
+import { RedisService } from 'src/common/services/redis/redis.service';
 
 @Module({
   imports: [
@@ -23,7 +24,8 @@ import { DatabaseModule } from 'src/common/services/database.module';
     DatabaseModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, RedisService],
   exports: [AuthService],
 })
-export class AuthModule {}
+export class AuthModule { }
+
