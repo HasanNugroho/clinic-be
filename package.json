@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "tsgo -p tsconfig.json",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -31,6 +31,7 @@
     "@nestjs/platform-socket.io": "^11.0.1",
     "@nestjs/swagger": "^11.2.3",
     "@nestjs/websockets": "^11.0.1",
+    "@typescript/native-preview": "^7.0.0-dev.20251206.1",
     "@xenova/transformers": "^2.6.5",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.63.0",
