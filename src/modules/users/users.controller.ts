@@ -1,10 +1,13 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import {
   ApiTags,
   ApiOperation,
   ApiBearerAuth,
   ApiParam,
+  ApiConsumes,
+  ApiBody,
 } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { UsersService } from './users.service';
 import { User, UserRole } from './schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -173,19 +176,46 @@ export class UsersController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({
-    summary: 'Bulk import users from JSON',
-    description: 'Import multiple users at once from JSON data. Sample format: { "users": [{ "fullName": "John Doe", "email": "john@example.com", "password": "password123", "role": "patient", "gender": "M", "address": "123 Main St", "phoneNumber": "+628123456789" }] }',
+    summary: 'Bulk import users from JSON file',
+    description: 'Import multiple users at once from a JSON file. File should contain: { "users": [{ "fullName": "John Doe", "email": "john@example.com", "password": "password123", "role": "patient", "gender": "M", "address": "123 Main St", "phoneNumber": "+628123456789" }] }',
+  })
+  @ApiBody({
+    description: 'JSON file containing users array',
+    type: 'multipart/form-data',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'JSON file with users data',
+        },
+      },
+      required: ['file'],
+    },
   })
   @ApiHttpResponse(200, 'Users imported successfully')
+  @ApiHttpErrorResponse(400, 'Invalid file format')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async importUsers(@Body() importData: any) {
-    const users = importData.users || [];
-    const result = await this.usersService.bulkImport(users);
-    return {
-      message: 'Import completed',
-      ...result,
-    };
+  async importUsers(@UploadedFile() file: any) {
+    if (!file) {
+      throw new Error('No file provided');
+    }
+
+    try {
+      const importData = JSON.parse(file.buffer.toString('utf-8'));
+      const users = importData.users || [];
+      const result = await this.usersService.bulkImport(users);
+      return {
+        message: 'Import completed',
+        ...result,
+      };
+    } catch (error) {
+      throw new Error(`Failed to parse JSON file: ${error.message}`);
+    }
   }
 }

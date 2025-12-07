@@ -6,6 +6,7 @@ import {
     IsString,
     MinLength,
     IsDateString,
+    ValidateIf,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Gender, UserRole } from '../schemas/user.schema';

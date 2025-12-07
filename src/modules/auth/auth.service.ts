@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import { LoginDto } from './dto/login.dto';
@@ -6,7 +6,7 @@ import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
 import { LoginResponse } from './dto/auth-response.dto';
 import { Model } from 'mongoose';
-import { User } from '../users/schemas/user.schema';
+import { User, UserRole } from '../users/schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { RedisService } from '../../common/services/redis/redis.service';
 import { randomUUID } from 'crypto';
@@ -27,6 +27,14 @@ export class AuthService {
   ) { }
 
   async register(registerDto: RegisterDto) {
+    // Allow admin creation only once
+    if (registerDto.role === UserRole.ADMIN) {
+      const existingAdmin = await this.userModel.findOne({ role: UserRole.ADMIN }).exec();
+      if (existingAdmin) {
+        throw new BadRequestException('Admin user already exists. Only one admin can be created.');
+      }
+    }
+
     return await this.usersService.create(registerDto);
   }
 

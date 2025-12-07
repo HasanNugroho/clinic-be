@@ -25,12 +25,16 @@ export class AuthController {
 
   /**
    * Register a new user
+   * Admin role can be created only once (one-time setup)
    */
   @Post('register')
-  @ApiOperation({ summary: 'Register a new user' })
+  @ApiOperation({
+    summary: 'Register a new user',
+    description: 'Register a new user account. Patient and doctor roles can be registered anytime. Admin role can be created only once during initial setup. If an admin already exists, admin registration will be rejected.',
+  })
   @ApiHttpResponse(201, 'User registered successfully', User)
   @ApiHttpErrorResponse(409, 'Email already exists')
-  @ApiHttpErrorResponse(400, 'Invalid input data')
+  @ApiHttpErrorResponse(400, 'Invalid input data or admin already exists')
   async register(@Body() registerDto: CreateUserDto) {
     return await this.authService.register(registerDto);
   }

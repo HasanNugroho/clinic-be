@@ -6,10 +6,11 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { Registration, RegistrationStatus } from './schemas/registration.schema';
+import { Registration, RegistrationStatus, RegistrationMethod } from './schemas/registration.schema';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { UpdateRegistrationDto } from './dto/update-registration.dto';
 import { QueryRegistrationDto } from './dto/query-registration.dto';
+import { CheckinRegistrationDto } from './dto/checkin-registration.dto';
 import { UsersService } from '../users/users.service';
 import { DoctorSchedulesService } from '../doctorSchedules/doctor-schedules.service';
 import { UserRole } from '../users/schemas/user.schema';
@@ -25,7 +26,7 @@ export class RegistrationsService {
     private embeddingService: EmbeddingService,
   ) { }
 
-  async create(createRegistrationDto: CreateRegistrationDto): Promise<Registration> {
+  async create(createRegistrationDto: CreateRegistrationDto, user?: any): Promise<Registration> {
     const patient = await this.usersService.findOne(createRegistrationDto.patientId);
     if (!patient || patient.role !== UserRole.PATIENT) {
       throw new BadRequestException('Invalid patient ID or user is not a patient');
@@ -59,17 +60,45 @@ export class RegistrationsService {
       );
     }
 
-    const queueNumber = await this.generateQueueNumber(
-      createRegistrationDto.doctorId,
-      registrationDate,
-    );
+    // Check quota only for non-admin users
+    // Admin users can create registrations beyond quota limits
+    const isAdmin = user && user.role === UserRole.ADMIN;
+    if (!isAdmin) {
+      const registrationCount = await this.registrationModel.countDocuments({
+        doctorId: new Types.ObjectId(createRegistrationDto.doctorId),
+        scheduleId: new Types.ObjectId(createRegistrationDto.scheduleId),
+        registrationDate,
+        status: { $in: [RegistrationStatus.WAITING, RegistrationStatus.EXAMINING] },
+      });
+
+      const quotaLimit = typeof schedule.quota === 'string' ? parseInt(schedule.quota, 10) : schedule.quota;
+      if (registrationCount >= quotaLimit) {
+        throw new ConflictException(
+          `Doctor schedule quota (${schedule.quota}) is full for this date. Cannot add more registrations.`,
+        );
+      }
+    }
+
+    // Determine registration method based on user role
+    // Admin creates offline registrations, non-admin creates online registrations
+    const registrationMethod = isAdmin ? RegistrationMethod.OFFLINE : RegistrationMethod.ONLINE;
+
+    // Generate queue number only for OFFLINE registrations (admin)
+    // ONLINE registrations get queue number when patient checks in
+    let queueNumber: number | null = null;
+    if (registrationMethod === RegistrationMethod.OFFLINE) {
+      queueNumber = await this.generateQueueNumber(
+        createRegistrationDto.doctorId,
+        registrationDate,
+      );
+    }
 
     const createdRegistration = new this.registrationModel({
       patientId: new Types.ObjectId(createRegistrationDto.patientId),
       doctorId: new Types.ObjectId(createRegistrationDto.doctorId),
       scheduleId: new Types.ObjectId(createRegistrationDto.scheduleId),
       registrationDate,
-      registrationMethod: createRegistrationDto.registrationMethod,
+      registrationMethod,
       status: RegistrationStatus.WAITING,
       queueNumber,
     });
@@ -78,7 +107,7 @@ export class RegistrationsService {
 
     await this.generateAndSaveEmbedding(savedRegistration._id.toString());
 
-    return savedRegistration.toJSON(); // <-- FIXED
+    return savedRegistration.toJSON();
   }
 
   async findAll(queryDto: QueryRegistrationDto): Promise<{ data: Registration[]; total: number }> {
@@ -498,5 +527,65 @@ export class RegistrationsService {
     }
 
     return { success, failed, errors };
+  }
+
+  /**
+   * Validate online registration before check-in
+   * Checks if registration exists and is valid for check-in
+   */
+  async validateRegistration(registrationId: string): Promise<Registration> {
+    const registration = await this.registrationModel.findById(registrationId).exec();
+
+    if (!registration) {
+      throw new NotFoundException('Registration not found');
+    }
+
+    // Only online registrations can be checked in
+    if (registration.registrationMethod !== RegistrationMethod.ONLINE) {
+      throw new BadRequestException('Only online registrations can be checked in. Offline registrations are already queued.');
+    }
+
+    // Registration must be in waiting status
+    if (registration.status !== RegistrationStatus.WAITING) {
+      throw new BadRequestException(`Registration status is ${registration.status}. Only waiting registrations can be checked in.`);
+    }
+
+    // Registration must not already have a queue number
+    if (registration.queueNumber) {
+      throw new ConflictException('Patient has already checked in for this registration');
+    }
+
+    return registration;
+  }
+
+  /**
+   * Check-in patient and generate queue number
+   * Called when patient arrives at clinic for online registration
+   */
+  async checkinRegistration(checkinDto: CheckinRegistrationDto): Promise<Registration> {
+    // Validate registration first
+    const registration = await this.validateRegistration(checkinDto.registrationId);
+
+    const checkinDate = new Date();
+    checkinDate.setHours(0, 0, 0, 0);
+
+    // Generate queue number for this registration
+    const queueNumber = await this.generateQueueNumber(
+      registration.doctorId.toString(),
+      checkinDate,
+    );
+
+    // Update registration with queue number
+    const updatedRegistration = await this.registrationModel.findByIdAndUpdate(
+      checkinDto.registrationId,
+      { queueNumber },
+      { new: true },
+    ).exec();
+
+    if (!updatedRegistration) {
+      throw new NotFoundException('Failed to update registration');
+    }
+
+    return updatedRegistration.toJSON();
   }
 }

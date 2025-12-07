@@ -22,9 +22,4 @@ export class CreateRegistrationDto {
     @IsNotEmpty()
     @IsDateString()
     registrationDate: string;
-
-    @ApiProperty({ enum: RegistrationMethod, description: 'Registration method' })
-    @IsNotEmpty()
-    @IsEnum(RegistrationMethod)
-    registrationMethod: RegistrationMethod;
 }

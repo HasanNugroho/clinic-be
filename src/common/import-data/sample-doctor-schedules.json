@@ -1,85 +1,64 @@
 {
     "schedules": [
         {
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "dayOfWeek": "Monday",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "dayOfWeek": "senin",
             "startTime": "08:00",
-            "endTime": "12:00",
-            "quota": 20
-        },
-        {
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "dayOfWeek": "Monday",
-            "startTime": "13:00",
             "endTime": "17:00",
-            "quota": 20
+            "quota": 40
         },
         {
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "dayOfWeek": "Wednesday",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "dayOfWeek": "rabu",
             "startTime": "08:00",
             "endTime": "16:00",
             "quota": 30
         },
         {
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "dayOfWeek": "Friday",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "dayOfWeek": "jumat",
             "startTime": "09:00",
             "endTime": "15:00",
             "quota": 25
         },
         {
-            "doctorEmail": "michael.chen@clinic.com",
-            "dayOfWeek": "Tuesday",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "dayOfWeek": "selasa",
             "startTime": "08:00",
-            "endTime": "12:00",
-            "quota": 15
-        },
-        {
-            "doctorEmail": "michael.chen@clinic.com",
-            "dayOfWeek": "Tuesday",
-            "startTime": "13:00",
             "endTime": "17:00",
-            "quota": 15
+            "quota": 30
         },
         {
-            "doctorEmail": "michael.chen@clinic.com",
-            "dayOfWeek": "Thursday",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "dayOfWeek": "kamis",
             "startTime": "08:00",
             "endTime": "16:00",
             "quota": 25
         },
         {
-            "doctorEmail": "michael.chen@clinic.com",
-            "dayOfWeek": "Saturday",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "dayOfWeek": "sabtu",
             "startTime": "09:00",
             "endTime": "13:00",
             "quota": 20
         },
         {
-            "doctorEmail": "amanda.lee@clinic.com",
-            "dayOfWeek": "Monday",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "dayOfWeek": "senin",
             "startTime": "09:00",
             "endTime": "13:00",
             "quota": 18
         },
         {
-            "doctorEmail": "amanda.lee@clinic.com",
-            "dayOfWeek": "Wednesday",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "dayOfWeek": "rabu",
             "startTime": "08:00",
-            "endTime": "12:00",
-            "quota": 18
-        },
-        {
-            "doctorEmail": "amanda.lee@clinic.com",
-            "dayOfWeek": "Wednesday",
-            "startTime": "13:00",
             "endTime": "17:00",
-            "quota": 18
+            "quota": 36
         },
         {
-            "doctorEmail": "amanda.lee@clinic.com",
-            "dayOfWeek": "Friday",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "dayOfWeek": "jumat",
             "startTime": "08:00",
             "endTime": "14:00",
             "quota": 22

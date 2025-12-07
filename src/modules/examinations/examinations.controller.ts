@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ExaminationsService } from './examinations.service';
 import { Examination } from './schemas/examination.schema';
 import { CreateExaminationDto } from './dto/create-examination.dto';
@@ -143,25 +144,52 @@ export class ExaminationsController {
   }
 
   /**
-   * Bulk import examinations from JSON
+   * Bulk import examinations from JSON file
    */
   @Post('import')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN, UserRole.DOCTOR)
   @ApiBearerAuth('access-token')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({
-    summary: 'Bulk import examinations from JSON',
-    description: 'Import multiple examinations. Sample: { "examinations": [{ "patientEmail": "patient@email.com", "doctorEmail": "doctor@clinic.com", "examinationDate": "2025-08-15T10:00:00Z", "diagnosisSummary": "Hypertension", "doctorNotes": "Patient advised...", "status": "completed" }] }',
+    summary: 'Bulk import examinations from JSON file',
+    description: 'Import multiple examinations from a JSON file. File should contain: { "examinations": [{ "patientEmail": "patient@email.com", "doctorEmail": "doctor@clinic.com", "examinationDate": "2025-08-15T10:00:00Z", "diagnosisSummary": "Hypertension", "doctorNotes": "Patient advised...", "status": "completed" }] }',
+  })
+  @ApiBody({
+    description: 'JSON file containing examinations array',
+    type: 'multipart/form-data',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'JSON file with examinations data',
+        },
+      },
+      required: ['file'],
+    },
   })
   @ApiHttpResponse(200, 'Examinations imported successfully')
+  @ApiHttpErrorResponse(400, 'Invalid file format')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async importExaminations(@Body() importData: any) {
-    const examinations = importData.examinations || [];
-    const result = await this.examinationsService.bulkImport(examinations);
-    return {
-      message: 'Import completed',
-      ...result,
-    };
+  async importExaminations(@UploadedFile() file: any) {
+    if (!file) {
+      throw new Error('No file provided');
+    }
+
+    try {
+      const importData = JSON.parse(file.buffer.toString('utf-8'));
+      const examinations = importData.examinations || [];
+      const result = await this.examinationsService.bulkImport(examinations);
+      return {
+        message: 'Import completed',
+        ...result,
+      };
+    } catch (error) {
+      throw new Error(`Failed to parse JSON file: ${error.message}`);
+    }
   }
 }

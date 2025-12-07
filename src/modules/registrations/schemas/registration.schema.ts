@@ -70,10 +70,11 @@ export class Registration {
 
   @ApiProperty({
     example: 3,
-    description: 'Queue number',
+    description: 'Queue number (null for online registrations until check-in, assigned for offline registrations)',
+    required: false,
   })
-  @Prop({ required: true })
-  queueNumber: number;
+  @Prop({ required: false })
+  queueNumber?: number;
 
   @ApiProperty({
     example: '2024-01-21T09:00:00Z',

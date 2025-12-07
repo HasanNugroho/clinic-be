@@ -1,5 +1,6 @@
-import { Controller, Get, Post, Body, Param, Delete, UseGuards, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Delete, UseGuards, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiParam, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { QueuesService } from './queues.service';
 import { Queue } from './schemas/queue.schema';
 import { CreateQueueDto } from './dto/create-queue.dto';
@@ -145,25 +146,52 @@ export class QueuesController {
   }
 
   /**
-   * Bulk import queues from JSON
+   * Bulk import queues from JSON file
    */
   @Post('import')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiBearerAuth('access-token')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiConsumes('multipart/form-data')
   @ApiOperation({
-    summary: 'Bulk import queues from JSON',
-    description: 'Import multiple queues. Sample: { "queues": [{ "patientEmail": "patient@email.com", "doctorEmail": "doctor@clinic.com", "queueNumber": 1, "queueDate": "2025-08-15", "status": "waiting" }] }',
+    summary: 'Bulk import queues from JSON file',
+    description: 'Import multiple queues from a JSON file. File should contain: { "queues": [{ "patientEmail": "patient@email.com", "doctorEmail": "doctor@clinic.com", "queueNumber": 1, "queueDate": "2025-08-15", "status": "waiting" }] }',
+  })
+  @ApiBody({
+    description: 'JSON file containing queues array',
+    type: 'multipart/form-data',
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'JSON file with queues data',
+        },
+      },
+      required: ['file'],
+    },
   })
   @ApiHttpResponse(200, 'Queues imported successfully')
+  @ApiHttpErrorResponse(400, 'Invalid file format')
   @ApiHttpErrorResponse(401, 'Unauthorized')
   @ApiHttpErrorResponse(403, 'Forbidden')
-  async importQueues(@Body() importData: any) {
-    const queues = importData.queues || [];
-    const result = await this.queuesService.bulkImport(queues);
-    return {
-      message: 'Import completed',
-      ...result,
-    };
+  async importQueues(@UploadedFile() file: any) {
+    if (!file) {
+      throw new Error('No file provided');
+    }
+
+    try {
+      const importData = JSON.parse(file.buffer.toString('utf-8'));
+      const queues = importData.queues || [];
+      const result = await this.queuesService.bulkImport(queues);
+      return {
+        message: 'Import completed',
+        ...result,
+      };
+    } catch (error) {
+      throw new Error(`Failed to parse JSON file: ${error.message}`);
+    }
   }
 }
