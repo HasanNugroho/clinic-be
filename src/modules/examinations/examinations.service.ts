@@ -18,7 +18,7 @@ export class ExaminationsService {
     private usersService: UsersService,
     private registrationsService: RegistrationsService,
     private embeddingService: EmbeddingService,
-  ) {}
+  ) { }
 
   async create(createExaminationDto: CreateExaminationDto): Promise<Examination> {
     // Validate registration exists
@@ -432,5 +432,58 @@ export class ExaminationsService {
         console.error(`Error generating embedding for examination ${examinationId}:`, error);
       }
     }
+  }
+
+  /**
+   * Bulk import examinations from JSON data
+   */
+  async bulkImport(examinations: any[]): Promise<{ success: number; failed: number; errors: any[] }> {
+    let success = 0;
+    let failed = 0;
+    const errors: any[] = [];
+
+    for (const examData of examinations) {
+      try {
+        // Find patient by email
+        const patient = await this.usersService.findByEmail(examData.patientEmail);
+        if (!patient || patient.role !== UserRole.PATIENT) {
+          failed++;
+          errors.push({ patientEmail: examData.patientEmail, error: 'Patient not found or invalid role' });
+          continue;
+        }
+
+        // Find doctor by email
+        const doctor = await this.usersService.findByEmail(examData.doctorEmail);
+        if (!doctor || doctor.role !== UserRole.DOCTOR) {
+          failed++;
+          errors.push({ doctorEmail: examData.doctorEmail, error: 'Doctor not found or invalid role' });
+          continue;
+        }
+
+        // Create examination
+        const created = await this.examinationModel.create({
+          patientId: patient._id,
+          doctorId: doctor._id,
+          examinationDate: new Date(examData.examinationDate),
+          diagnosisSummary: examData.diagnosisSummary,
+          doctorNotes: examData.doctorNotes,
+          status: examData.status,
+        });
+
+        // Generate embedding asynchronously
+        this.generateAndSaveEmbedding(created._id.toString()).catch(() => null);
+
+        success++;
+      } catch (error) {
+        failed++;
+        errors.push({
+          patientEmail: examData.patientEmail,
+          doctorEmail: examData.doctorEmail,
+          error: error.message
+        });
+      }
+    }
+
+    return { success, failed, errors };
   }
 }

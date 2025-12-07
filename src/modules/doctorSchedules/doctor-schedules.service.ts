@@ -16,7 +16,7 @@ export class DoctorSchedulesService {
     private doctorScheduleModel: Model<DoctorSchedule>,
     private usersService: UsersService,
     private embeddingService: EmbeddingService,
-  ) {}
+  ) { }
 
   /* -------------------------------------------
      CREATE
@@ -256,5 +256,52 @@ export class DoctorSchedulesService {
       embeddingText,
       embeddingUpdatedAt: new Date(),
     });
+  }
+
+  /**
+   * Bulk import doctor schedules from JSON data
+   */
+  async bulkImport(schedules: any[]): Promise<{ success: number; failed: number; errors: any[] }> {
+    let success = 0;
+    let failed = 0;
+    const errors: any[] = [];
+
+    for (const scheduleData of schedules) {
+      try {
+        // Find doctor by email
+        const doctor = await this.usersService.findByEmail(scheduleData.doctorEmail);
+        if (!doctor || doctor.role !== UserRole.DOCTOR) {
+          failed++;
+          errors.push({ doctorEmail: scheduleData.doctorEmail, error: 'Doctor not found or invalid role' });
+          continue;
+        }
+
+        // Validate times
+        if (scheduleData.startTime >= scheduleData.endTime) {
+          failed++;
+          errors.push({ doctorEmail: scheduleData.doctorEmail, error: 'End time must be after start time' });
+          continue;
+        }
+
+        // Create schedule
+        const created = await this.doctorScheduleModel.create({
+          doctorId: doctor._id,
+          dayOfWeek: scheduleData.dayOfWeek,
+          startTime: scheduleData.startTime,
+          endTime: scheduleData.endTime,
+          quota: scheduleData.quota,
+        });
+
+        // Generate embedding asynchronously
+        this.generateAndSaveEmbedding(created._id.toString()).catch(() => null);
+
+        success++;
+      } catch (error) {
+        failed++;
+        errors.push({ doctorEmail: scheduleData.doctorEmail, error: error.message });
+      }
+    }
+
+    return { success, failed, errors };
   }
 }

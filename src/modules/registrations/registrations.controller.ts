@@ -141,4 +141,27 @@ export class RegistrationsController {
     await this.registrationsService.remove(id);
     return { message: 'Registration deleted successfully' };
   }
+
+  /**
+   * Bulk import registrations from JSON
+   */
+  @Post('import')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Bulk import registrations from JSON',
+    description: 'Import multiple registrations. Sample: { "registrations": [{ "patientEmail": "patient@email.com", "doctorEmail": "doctor@clinic.com", "registrationDate": "2025-08-15T09:00:00Z", "registrationMethod": "online", "queueNumber": 1 }] }',
+  })
+  @ApiHttpResponse(200, 'Registrations imported successfully')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async importRegistrations(@Body() importData: any) {
+    const registrations = importData.registrations || [];
+    const result = await this.registrationsService.bulkImport(registrations);
+    return {
+      message: 'Import completed',
+      ...result,
+    };
+  }
 }

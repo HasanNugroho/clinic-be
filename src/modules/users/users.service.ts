@@ -154,4 +154,42 @@ export class UsersService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
   }
+
+  /**
+   * Bulk import users from JSON data
+   */
+  async bulkImport(users: any[]): Promise<{ success: number; failed: number; errors: any[] }> {
+    let success = 0;
+    let failed = 0;
+    const errors: any[] = [];
+
+    for (const userData of users) {
+      try {
+        // Check if email already exists
+        const existingUser = await this.userModel.findOne({ email: userData.email });
+        if (existingUser) {
+          failed++;
+          errors.push({ email: userData.email, error: 'Email already exists' });
+          continue;
+        }
+
+        // Hash password
+        const hashedPassword = await bcrypt.hash(userData.password, 10);
+
+        // Create user
+        const createdUser = new this.userModel({
+          ...userData,
+          password: hashedPassword,
+        });
+
+        await createdUser.save();
+        success++;
+      } catch (error) {
+        failed++;
+        errors.push({ email: userData.email, error: error.message });
+      }
+    }
+
+    return { success, failed, errors };
+  }
 }

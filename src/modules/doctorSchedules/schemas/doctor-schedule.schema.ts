@@ -43,6 +43,15 @@ export class DoctorSchedule {
   @Prop({ required: true, default: 1 })
   quota: string;
 
+  @Prop({ type: [Number], required: false, select: false })
+  embedding?: number[];
+
+  @Prop({ required: false, select: false })
+  embeddingText?: string;
+
+  @Prop({ required: false })
+  embeddingUpdatedAt?: Date;
+
   @ApiProperty({
     required: false,
     type: User,

@@ -1,0 +1,116 @@
+{
+    "examinations": [
+        {
+            "patientEmail": "john.smith@email.com",
+            "doctorEmail": "sarah.johnson@clinic.com",
+            "examinationDate": "2025-08-04T10:00:00Z",
+            "diagnosisSummary": "Hypertension - Stage 1. Blood pressure: 140/90 mmHg.",
+            "doctorNotes": "Patient advised on lifestyle modifications including diet and exercise. Prescribed ACE inhibitor for blood pressure management. Follow-up in 4 weeks.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.garcia@email.com",
+            "doctorEmail": "sarah.johnson@clinic.com",
+            "examinationDate": "2025-08-04T11:00:00Z",
+            "diagnosisSummary": "Routine cardiac checkup. No abnormalities detected.",
+            "doctorNotes": "ECG normal. Heart rate: 72 bpm. Blood pressure: 118/76 mmHg. Continue current health regimen.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "david.wong@email.com",
+            "doctorEmail": "michael.chen@clinic.com",
+            "examinationDate": "2025-08-05T10:30:00Z",
+            "diagnosisSummary": "Migraine headaches. Neurological examination normal.",
+            "doctorNotes": "Patient reports frequent migraines. Prescribed preventive medication. Recommended stress management techniques and regular sleep schedule.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "lisa.anderson@email.com",
+            "doctorEmail": "amanda.lee@clinic.com",
+            "examinationDate": "2025-08-07T11:30:00Z",
+            "diagnosisSummary": "Upper respiratory tract infection.",
+            "doctorNotes": "Mild fever and cough. Prescribed antibiotics and cough syrup. Rest recommended for 3-5 days.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "robert.taylor@email.com",
+            "doctorEmail": "sarah.johnson@clinic.com",
+            "examinationDate": "2025-08-11T09:45:00Z",
+            "diagnosisSummary": "Chest pain evaluation. Cardiac markers normal.",
+            "doctorNotes": "Stress test performed - results normal. Chest pain likely musculoskeletal. Prescribed pain relief medication.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "emma.wilson@email.com",
+            "doctorEmail": "michael.chen@clinic.com",
+            "examinationDate": "2025-08-12T11:00:00Z",
+            "diagnosisSummary": "Tension headache. No neurological deficits.",
+            "doctorNotes": "Patient experiencing work-related stress. Prescribed muscle relaxants. Recommended physical therapy and stress management.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "john.smith@email.com",
+            "doctorEmail": "amanda.lee@clinic.com",
+            "examinationDate": "2025-09-02T09:30:00Z",
+            "diagnosisSummary": "Follow-up examination. Blood pressure improved.",
+            "doctorNotes": "Blood pressure: 128/82 mmHg. Patient responding well to treatment. Continue current medication.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.garcia@email.com",
+            "doctorEmail": "michael.chen@clinic.com",
+            "examinationDate": "2025-09-15T11:45:00Z",
+            "diagnosisSummary": "Dizziness and balance issues. Vestibular function test ordered.",
+            "doctorNotes": "Patient reports occasional dizziness. Neurological exam normal. Awaiting vestibular test results.",
+            "status": "pending"
+        },
+        {
+            "patientEmail": "david.wong@email.com",
+            "doctorEmail": "sarah.johnson@clinic.com",
+            "examinationDate": "2025-10-03T10:00:00Z",
+            "diagnosisSummary": "Annual cardiac screening. All parameters normal.",
+            "doctorNotes": "ECG, blood pressure, and cholesterol levels all within normal range. Continue healthy lifestyle.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "lisa.anderson@email.com",
+            "doctorEmail": "sarah.johnson@clinic.com",
+            "examinationDate": "2025-10-20T10:30:00Z",
+            "diagnosisSummary": "Allergic rhinitis. Seasonal allergies.",
+            "doctorNotes": "Prescribed antihistamines and nasal spray. Advised to avoid known allergens.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "robert.taylor@email.com",
+            "doctorEmail": "amanda.lee@clinic.com",
+            "examinationDate": "2025-11-05T10:15:00Z",
+            "diagnosisSummary": "Gastroenteritis. Mild dehydration.",
+            "doctorNotes": "Prescribed oral rehydration solution and anti-nausea medication. Dietary modifications recommended.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "emma.wilson@email.com",
+            "doctorEmail": "michael.chen@clinic.com",
+            "examinationDate": "2025-11-18T11:30:00Z",
+            "diagnosisSummary": "Follow-up for headaches. Symptoms improved.",
+            "doctorNotes": "Patient reports significant improvement with current treatment. Continue medication for another month.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "john.smith@email.com",
+            "doctorEmail": "sarah.johnson@clinic.com",
+            "examinationDate": "2025-12-01T09:00:00Z",
+            "diagnosisSummary": "Routine checkup. Blood pressure stable.",
+            "doctorNotes": "Blood pressure: 125/80 mmHg. Patient maintaining good health. Continue current regimen.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.garcia@email.com",
+            "doctorEmail": "amanda.lee@clinic.com",
+            "examinationDate": "2025-12-05T10:45:00Z",
+            "diagnosisSummary": "Awaiting lab results for comprehensive metabolic panel.",
+            "doctorNotes": "Blood samples collected. Results pending. Follow-up appointment scheduled.",
+            "status": "pending"
+        }
+    ]
+}

@@ -1,0 +1,117 @@
+{
+    "users": [
+        {
+            "fullName": "Dr. Sarah Johnson",
+            "nik": "3201234567890001",
+            "birthDate": "1985-03-15",
+            "gender": "F",
+            "address": "Jl. Sudirman No. 123, Jakarta Pusat",
+            "phoneNumber": "+628123456001",
+            "email": "sarah.johnson@clinic.com",
+            "password": "doctor123",
+            "role": "doctor",
+            "specialization": "Cardiology"
+        },
+        {
+            "fullName": "Dr. Michael Chen",
+            "nik": "3201234567890002",
+            "birthDate": "1982-07-22",
+            "gender": "M",
+            "address": "Jl. Gatot Subroto No. 456, Jakarta Selatan",
+            "phoneNumber": "+628123456002",
+            "email": "michael.chen@clinic.com",
+            "password": "doctor123",
+            "role": "doctor",
+            "specialization": "Neurology"
+        },
+        {
+            "fullName": "Dr. Amanda Lee",
+            "nik": "3201234567890003",
+            "birthDate": "1988-11-08",
+            "gender": "F",
+            "address": "Jl. Thamrin No. 789, Jakarta Pusat",
+            "phoneNumber": "+628123456003",
+            "email": "amanda.lee@clinic.com",
+            "password": "doctor123",
+            "role": "doctor",
+            "specialization": "Pediatrics"
+        },
+        {
+            "fullName": "Admin User",
+            "nik": "3201234567890004",
+            "birthDate": "1990-05-20",
+            "gender": "M",
+            "address": "Jl. Kuningan No. 321, Jakarta Selatan",
+            "phoneNumber": "+628123456004",
+            "email": "admin@clinic.com",
+            "password": "admin123",
+            "role": "admin"
+        },
+        {
+            "fullName": "John Smith",
+            "nik": "3201234567890101",
+            "birthDate": "1995-08-10",
+            "gender": "M",
+            "address": "Jl. Kebon Jeruk No. 45, Jakarta Barat",
+            "phoneNumber": "+628123456101",
+            "email": "john.smith@email.com",
+            "password": "patient123",
+            "role": "patient"
+        },
+        {
+            "fullName": "Maria Garcia",
+            "nik": "3201234567890102",
+            "birthDate": "1992-12-25",
+            "gender": "F",
+            "address": "Jl. Cempaka Putih No. 67, Jakarta Pusat",
+            "phoneNumber": "+628123456102",
+            "email": "maria.garcia@email.com",
+            "password": "patient123",
+            "role": "patient"
+        },
+        {
+            "fullName": "David Wong",
+            "nik": "3201234567890103",
+            "birthDate": "1988-04-18",
+            "gender": "M",
+            "address": "Jl. Menteng No. 89, Jakarta Pusat",
+            "phoneNumber": "+628123456103",
+            "email": "david.wong@email.com",
+            "password": "patient123",
+            "role": "patient"
+        },
+        {
+            "fullName": "Lisa Anderson",
+            "nik": "3201234567890104",
+            "birthDate": "1997-09-30",
+            "gender": "F",
+            "address": "Jl. Senopati No. 12, Jakarta Selatan",
+            "phoneNumber": "+628123456104",
+            "email": "lisa.anderson@email.com",
+            "password": "patient123",
+            "role": "patient"
+        },
+        {
+            "fullName": "Robert Taylor",
+            "nik": "3201234567890105",
+            "birthDate": "1985-06-14",
+            "gender": "M",
+            "address": "Jl. Kemang No. 34, Jakarta Selatan",
+            "phoneNumber": "+628123456105",
+            "email": "robert.taylor@email.com",
+            "password": "patient123",
+            "role": "patient"
+        },
+        {
+            "fullName": "Emma Wilson",
+            "nik": "3201234567890106",
+            "birthDate": "1993-02-28",
+            "gender": "F",
+            "address": "Jl. Pondok Indah No. 56, Jakarta Selatan",
+            "phoneNumber": "+628123456106",
+            "email": "emma.wilson@email.com",
+            "password": "patient123",
+            "role": "patient"
+        }
+    ]
+}

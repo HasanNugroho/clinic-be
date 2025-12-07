@@ -165,4 +165,27 @@ export class UsersController {
     await this.usersService.remove(id);
     return { message: 'User deleted successfully' };
   }
+
+  /**
+   * Bulk import users from JSON file
+   */
+  @Post('import')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Bulk import users from JSON',
+    description: 'Import multiple users at once from JSON data. Sample format: { "users": [{ "fullName": "John Doe", "email": "john@example.com", "password": "password123", "role": "patient", "gender": "M", "address": "123 Main St", "phoneNumber": "+628123456789" }] }',
+  })
+  @ApiHttpResponse(200, 'Users imported successfully')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async importUsers(@Body() importData: any) {
+    const users = importData.users || [];
+    const result = await this.usersService.bulkImport(users);
+    return {
+      message: 'Import completed',
+      ...result,
+    };
+  }
 }

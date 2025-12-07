@@ -23,7 +23,7 @@ export class RegistrationsService {
     private usersService: UsersService,
     private doctorSchedulesService: DoctorSchedulesService,
     private embeddingService: EmbeddingService,
-  ) {}
+  ) { }
 
   async create(createRegistrationDto: CreateRegistrationDto): Promise<Registration> {
     const patient = await this.usersService.findOne(createRegistrationDto.patientId);
@@ -437,12 +437,66 @@ export class RegistrationsService {
    * @param registrationIds - Array of registration IDs
    */
   async generateBatchEmbeddings(registrationIds: string[]): Promise<void> {
-    for (const registrationId of registrationIds) {
+    for (const id of registrationIds) {
       try {
-        await this.generateAndSaveEmbedding(registrationId);
+        await this.generateAndSaveEmbedding(id);
       } catch (error) {
-        console.error(`Error generating embedding for registration ${registrationId}:`, error);
+        // Log but don't fail the batch
+        console.error(`Failed to generate embedding for registration ${id}:`, error);
       }
     }
+  }
+
+  /**
+   * Bulk import registrations from JSON data
+   */
+  async bulkImport(registrations: any[]): Promise<{ success: number; failed: number; errors: any[] }> {
+    let success = 0;
+    let failed = 0;
+    const errors: any[] = [];
+
+    for (const regData of registrations) {
+      try {
+        // Find patient by email
+        const patient = await this.usersService.findByEmail(regData.patientEmail);
+        if (!patient || patient.role !== UserRole.PATIENT) {
+          failed++;
+          errors.push({ patientEmail: regData.patientEmail, error: 'Patient not found or invalid role' });
+          continue;
+        }
+
+        // Find doctor by email
+        const doctor = await this.usersService.findByEmail(regData.doctorEmail);
+        if (!doctor || doctor.role !== UserRole.DOCTOR) {
+          failed++;
+          errors.push({ doctorEmail: regData.doctorEmail, error: 'Doctor not found or invalid role' });
+          continue;
+        }
+
+        // Create registration
+        const created = await this.registrationModel.create({
+          patientId: patient._id,
+          doctorId: doctor._id,
+          registrationDate: new Date(regData.registrationDate),
+          registrationMethod: regData.registrationMethod,
+          queueNumber: regData.queueNumber,
+          status: 'waiting', // Default status
+        });
+
+        // Generate embedding asynchronously
+        this.generateAndSaveEmbedding(created._id.toString()).catch(() => null);
+
+        success++;
+      } catch (error) {
+        failed++;
+        errors.push({
+          patientEmail: regData.patientEmail,
+          doctorEmail: regData.doctorEmail,
+          error: error.message
+        });
+      }
+    }
+
+    return { success, failed, errors };
   }
 }

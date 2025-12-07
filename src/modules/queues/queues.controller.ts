@@ -143,4 +143,27 @@ export class QueuesController {
   async skipQueue(@Param('id') id: string) {
     return this.queuesService.skipQueue(id);
   }
+
+  /**
+   * Bulk import queues from JSON
+   */
+  @Post('import')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Bulk import queues from JSON',
+    description: 'Import multiple queues. Sample: { "queues": [{ "patientEmail": "patient@email.com", "doctorEmail": "doctor@clinic.com", "queueNumber": 1, "queueDate": "2025-08-15", "status": "waiting" }] }',
+  })
+  @ApiHttpResponse(200, 'Queues imported successfully')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async importQueues(@Body() importData: any) {
+    const queues = importData.queues || [];
+    const result = await this.queuesService.bulkImport(queues);
+    return {
+      message: 'Import completed',
+      ...result,
+    };
+  }
 }

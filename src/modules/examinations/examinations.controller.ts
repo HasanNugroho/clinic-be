@@ -141,4 +141,27 @@ export class ExaminationsController {
     await this.examinationsService.remove(id);
     return { message: 'Examination deleted successfully' };
   }
+
+  /**
+   * Bulk import examinations from JSON
+   */
+  @Post('import')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN, UserRole.DOCTOR)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Bulk import examinations from JSON',
+    description: 'Import multiple examinations. Sample: { "examinations": [{ "patientEmail": "patient@email.com", "doctorEmail": "doctor@clinic.com", "examinationDate": "2025-08-15T10:00:00Z", "diagnosisSummary": "Hypertension", "doctorNotes": "Patient advised...", "status": "completed" }] }',
+  })
+  @ApiHttpResponse(200, 'Examinations imported successfully')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async importExaminations(@Body() importData: any) {
+    const examinations = importData.examinations || [];
+    const result = await this.examinationsService.bulkImport(examinations);
+    return {
+      message: 'Import completed',
+      ...result,
+    };
+  }
 }

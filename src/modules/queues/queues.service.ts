@@ -307,8 +307,10 @@ export class QueuesService {
     return transformObjectId<Queue[]>(queues);
   }
 
-  // Helper method to populate queue
-  private async populateQueue(queue: any): Promise<Queue> {
+  /**
+   * Helper method to populate queue
+   */
+  async populateQueue(queue: any): Promise<Queue> {
     const populated = await this.queueModel
       .findById(queue._id)
       .populate('patientId', 'fullName email phoneNumber')
@@ -317,6 +319,59 @@ export class QueuesService {
       .lean()
       .exec();
 
+    if (!populated) {
+      throw new NotFoundException('Queue not found');
+    }
+
     return transformObjectId<Queue>(populated);
+  }
+
+  /**
+   * Bulk import queues from JSON data
+   */
+  async bulkImport(queues: any[]): Promise<{ success: number; failed: number; errors: any[] }> {
+    let success = 0;
+    let failed = 0;
+    const errors: any[] = [];
+
+    for (const queueData of queues) {
+      try {
+        // Find patient by email
+        const patient = await this.queueModel.db.collection('users').findOne({ email: queueData.patientEmail });
+        if (!patient || patient.role !== 'patient') {
+          failed++;
+          errors.push({ patientEmail: queueData.patientEmail, error: 'Patient not found or invalid role' });
+          continue;
+        }
+
+        // Find doctor by email
+        const doctor = await this.queueModel.db.collection('users').findOne({ email: queueData.doctorEmail });
+        if (!doctor || doctor.role !== 'doctor') {
+          failed++;
+          errors.push({ doctorEmail: queueData.doctorEmail, error: 'Doctor not found or invalid role' });
+          continue;
+        }
+
+        // Create queue
+        const created = await this.queueModel.create({
+          patientId: patient._id,
+          doctorId: doctor._id,
+          queueNumber: queueData.queueNumber,
+          queueDate: new Date(queueData.queueDate),
+          status: queueData.status,
+        });
+
+        success++;
+      } catch (error) {
+        failed++;
+        errors.push({
+          patientEmail: queueData.patientEmail,
+          doctorEmail: queueData.doctorEmail,
+          error: error.message
+        });
+      }
+    }
+
+    return { success, failed, errors };
   }
 }

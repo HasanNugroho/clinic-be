@@ -122,4 +122,27 @@ export class DoctorSchedulesController {
     await this.doctorSchedulesService.remove(id);
     return { message: 'Doctor schedule deleted successfully' };
   }
+
+  /**
+   * Bulk import doctor schedules from JSON
+   */
+  @Post('import')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Bulk import doctor schedules from JSON',
+    description: 'Import multiple doctor schedules at once. Sample format: { "schedules": [{ "doctorEmail": "doctor@clinic.com", "dayOfWeek": "Monday", "startTime": "08:00", "endTime": "17:00", "quota": 30 }] }',
+  })
+  @ApiHttpResponse(200, 'Schedules imported successfully')
+  @ApiHttpErrorResponse(401, 'Unauthorized')
+  @ApiHttpErrorResponse(403, 'Forbidden')
+  async importSchedules(@Body() importData: any) {
+    const schedules = importData.schedules || [];
+    const result = await this.doctorSchedulesService.bulkImport(schedules);
+    return {
+      message: 'Import completed',
+      ...result,
+    };
+  }
 }
