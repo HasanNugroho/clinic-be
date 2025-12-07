@@ -13,6 +13,7 @@ export enum RegistrationStatus {
   WAITING = 'waiting',
   EXAMINING = 'examining',
   COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
 }
 
 @Schema({ timestamps: true })

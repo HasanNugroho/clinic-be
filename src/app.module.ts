@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { DoctorSchedulesModule } from './modules/doctorSchedules/doctor-schedules.module';
@@ -10,6 +11,7 @@ import { QueuesModule } from './modules/queues/queues.module';
 import { RagModule } from './modules/rag/rag.module';
 import { BullModule } from '@nestjs/bullmq';
 import mongoose from 'mongoose';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 const { ObjectId } = mongoose.Types;
 ObjectId.prototype.valueOf = function () {
@@ -27,6 +29,7 @@ ObjectId.prototype.valueOf = function () {
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    ScheduleModule.forRoot(),
     BullModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
@@ -53,6 +56,7 @@ ObjectId.prototype.valueOf = function () {
     ExaminationsModule,
     QueuesModule,
     RagModule,
+    DashboardModule,
   ],
   providers: [],
 })
