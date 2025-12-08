@@ -479,4 +479,38 @@ export class QdrantIndexingService {
 
         return this.embeddingService.buildEmbeddingText(fields);
     }
+
+    /**
+     * Reindex all collections (delete and recreate)
+     * Flow: Delete all collections -> Create collections -> Index all data
+     */
+    async reindexAll(): Promise<{ dashboards: number; registrations: number; examinations: number; schedules: number }> {
+        try {
+            this.logger.log('🔄 Starting full reindexing process...');
+
+            // Step 1: Delete all collections
+            this.logger.log('📋 Step 1: Deleting all collections...');
+            await this.qdrantService.deleteCollection(this.DASHBOARD_COLLECTION).catch(() => null);
+            await this.qdrantService.deleteCollection(this.REGISTRATION_COLLECTION).catch(() => null);
+            await this.qdrantService.deleteCollection(this.EXAMINATION_COLLECTION).catch(() => null);
+            await this.qdrantService.deleteCollection(this.SCHEDULE_COLLECTION).catch(() => null);
+            this.logger.log('✅ All collections deleted');
+
+            // Step 2: Create collections
+            this.logger.log('📋 Step 2: Creating collections...');
+            await this.initializeCollections();
+            this.logger.log('✅ All collections created');
+
+            // Step 3: Index all data
+            this.logger.log('📋 Step 3: Indexing all data...');
+            const results = await this.indexAll();
+            this.logger.log('✅ All data indexed');
+
+            this.logger.log('🎉 Full reindexing completed successfully');
+            return results;
+        } catch (error) {
+            this.logger.error('Error during reindexing:', error);
+            throw error;
+        }
+    }
 }
