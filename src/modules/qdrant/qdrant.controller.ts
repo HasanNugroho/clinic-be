@@ -75,4 +75,37 @@ export class QdrantController {
             },
         };
     }
+
+    @Roles(UserRole.ADMIN)
+    @Post('reindex-all')
+    @ApiOperation({
+        summary: 'Reindex all collections (delete and recreate)',
+        description:
+            'Perform a complete reindexing operation: ' +
+            '1. Delete all existing Qdrant collections ' +
+            '2. Create fresh collections ' +
+            '3. Index all records from MongoDB to Qdrant ' +
+            'This operation clears all vector data and rebuilds from scratch. ' +
+            'Only accessible by admin users.',
+    })
+    @ApiHttpResponse(200, 'All collections reindexed successfully')
+    async reindexAll(): Promise<any> {
+        this.logger.log('Starting full reindexing of all collections');
+
+        const results = await this.qdrantIndexingService.reindexAll();
+
+        return {
+            success: true,
+            statusCode: 200,
+            message: 'All collections reindexed successfully',
+            data: {
+                dashboards: results.dashboards,
+                registrations: results.registrations,
+                examinations: results.examinations,
+                schedules: results.schedules,
+                total: results.dashboards + results.registrations + results.examinations + results.schedules,
+                timestamp: new Date().toISOString(),
+            },
+        };
+    }
 }
