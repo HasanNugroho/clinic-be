@@ -14,16 +14,19 @@ import { CheckinRegistrationDto } from './dto/checkin-registration.dto';
 import { UsersService } from '../users/users.service';
 import { DoctorSchedulesService } from '../doctorSchedules/doctor-schedules.service';
 import { UserRole } from '../users/schemas/user.schema';
-import { EmbeddingService } from '../../common/services/embedding/embedding.service';
+import { QdrantIndexingService } from '../qdrant/qdrant-indexing.service';
+import { DoctorSchedule } from '../doctorSchedules/schemas/doctor-schedule.schema';
 
 @Injectable()
 export class RegistrationsService {
   constructor(
     @InjectModel(Registration.name)
     private registrationModel: Model<Registration>,
+    @InjectModel(DoctorSchedule.name)
+    private scheduleModel: Model<DoctorSchedule>,
     private usersService: UsersService,
     private doctorSchedulesService: DoctorSchedulesService,
-    private embeddingService: EmbeddingService,
+    private qdrantIndexingService: QdrantIndexingService,
   ) { }
 
   async create(createRegistrationDto: CreateRegistrationDto, user?: any): Promise<Registration> {
@@ -380,55 +383,6 @@ export class RegistrationsService {
   }
 
   /**
-   * Build embedding text for a registration
-   * Combines registration metadata for RAG indexing
-   * @param registration - Registration document with populated references
-   * @returns Embedding text string
-   */
-  buildEmbeddingText(registration: any): string {
-    const fields: Record<string, any> = {};
-
-    // Add registration metadata
-    if (registration.registrationDate) {
-      fields['registration_date'] = registration.registrationDate.toISOString().split('T')[0];
-    }
-    if (registration.registrationMethod) {
-      fields['registration_method'] = registration.registrationMethod;
-    }
-    if (registration.status) {
-      fields['status'] = registration.status;
-    }
-    if (registration.queueNumber) {
-      fields['queue_number'] = registration.queueNumber;
-    }
-
-    // Add doctor information (if populated)
-    if (registration.doctorId && typeof registration.doctorId === 'object') {
-      if (registration.doctorId.fullName) {
-        fields['doctor_name'] = registration.doctorId.fullName;
-      }
-      if (registration.doctorId.specialization) {
-        fields['doctor_specialization'] = registration.doctorId.specialization;
-      }
-    }
-
-    // Add schedule information (if populated)
-    if (registration.scheduleId && typeof registration.scheduleId === 'object') {
-      if (registration.scheduleId.dayOfWeek) {
-        fields['schedule_day'] = registration.scheduleId.dayOfWeek;
-      }
-      if (registration.scheduleId.startTime) {
-        fields['schedule_start'] = registration.scheduleId.startTime;
-      }
-      if (registration.scheduleId.endTime) {
-        fields['schedule_end'] = registration.scheduleId.endTime;
-      }
-    }
-
-    return this.embeddingService.buildEmbeddingText(fields);
-  }
-
-  /**
    * Generate and save embedding for a registration
    * @param registrationId - ID of registration to embed
    */
@@ -444,16 +398,10 @@ export class RegistrationsService {
         throw new NotFoundException(`Registration with ID ${registrationId} not found`);
       }
 
-      const embeddingText = this.buildEmbeddingText(registration);
-      const embedding = await this.embeddingService.generateEmbedding(embeddingText);
-
-      await this.registrationModel
-        .findByIdAndUpdate(registrationId, {
-          embedding,
-          embeddingText,
-          embeddingUpdatedAt: new Date(),
-        })
-        .exec();
+      // Index to Qdrant asynchronously (non-blocking)
+      this.qdrantIndexingService.indexRegistration(registration).catch((error) => {
+        console.error(`Failed to index registration ${registrationId} to Qdrant:`, error);
+      });
     } catch (error) {
       throw new Error(
         `Failed to generate embedding for registration ${registrationId}: ${error.message}`,
@@ -477,7 +425,17 @@ export class RegistrationsService {
   }
 
   /**
+   * Helper method to convert date to day of week name in Indonesian
+   * Used to match with doctor schedule day of week
+   */
+  private getDayOfWeek(date: Date): string {
+    const daysInIndonesian = ['minggu', 'senin', 'selasa', 'rabu', 'kamis', 'jumat', 'sabtu'];
+    return daysInIndonesian[date.getDay()];
+  }
+
+  /**
    * Bulk import registrations from JSON data
+   * Automatically finds and links scheduleId based on doctor and registration date
    */
   async bulkImport(registrations: any[]): Promise<{ success: number; failed: number; errors: any[] }> {
     let success = 0;
@@ -502,11 +460,34 @@ export class RegistrationsService {
           continue;
         }
 
-        // Create registration
+        // Get registration date and determine day of week
+        const registrationDate = new Date(regData.registrationDate);
+        const dayOfWeek = this.getDayOfWeek(registrationDate);
+        const doctorOid = new Types.ObjectId(doctor._id);
+
+        // Find schedule for this doctor on this day of week
+        const schedule = await this.scheduleModel.findOne({
+          doctorId: doctorOid,
+          dayOfWeek: dayOfWeek
+        });
+
+        if (!schedule) {
+          failed++;
+          errors.push({
+            patientEmail: regData.patientEmail,
+            doctorEmail: regData.doctorEmail,
+            registrationDate: regData.registrationDate,
+            error: `No schedule found for doctor on ${dayOfWeek}`
+          });
+          continue;
+        }
+
+        // Create registration with scheduleId
         const created = await this.registrationModel.create({
-          patientId: patient._id,
-          doctorId: doctor._id,
-          registrationDate: new Date(regData.registrationDate),
+          patientId: new Types.ObjectId(patient._id),
+          doctorId: new Types.ObjectId(doctor._id),
+          scheduleId: schedule._id,
+          registrationDate: new Date(registrationDate.toISOString().split('T')[0]),
           registrationMethod: regData.registrationMethod,
           queueNumber: regData.queueNumber,
           status: 'waiting', // Default status

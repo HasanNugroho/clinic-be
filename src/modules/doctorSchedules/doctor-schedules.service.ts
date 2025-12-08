@@ -7,7 +7,7 @@ import { CreateDoctorScheduleDto } from './dto/create-doctor-schedule.dto';
 import { UpdateDoctorScheduleDto } from './dto/update-doctor-schedule.dto';
 import { QueryDoctorScheduleDto } from './dto/query-doctor-schedule.dto';
 import { UserRole } from '../users/schemas/user.schema';
-import { EmbeddingService } from '../../common/services/embedding/embedding.service';
+import { QdrantIndexingService } from '../qdrant/qdrant-indexing.service';
 
 @Injectable()
 export class DoctorSchedulesService {
@@ -15,7 +15,7 @@ export class DoctorSchedulesService {
     @InjectModel(DoctorSchedule.name)
     private doctorScheduleModel: Model<DoctorSchedule>,
     private usersService: UsersService,
-    private embeddingService: EmbeddingService,
+    private qdrantIndexingService: QdrantIndexingService,
   ) { }
 
   /* -------------------------------------------
@@ -222,24 +222,6 @@ export class DoctorSchedulesService {
     await this.doctorScheduleModel.findByIdAndDelete(id).exec();
   }
 
-  /* -------------------------------------------
-     EMBEDDING BUILDER
-  ------------------------------------------- */
-  buildEmbeddingText(schedule: any): string {
-    const fields: any = {
-      'hari praktik': schedule.dayOfWeek,
-      'jam mulai': schedule.startTime,
-      'jam berakhir': schedule.endTime,
-      kuota: schedule.quota,
-    };
-
-    if (schedule.doctorId?.fullName) fields['nama dokter'] = schedule.doctorId.fullName;
-    if (schedule.doctorId?.specialization)
-      fields['dokter spesialis'] = schedule.doctorId.specialization;
-
-    return this.embeddingService.buildEmbeddingText(fields);
-  }
-
   async generateAndSaveEmbedding(scheduleId: string): Promise<void> {
     const schedule = await this.doctorScheduleModel
       .findById(scheduleId)
@@ -248,13 +230,9 @@ export class DoctorSchedulesService {
 
     if (!schedule) return;
 
-    const embeddingText = this.buildEmbeddingText(schedule);
-    const embedding = await this.embeddingService.generateEmbedding(embeddingText);
-
-    await this.doctorScheduleModel.findByIdAndUpdate(scheduleId, {
-      embedding,
-      embeddingText,
-      embeddingUpdatedAt: new Date(),
+    // Index to Qdrant asynchronously (non-blocking)
+    this.qdrantIndexingService.indexSchedule(schedule).catch((error) => {
+      console.error(`Failed to index schedule ${scheduleId} to Qdrant:`, error);
     });
   }
 
@@ -285,7 +263,7 @@ export class DoctorSchedulesService {
 
         // Create schedule
         const created = await this.doctorScheduleModel.create({
-          doctorId: doctor._id,
+          doctorId: new Types.ObjectId(doctor._id),
           dayOfWeek: scheduleData.dayOfWeek,
           startTime: scheduleData.startTime,
           endTime: scheduleData.endTime,

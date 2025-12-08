@@ -11,3 +11,9 @@ services:
     env_file:
       # update to be .env.production for production mode
       - .env
+    networks:
+      - shared-net
+
+networks:
+  shared-net:
+    external: true

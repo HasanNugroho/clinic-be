@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { DashboardService } from '../services/dashboard.service';
+import { DashboardService } from '../dashboard.service';
 
 @Injectable()
 export class DashboardCutoffJob {

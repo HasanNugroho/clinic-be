@@ -2,18 +2,18 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ScheduleModule } from '@nestjs/schedule';
 import { Dashboard, DashboardSchema } from './schemas/dashboard.schema';
-import { DashboardService } from './services/dashboard.service';
-import { DashboardController } from './controllers/dashboard.controller';
+import { DashboardService } from './dashboard.service';
+import { DashboardController } from './dashboard.controller';
 import { DashboardCutoffJob } from './jobs/dashboard-cutoff.job';
 import { Registration, RegistrationSchema } from '../registrations/schemas/registration.schema';
+import { QdrantModule } from '../qdrant/qdrant.module';
+import { DatabaseModule } from 'src/common/services/database.module';
 
 @Module({
     imports: [
-        MongooseModule.forFeature([
-            { name: Dashboard.name, schema: DashboardSchema },
-            { name: Registration.name, schema: RegistrationSchema },
-        ]),
+        DatabaseModule,
         ScheduleModule.forRoot(),
+        QdrantModule,
     ],
     controllers: [DashboardController],
     providers: [DashboardService, DashboardCutoffJob],
