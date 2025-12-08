@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose';
 import { Registration } from '../registrations/schemas/registration.schema';
 import { Examination } from '../examinations/schemas/examination.schema';
 import { DayOfWeek, DoctorSchedule } from '../doctorSchedules/schemas/doctor-schedule.schema';
+import { Dashboard } from '../dashboard/schemas/dashboard.schema';
 import { EmbeddingService } from '../../common/services/embedding/embedding.service';
 import { RedisService } from '../../common/services/redis/redis.service';
 import { User, UserRole } from '../users/schemas/user.schema';
@@ -28,6 +29,8 @@ export class RagService {
     private doctorScheduleModel: Model<DoctorSchedule>,
     @InjectModel(User.name)
     private userModel: Model<User>,
+    @InjectModel(Dashboard.name)
+    private dashboardModel: Model<Dashboard>,
     private embeddingService: EmbeddingService,
     private redisService: RedisService,
   ) {
@@ -228,7 +231,7 @@ export class RagService {
     userContext: UserContext,
   ): Promise<RetrievalResult[]> {
     const results: RetrievalResult[] = [];
-    const collections = ['doctorschedules', 'examinations', 'registrations'];
+    const collections = ['doctorschedules', 'examinations', 'registrations', 'dashboards'];
 
     // Generate embedding for the query
     const queryEmbedding = await this.embeddingService.generateEmbedding(query);
@@ -313,13 +316,17 @@ export class RagService {
 
       const results = await model.aggregate(pipeline);
 
-      return results.map((doc) => ({
-        collection,
-        documentId: doc._id.toString(),
-        snippet: this.buildSnippet(userContext.role, collection, results),
-        score: doc.score,
-        metadata: doc,
-      }));
+      return results.map((doc) => {
+        // Convert all ObjectIds to strings in metadata
+        const convertedDoc = this.convertObjectIdsToStrings(doc);
+        return {
+          collection,
+          documentId: doc._id.toString(),
+          snippet: this.buildSnippet(userContext.role, collection, [convertedDoc]),
+          score: doc.score,
+          metadata: convertedDoc,
+        };
+      });
     } catch (error) {
       this.logger.error('Vector search failed', {
         error: error.message,
@@ -336,6 +343,7 @@ export class RagService {
       doctorschedules: this.doctorScheduleModel,
       examinations: this.examinationModel,
       registrations: this.registrationModel,
+      dashboards: this.dashboardModel,
     };
     return models[collection] || null;
   }
@@ -372,6 +380,18 @@ export class RagService {
         'doctor.specialization': 1,
         'patient.fullName': 1,
       },
+      dashboards: {
+        date: 1,
+        totalPatients: 1,
+        totalRegistrations: 1,
+        totalCompleted: 1,
+        totalWaiting: 1,
+        totalExamining: 1,
+        totalCancelled: 1,
+        registrationMethod: 1,
+        doctorStats: 1,
+        embeddingText: 1,
+      },
     };
 
     /** LIST FIELD YANG HARUS DI-HIDE PER ROLE */
@@ -380,18 +400,21 @@ export class RagService {
         examinations: ['doctorId'],
         registrations: ['doctorId'],
         doctorschedules: [],
+        dashboards: [],
       },
 
       doctor: {
         examinations: ['patientId', "'patient.fullName'"],
         registrations: ['patientId', "'patient.fullName'"],
         doctorschedules: [],
+        dashboards: [],
       },
 
       admin: {
         examinations: ['diagnosisSummary', 'doctorNotes', 'patientId', "'patient.fullName'"],
         registrations: ['patientId', "'patient.fullName'"],
         doctorschedules: [],
+        dashboards: [],
       },
     };
 
@@ -555,12 +578,12 @@ ${previousTopic
         return data
           .map(
             (d) => `
-Doctor Schedule:
-- Doctor: ${d.doctor.fullName}
-- Specialization: ${d.doctor.specialization ?? 'N/A'}
-- Day: ${d.dayOfWeek}
-- Time: ${d.startTime} - ${d.endTime}
-- Quota: ${d.quota}
+Jadwal Dokter:
+- Dokter: ${d.doctor.fullName}
+- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
+- Hari: ${d.dayOfWeek}
+- Waktu: ${d.startTime} - ${d.endTime}
+- Kuota: ${d.quota}
 `,
           )
           .join('\n');
@@ -569,13 +592,13 @@ Doctor Schedule:
         return data
           .map(
             (d) => `
-Your Examination Summary:
-- Date: ${d.examinationDate}
+Ringkasan Pemeriksaan Anda:
+- Tanggal: ${d.examinationDate}
 - Status: ${d.status}
-- Diagnosis Summary: ${d.diagnosisSummary}
-- Doctor Notes: ${d.doctorNotes}
+- Ringkasan Diagnosis: ${d.diagnosisSummary}
+- Catatan Dokter: ${d.doctorNotes}
 
-This information is educational and not a substitute for direct consultation with a doctor.
+Informasi ini bersifat edukatif dan bukan pengganti konsultasi langsung dengan dokter.
 `,
           )
           .join('\n');
@@ -584,13 +607,27 @@ This information is educational and not a substitute for direct consultation wit
         return data
           .map(
             (d) => `
-Registration:
-- Registration Date: ${d.registrationDate}
-- Method: ${d.registrationMethod}
+Pendaftaran:
+- Tanggal Pendaftaran: ${d.registrationDate}
+- Metode: ${d.registrationMethod}
 - Status: ${d.status}
-- Queue Number: ${d.queueNumber}
-- Doctor: ${d.doctor.fullName}
-- Specialization: ${d.doctor.specialization ?? 'N/A'}
+- Nomor Antrian: ${d.queueNumber}
+- Dokter: ${d.doctor.fullName}
+- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
+`,
+          )
+          .join('\n');
+
+      case 'dashboards':
+        return data
+          .map(
+            (d) => `
+Metrik Dashboard Klinik:
+- Tanggal: ${d.date}
+- Total Pasien: ${d.totalPatients}
+- Total Pendaftaran: ${d.totalRegistrations}
+- Selesai: ${d.totalCompleted}, Menunggu: ${d.totalWaiting}, Sedang Diperiksa: ${d.totalExamining}, Dibatalkan: ${d.totalCancelled}
+- Pendaftaran Online: ${d.registrationMethod?.online ?? 0}, Offline: ${d.registrationMethod?.offline ?? 0}
 `,
           )
           .join('\n');
@@ -606,14 +643,14 @@ Registration:
         return data
           .map(
             (d) => `
-Examination Data (Anonymized):
-- Date: ${d.examinationDate}
+Data Pemeriksaan (Anonim):
+- Tanggal: ${d.examinationDate}
 - Status: ${d.status}
-- Diagnosis Summary: ${d.diagnosisSummary}
-- Doctor Notes: ${d.doctorNotes}
-- Attending Doctor: ${d.doctor.fullName}
+- Ringkasan Diagnosis: ${d.diagnosisSummary}
+- Catatan Dokter: ${d.doctorNotes}
+- Dokter Pemeriksa: ${d.doctor.fullName}
 
-Note: Patient identity has been anonymized according to privacy policy.
+Catatan: Identitas pasien telah dianonimkan sesuai kebijakan privasi.
 `,
           )
           .join('\n');
@@ -622,11 +659,11 @@ Note: Patient identity has been anonymized according to privacy policy.
         return data
           .map(
             (d) => `
-Registration (Anonymized):
-- Date: ${d.registrationDate}
+Pendaftaran (Anonim):
+- Tanggal: ${d.registrationDate}
 - Status: ${d.status}
-- Queue Number: ${d.queueNumber}
-- Doctor: ${d.doctor.fullName}
+- Nomor Antrian: ${d.queueNumber}
+- Dokter: ${d.doctor.fullName}
 `,
           )
           .join('\n');
@@ -635,12 +672,26 @@ Registration (Anonymized):
         return data
           .map(
             (d) => `
-Doctor Schedule:
-- Doctor Name: ${d.doctor.fullName}
-- Specialization: ${d.doctor.specialization ?? 'N/A'}
-- Day: ${d.dayOfWeek}
-- Time: ${d.startTime} - ${d.endTime}
-- Quota: ${d.quota}
+Jadwal Dokter:
+- Nama Dokter: ${d.doctor.fullName}
+- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
+- Hari: ${d.dayOfWeek}
+- Waktu: ${d.startTime} - ${d.endTime}
+- Kuota: ${d.quota}
+`,
+          )
+          .join('\n');
+
+      case 'dashboards':
+        return data
+          .map(
+            (d) => `
+Metrik Dashboard Klinik:
+- Tanggal: ${d.date}
+- Total Pasien: ${d.totalPatients}
+- Total Pendaftaran: ${d.totalRegistrations}
+- Selesai: ${d.totalCompleted}, Menunggu: ${d.totalWaiting}, Sedang Diperiksa: ${d.totalExamining}, Dibatalkan: ${d.totalCancelled}
+- Pendaftaran Online: ${d.registrationMethod?.online ?? 0}, Offline: ${d.registrationMethod?.offline ?? 0}
 `,
           )
           .join('\n');
@@ -656,11 +707,11 @@ Doctor Schedule:
         return data
           .map(
             (d) => `
-Examination Data (Non-Medical):
-- Date: ${d.examinationDate}
+Data Pemeriksaan (Non-Medis):
+- Tanggal: ${d.examinationDate}
 - Status: ${d.status}
 
-Note: Diagnosis and doctor notes are hidden according to policy.
+Catatan: Diagnosis dan catatan dokter disembunyikan sesuai kebijakan.
 `,
           )
           .join('\n');
@@ -669,13 +720,13 @@ Note: Diagnosis and doctor notes are hidden according to policy.
         return data
           .map(
             (d) => `
-Registration:
-- Date: ${d.registrationDate}
-- Method: ${d.registrationMethod}
+Pendaftaran:
+- Tanggal: ${d.registrationDate}
+- Metode: ${d.registrationMethod}
 - Status: ${d.status}
-- Queue Number: ${d.queueNumber}
-- Doctor: ${d.doctor.fullName}
-- Specialization: ${d.doctor.specialization ?? 'N/A'}
+- Nomor Antrian: ${d.queueNumber}
+- Dokter: ${d.doctor.fullName}
+- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
 `,
           )
           .join('\n');
@@ -684,12 +735,26 @@ Registration:
         return data
           .map(
             (d) => `
-Doctor Schedule:
-- Doctor: ${d.doctor.fullName}
-- Specialization: ${d.doctor.specialization ?? 'N/A'}
-- Day: ${d.dayOfWeek}
-- Time: ${d.startTime} - ${d.endTime}
-- Quota: ${d.quota}
+Jadwal Dokter:
+- Dokter: ${d.doctor.fullName}
+- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
+- Hari: ${d.dayOfWeek}
+- Waktu: ${d.startTime} - ${d.endTime}
+- Kuota: ${d.quota}
+`,
+          )
+          .join('\n');
+
+      case 'dashboards':
+        return data
+          .map(
+            (d) => `
+Metrik Dashboard Klinik:
+- Tanggal: ${d.date}
+- Total Pasien: ${d.totalPatients}
+- Total Pendaftaran: ${d.totalRegistrations}
+- Selesai: ${d.totalCompleted}, Menunggu: ${d.totalWaiting}, Sedang Diperiksa: ${d.totalExamining}, Dibatalkan: ${d.totalCancelled}
+- Pendaftaran Online: ${d.registrationMethod?.online ?? 0}, Offline: ${d.registrationMethod?.offline ?? 0}
 `,
           )
           .join('\n');
@@ -756,5 +821,35 @@ Doctor Schedule:
     // Collapse extra spaces created by removals
     out = out.replace(/\s{2,}/g, ' ').replace(/\s+\./g, '.');
     return out;
+  }
+
+  /**
+   * Convert all ObjectIds to strings recursively
+   */
+  private convertObjectIdsToStrings(obj: any): any {
+    if (obj === null || obj === undefined) return obj;
+
+    // Handle ObjectId
+    if (obj._bsontype === 'ObjectId' || (obj.toString && typeof obj.toString === 'function' && obj.constructor.name === 'ObjectId')) {
+      return obj.toString();
+    }
+
+    // Handle arrays
+    if (Array.isArray(obj)) {
+      return obj.map((item) => this.convertObjectIdsToStrings(item));
+    }
+
+    // Handle objects
+    if (typeof obj === 'object') {
+      const converted: any = {};
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          converted[key] = this.convertObjectIdsToStrings(obj[key]);
+        }
+      }
+      return converted;
+    }
+
+    return obj;
   }
 }

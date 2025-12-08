@@ -8,7 +8,7 @@ import { QueryExaminationDto } from './dto/query-examination.dto';
 import { UsersService } from '../users/users.service';
 import { RegistrationsService } from '../registrations/registrations.service';
 import { UserRole } from '../users/schemas/user.schema';
-import { EmbeddingService } from '../../common/services/embedding/embedding.service';
+import { QdrantIndexingService } from '../qdrant/qdrant-indexing.service';
 
 @Injectable()
 export class ExaminationsService {
@@ -17,7 +17,7 @@ export class ExaminationsService {
     private examinationModel: Model<Examination>,
     private usersService: UsersService,
     private registrationsService: RegistrationsService,
-    private embeddingService: EmbeddingService,
+    private qdrantIndexingService: QdrantIndexingService,
   ) { }
 
   async create(createExaminationDto: CreateExaminationDto): Promise<Examination> {
@@ -346,44 +346,6 @@ export class ExaminationsService {
   }
 
   /**
-   * Build embedding text for an examination
-   * Combines diagnosis and doctor notes for RAG indexing
-   * @param examination - Examination document with populated references
-   * @returns Embedding text string
-   */
-  buildEmbeddingText(examination: any): string {
-    const fields: Record<string, any> = {};
-
-    // Add examination metadata
-    if (examination.examinationDate) {
-      fields['examination_date'] = examination.examinationDate.toISOString().split('T')[0];
-    }
-    if (examination.status) {
-      fields['status'] = examination.status;
-    }
-
-    // Add diagnosis and notes (core medical data)
-    if (examination.diagnosisSummary) {
-      fields['diagnosis_summary'] = examination.diagnosisSummary;
-    }
-    if (examination.doctorNotes) {
-      fields['doctor_notes'] = examination.doctorNotes;
-    }
-
-    // Add doctor information (if populated)
-    if (examination.doctorId && typeof examination.doctorId === 'object') {
-      if (examination.doctorId.fullName) {
-        fields['doctor_name'] = examination.doctorId.fullName;
-      }
-      if (examination.doctorId.specialization) {
-        fields['doctor_specialization'] = examination.doctorId.specialization;
-      }
-    }
-
-    return this.embeddingService.buildEmbeddingText(fields);
-  }
-
-  /**
    * Generate and save embedding for an examination
    * @param examinationId - ID of examination to embed
    */
@@ -399,20 +361,10 @@ export class ExaminationsService {
         throw new NotFoundException(`Examination with ID ${examinationId} not found`);
       }
 
-      const embeddingText = this.buildEmbeddingText(examination);
-      const embedding = await this.embeddingService.generateEmbedding(embeddingText);
-
-      await this.examinationModel
-        .findByIdAndUpdate(
-          examinationId,
-          {
-            embedding,
-            embeddingText,
-            embeddingUpdatedAt: new Date(),
-          },
-          { new: true },
-        )
-        .exec();
+      // Index to Qdrant asynchronously (non-blocking)
+      this.qdrantIndexingService.indexExamination(examination).catch((error) => {
+        console.error(`Failed to index examination ${examinationId} to Qdrant:`, error);
+      });
     } catch (error) {
       throw new Error(
         `Failed to generate embedding for examination ${examinationId}: ${error.message}`,
@@ -436,6 +388,8 @@ export class ExaminationsService {
 
   /**
    * Bulk import examinations from JSON data
+   * Validates and links registrationId based on patient, doctor, and date
+   * Ensures examination time is not greater than queue time
    */
   async bulkImport(examinations: any[]): Promise<{ success: number; failed: number; errors: any[] }> {
     let success = 0;
@@ -460,11 +414,58 @@ export class ExaminationsService {
           continue;
         }
 
-        // Create examination
+        // Get examination date
+        const examinationDate = new Date(examData.examinationDate);
+        const examinationDateOnly = new Date(examinationDate);
+        examinationDateOnly.setHours(0, 0, 0, 0);
+
+        // Find registration by patient, doctor, and date
+        const registration = await this.examinationModel.db.collection('registrations').findOne({
+          patientId: new Types.ObjectId(patient._id),
+          doctorId: new Types.ObjectId(doctor._id),
+          registrationDate: {
+            $gte: examinationDateOnly,
+            $lt: new Date(examinationDateOnly.getTime() + 24 * 60 * 60 * 1000)
+          }
+        });
+
+        if (!registration) {
+          failed++;
+          errors.push({
+            patientEmail: examData.patientEmail,
+            doctorEmail: examData.doctorEmail,
+            examinationDate: examData.examinationDate,
+            error: 'No matching registration found for this patient-doctor-date combination'
+          });
+          continue;
+        }
+
+        // Find queue for this registration to validate examination time
+        const queue = await this.examinationModel.db.collection('queues').findOne({
+          registrationId: registration._id
+        });
+
+        // Validate examination time is not greater than queue time (if queue exists)
+        if (queue) {
+          // Queue date should be same or after registration date
+          const queueDate = new Date(queue.queueDate);
+          if (examinationDate < queueDate) {
+            failed++;
+            errors.push({
+              patientEmail: examData.patientEmail,
+              doctorEmail: examData.doctorEmail,
+              error: 'Examination time cannot be earlier than queue date'
+            });
+            continue;
+          }
+        }
+
+        // Create examination with registrationId
         const created = await this.examinationModel.create({
-          patientId: patient._id,
-          doctorId: doctor._id,
-          examinationDate: new Date(examData.examinationDate),
+          patientId: new Types.ObjectId(patient._id),
+          doctorId: new Types.ObjectId(doctor._id),
+          registrationId: new Types.ObjectId(registration._id),
+          examinationDate,
           diagnosisSummary: examData.diagnosisSummary,
           doctorNotes: examData.doctorNotes,
           status: examData.status,

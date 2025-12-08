@@ -4,10 +4,10 @@ import { ExaminationsController } from './examinations.controller';
 import { UsersModule } from '../users/users.module';
 import { RegistrationsModule } from '../registrations/registrations.module';
 import { DatabaseModule } from 'src/common/services/database.module';
-import { EmbeddingModule } from 'src/common/services/embedding/embedding.modul';
+import { QdrantModule } from '../qdrant/qdrant.module';
 
 @Module({
-  imports: [DatabaseModule, UsersModule, RegistrationsModule, EmbeddingModule,],
+  imports: [DatabaseModule, UsersModule, RegistrationsModule, QdrantModule,],
   controllers: [ExaminationsController],
   providers: [ExaminationsService],
   exports: [ExaminationsService],

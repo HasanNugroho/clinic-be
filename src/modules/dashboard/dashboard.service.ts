@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Dashboard, DoctorStat, RegistrationMethodBreakdown } from '../schemas/dashboard.schema';
-import { Registration, RegistrationStatus, RegistrationMethod } from '../../registrations/schemas/registration.schema';
+import { Dashboard, DoctorStat, RegistrationMethodBreakdown } from './schemas/dashboard.schema';
+import { Registration, RegistrationStatus, RegistrationMethod } from './../registrations/schemas/registration.schema';
+import { QdrantIndexingService } from '../qdrant/qdrant-indexing.service';
 
 @Injectable()
 export class DashboardService {
@@ -11,6 +12,7 @@ export class DashboardService {
     constructor(
         @InjectModel(Dashboard.name) private dashboardModel: Model<Dashboard>,
         @InjectModel(Registration.name) private registrationModel: Model<Registration>,
+        private qdrantIndexingService: QdrantIndexingService,
     ) { }
 
     /**
@@ -151,13 +153,93 @@ export class DashboardService {
     }
 
     /**
+     * Generate and save embedding for a single dashboard
+     */
+    async generateAndSaveEmbedding(dashboardId: string): Promise<void> {
+        try {
+            const dashboard = await this.dashboardModel.findById(dashboardId);
+            if (!dashboard) {
+                this.logger.warn(`Dashboard not found: ${dashboardId}`);
+                return;
+            }
+
+            // Index to Qdrant asynchronously (non-blocking)
+            this.qdrantIndexingService.indexDashboard(dashboard).catch((error) => {
+                this.logger.error(`Failed to index dashboard ${dashboardId} to Qdrant:`, error);
+            });
+        } catch (error) {
+            this.logger.error(`❌ Error generating embedding for dashboard ${dashboardId}:`, error);
+        }
+    }
+
+    /**
+     * Generate embeddings for multiple dashboards in batch
+     */
+    async generateBatchEmbeddings(dashboardIds: string[]): Promise<void> {
+        this.logger.log(`🔄 Generating embeddings for ${dashboardIds.length} dashboards...`);
+
+        for (let i = 0; i < dashboardIds.length; i++) {
+            try {
+                await this.generateAndSaveEmbedding(dashboardIds[i]);
+                const progress = Math.round(((i + 1) / dashboardIds.length) * 100);
+                this.logger.log(`   Progress: ${progress}% (${i + 1}/${dashboardIds.length})`);
+            } catch (error) {
+                this.logger.error(`Error processing dashboard ${dashboardIds[i]}:`, error);
+                // Continue with next dashboard
+            }
+        }
+
+        this.logger.log(`✅ Batch embedding generation completed`);
+    }
+
+    /**
+     * Generate embeddings for all dashboards
+     */
+    async generateAllDashboardEmbeddings(): Promise<number> {
+        try {
+            this.logger.log(`🔄 Generating embeddings for all dashboards...`);
+
+            // Get all dashboards
+            const dashboards = await this.dashboardModel.find();
+            this.logger.log(`📊 Found ${dashboards.length} dashboards to process`);
+
+            let successCount = 0;
+            for (let i = 0; i < dashboards.length; i++) {
+                try {
+                    await this.generateAndSaveEmbedding(dashboards[i]._id.toString());
+                    successCount++;
+                    const progress = Math.round(((i + 1) / dashboards.length) * 100);
+                    this.logger.log(`   Progress: ${progress}% (${i + 1}/${dashboards.length})`);
+                } catch (error) {
+                    this.logger.error(`Error processing dashboard ${dashboards[i]._id}:`, error);
+                    // Continue with next dashboard
+                }
+            }
+
+            this.logger.log(`✅ Embedding generation completed for all dashboards`);
+            this.logger.log(`   Total: ${dashboards.length}, Success: ${successCount}, Failed: ${dashboards.length - successCount}`);
+
+            return successCount;
+        } catch (error) {
+            this.logger.error('Error generating embeddings for all dashboards:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Cron job: Run daily at 11:45 PM to calculate dashboard metrics for the current day
      */
     async dailyCutoffJob(): Promise<void> {
         try {
             const todayStr = this.getTodayDateString();
             this.logger.log(`Running daily cutoff job for date: ${todayStr}`);
-            await this.calculateDashboardMetrics(todayStr);
+            const dashboard = await this.calculateDashboardMetrics(todayStr);
+
+            // Generate embedding asynchronously (non-blocking)
+            this.generateAndSaveEmbedding(dashboard._id as string).catch((error) => {
+                this.logger.error(`Error generating embedding in daily cutoff job:`, error);
+            });
+
             this.logger.log(`Daily cutoff job completed successfully`);
         } catch (error) {
             this.logger.error('Error in daily cutoff job:', error);

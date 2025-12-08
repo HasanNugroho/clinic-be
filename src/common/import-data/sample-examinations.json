@@ -1,116 +1,404 @@
 {
     "examinations": [
         {
-            "patientEmail": "john.smith@email.com",
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "examinationDate": "2025-08-04T10:00:00Z",
-            "diagnosisSummary": "Hypertension - Stage 1. Blood pressure: 140/90 mmHg.",
-            "doctorNotes": "Patient advised on lifestyle modifications including diet and exercise. Prescribed ACE inhibitor for blood pressure management. Follow-up in 4 weeks.",
+            "patientEmail": "andi.setiawan@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-04T09:15:00Z",
+            "diagnosisSummary": "Hipertensi Esensial Stadium 1",
+            "doctorNotes": "Diagnosis: Hipertensi Esensial Stadium 1 pada pasien. Pemeriksaan dilakukan pada tanggal 4/8/2025.\n\nTemuan Klinis:\n- Tekanan darah sistolik 140 mmHg\n- Tekanan darah diastolik 90 mmHg\n- Tidak ada kelainan pada pemeriksaan fisik lainnya\n\nRekomendasi:\n- Memulai pengobatan antihipertensi dengan dosis yang tepat\n- Menyarankan perubahan gaya hidup sehat, termasuk diet rendah garam dan olahraga teratur\n- Pantauan tekanan darah secara rutin dan jadwalkan kunjungan follow-up dalam 1 bulan.",
             "status": "completed"
         },
         {
-            "patientEmail": "maria.garcia@email.com",
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "examinationDate": "2025-08-04T11:00:00Z",
-            "diagnosisSummary": "Routine cardiac checkup. No abnormalities detected.",
-            "doctorNotes": "ECG normal. Heart rate: 72 bpm. Blood pressure: 118/76 mmHg. Continue current health regimen.",
+            "patientEmail": "maria.sari@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-04T10:30:00Z",
+            "diagnosisSummary": "Aritmia Jantung",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan aritmia jantung pada tanggal 4/8/2025. Temuan klinis menunjukkan denyut jantung tidak teratur. Rekomendasi untuk melakukan monitor jantung dan konsultasi dengan ahli jantung untuk penanganan lebih lanjut.",
             "status": "completed"
         },
         {
-            "patientEmail": "david.wong@email.com",
-            "doctorEmail": "michael.chen@clinic.com",
-            "examinationDate": "2025-08-05T10:30:00Z",
-            "diagnosisSummary": "Migraine headaches. Neurological examination normal.",
-            "doctorNotes": "Patient reports frequent migraines. Prescribed preventive medication. Recommended stress management techniques and regular sleep schedule.",
+            "patientEmail": "david.gunawan@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-05T09:30:00Z",
+            "diagnosisSummary": "Migren dengan Aura",
+            "doctorNotes": "Diagnosis: Migren dengan Aura\n\nPada pemeriksaan tanggal 5/8/2025, pasien didiagnosis mengalami migren dengan aura berdasarkan gejala yang hadir. Temuan klinis meliputi nyeri kepala yang berdenyut, disertai dengan gejala aura seperti gangguan penglihatan. Rekomendasi untuk pasien adalah menghindari pemicu migren, menjaga pola tidur yang teratur, dan mengonsumsi obat sesuai anjuran untuk mengurangi serangan migren.\n\nInstruksi pemulangan: Pasien diinstruksikan untuk mengikuti jadwal konsultasi berikutnya dan mematuhi rencana pengobatan yang telah diresepkan.",
             "status": "completed"
         },
         {
-            "patientEmail": "lisa.anderson@email.com",
-            "doctorEmail": "amanda.lee@clinic.com",
-            "examinationDate": "2025-08-07T11:30:00Z",
-            "diagnosisSummary": "Upper respiratory tract infection.",
-            "doctorNotes": "Mild fever and cough. Prescribed antibiotics and cough syrup. Rest recommended for 3-5 days.",
+            "patientEmail": "lisa.andini@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-04T10:45:00Z",
+            "diagnosisSummary": "Infeksi Saluran Pernapasan Atas dengan Demam",
+            "doctorNotes": "Pasien didiagnosis dengan Infeksi Saluran Pernapasan Atas dengan Demam pada tanggal 4/8/2025. Ditemukan gejala batuk, pilek, dan demam. Rekomendasi untuk istirahat yang cukup, minum banyak cairan, dan konsumsi obat pereda demam jika suhu tubuh tinggi.\n\nTindak lanjut:\n1. Istirahat yang cukup\n2. Minum banyak cairan\n3. Konsumsi obat pereda demam jika suhu tubuh tinggi.",
             "status": "completed"
         },
         {
-            "patientEmail": "robert.taylor@email.com",
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "examinationDate": "2025-08-11T09:45:00Z",
-            "diagnosisSummary": "Chest pain evaluation. Cardiac markers normal.",
-            "doctorNotes": "Stress test performed - results normal. Chest pain likely musculoskeletal. Prescribed pain relief medication.",
+            "patientEmail": "robert.tanujaya@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-06T10:00:00Z",
+            "diagnosisSummary": "Nyeri Dada Muskuloskeletal",
+            "doctorNotes": "- Pasien mengeluh nyeri dada muskuloskeletal dengan intensitas sedang. Pemeriksaan fisik menunjukkan adanya nyeri tekan pada otot-otot dada tanpa adanya gejala pernapasan yang terkait.\n- Disarankan untuk istirahat yang cukup, hindari aktivitas fisik yang berat, dan konsumsi obat antiinflamasi nonsteroid sesuai kebutuhan. Instruksi untuk menghubungi kembali jika nyeri dada memburuk atau terjadi gejala tambahan.",
             "status": "completed"
         },
         {
-            "patientEmail": "emma.wilson@email.com",
-            "doctorEmail": "michael.chen@clinic.com",
-            "examinationDate": "2025-08-12T11:00:00Z",
-            "diagnosisSummary": "Tension headache. No neurological deficits.",
-            "doctorNotes": "Patient experiencing work-related stress. Prescribed muscle relaxants. Recommended physical therapy and stress management.",
+            "patientEmail": "emma.wulandari@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-05T11:15:00Z",
+            "diagnosisSummary": "Sakit Kepala Tegang",
+            "doctorNotes": "Catatan Medis:\nPasien mengalami sakit kepala tegang pada pemeriksaan tanggal 5/8/2025. Ditemukan tekanan otot pada daerah leher dan kepala. Disarankan untuk istirahat yang cukup, menghindari stres, dan melakukan teknik relaksasi untuk mengurangi gejala. Instruksi pemulangan: konsumsi obat pereda nyeri sesuai dosis yang dianjurkan dan pantau perkembangan gejala.",
             "status": "completed"
         },
         {
-            "patientEmail": "john.smith@email.com",
-            "doctorEmail": "amanda.lee@clinic.com",
-            "examinationDate": "2025-09-02T09:30:00Z",
-            "diagnosisSummary": "Follow-up examination. Blood pressure improved.",
-            "doctorNotes": "Blood pressure: 128/82 mmHg. Patient responding well to treatment. Continue current medication.",
+            "patientEmail": "andi.setiawan@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-06T10:30:00Z",
+            "diagnosisSummary": "Rinitis Alergi",
+            "doctorNotes": "Catatan Medis:\nPasien menderita rinitis alergi berdasarkan hasil pemeriksaan pada tanggal 6/8/2025. Ditemukan gejala klinis berupa hidung tersumbat, bersin-bersin, dan gatal pada hidung. Rekomendasi untuk tindak lanjut adalah menjauhi pemicu alergi, menggunakan obat antihistamin, dan menghindari paparan alergen.",
             "status": "completed"
         },
         {
-            "patientEmail": "maria.garcia@email.com",
-            "doctorEmail": "michael.chen@clinic.com",
-            "examinationDate": "2025-09-15T11:45:00Z",
-            "diagnosisSummary": "Dizziness and balance issues. Vestibular function test ordered.",
-            "doctorNotes": "Patient reports occasional dizziness. Neurological exam normal. Awaiting vestibular test results.",
-            "status": "pending"
-        },
-        {
-            "patientEmail": "david.wong@email.com",
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "examinationDate": "2025-10-03T10:00:00Z",
-            "diagnosisSummary": "Annual cardiac screening. All parameters normal.",
-            "doctorNotes": "ECG, blood pressure, and cholesterol levels all within normal range. Continue healthy lifestyle.",
+            "patientEmail": "maria.sari@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-07T11:00:00Z",
+            "diagnosisSummary": "Vertigo Posisional Paroksismal Jinak",
+            "doctorNotes": "Diagnosis: Vertigo Posisional Paroksismal Jinak\nTanggal Pemeriksaan: 7/8/2025\nStatus: completed\n\nTemuan Klinis: Pasien mengalami gejala vertigo posisional paroksismal jinak berupa rasa pusing yang timbul dengan perubahan posisi kepala.\nObservasi: Tidak terdapat kelainan neurologis lainnya selain vertigo posisional paroksismal jinak.\n\nRekomendasi: Instruksi untuk melakukan manuver Epley untuk mengatasi vertigo posisional paroksismal jinak. Berikan informasi kepada pasien tentang cara melakukan manuver tersebut dan jadwal tindak lanjut selama 1 minggu ke depan.",
             "status": "completed"
         },
         {
-            "patientEmail": "lisa.anderson@email.com",
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "examinationDate": "2025-10-20T10:30:00Z",
-            "diagnosisSummary": "Allergic rhinitis. Seasonal allergies.",
-            "doctorNotes": "Prescribed antihistamines and nasal spray. Advised to avoid known allergens.",
+            "patientEmail": "david.gunawan@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-08T11:15:00Z",
+            "diagnosisSummary": "Hipertensi Esensial Stadium 1",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan Hipertensi Esensial Stadium 1 pada tanggal 8/8/2025. Tekanan darah sistolik sebesar 140 mmHg dan tekanan darah diastolik sebesar 90 mmHg. Pasien dianjurkan untuk mengikuti diet rendah garam, olahraga teratur, dan rutin memeriksakan tekanan darah. Disarankan juga untuk menghindari stres dan merokok serta meminum obat sesuai petunjuk dokter. Pasien diinstruksikan untuk kembali ke klinik dalam 1 bulan untuk evaluasi lebih lanjut.",
             "status": "completed"
         },
         {
-            "patientEmail": "robert.taylor@email.com",
-            "doctorEmail": "amanda.lee@clinic.com",
-            "examinationDate": "2025-11-05T10:15:00Z",
-            "diagnosisSummary": "Gastroenteritis. Mild dehydration.",
-            "doctorNotes": "Prescribed oral rehydration solution and anti-nausea medication. Dietary modifications recommended.",
+            "patientEmail": "lisa.andini@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-08T11:45:00Z",
+            "diagnosisSummary": "Aritmia Jantung",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan aritmia jantung pada tanggal 8/8/2025. Temuan klinis menunjukkan denyut jantung tidak teratur dan tidak teratur. Rekomendasi untuk dilakukan pemantauan jantung rutin dan konsultasi dengan ahli jantung untuk pengelolaan lanjutan.",
             "status": "completed"
         },
         {
-            "patientEmail": "emma.wilson@email.com",
-            "doctorEmail": "michael.chen@clinic.com",
-            "examinationDate": "2025-11-18T11:30:00Z",
-            "diagnosisSummary": "Follow-up for headaches. Symptoms improved.",
-            "doctorNotes": "Patient reports significant improvement with current treatment. Continue medication for another month.",
+            "patientEmail": "robert.tanujaya@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-08T09:30:00Z",
+            "diagnosisSummary": "Infeksi Saluran Pernapasan Atas dengan Demam",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan Infeksi Saluran Pernapasan Atas dengan Demam pada tanggal 8/8/2025. Temuan klinis menunjukkan gejala batuk, pilek, dan demam. Rekomendasi untuk mengonsumsi obat penurun demam dan istirahat cukup. Instruksi pemulangan dengan pemantauan gejala dan konsultasi lebih lanjut jika kondisi memburuk.",
             "status": "completed"
         },
         {
-            "patientEmail": "john.smith@email.com",
-            "doctorEmail": "sarah.johnson@clinic.com",
-            "examinationDate": "2025-12-01T09:00:00Z",
-            "diagnosisSummary": "Routine checkup. Blood pressure stable.",
-            "doctorNotes": "Blood pressure: 125/80 mmHg. Patient maintaining good health. Continue current regimen.",
+            "patientEmail": "emma.wulandari@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-09T11:45:00Z",
+            "diagnosisSummary": "Migren dengan Aura",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan migren dengan aura berdasarkan gejala yang muncul. Temuan klinis meliputi adanya gangguan penglihatan, kelemahan otot, dan nyeri kepala hebat. Rekomendasi untuk tindak lanjut adalah dengan memberikan terapi pengurang nyeri dan menghindari pemicu migren yang diketahui. Pasien diminta untuk mengontrol kondisi dengan rutin dan segera konsultasi jika gejala memburuk.",
             "status": "completed"
         },
         {
-            "patientEmail": "maria.garcia@email.com",
-            "doctorEmail": "amanda.lee@clinic.com",
-            "examinationDate": "2025-12-05T10:45:00Z",
-            "diagnosisSummary": "Awaiting lab results for comprehensive metabolic panel.",
-            "doctorNotes": "Blood samples collected. Results pending. Follow-up appointment scheduled.",
-            "status": "pending"
+            "patientEmail": "andi.setiawan@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-11T11:00:00Z",
+            "diagnosisSummary": "Nyeri Dada Muskuloskeletal",
+            "doctorNotes": "Catatan Medis:\nPasien mengeluh nyeri dada muskuloskeletal saat bernafas dalam. Pada pemeriksaan fisik, terdapat nyeri tekan pada daerah dada yang dapat dipicu dengan gerakan tertentu. Disarankan untuk istirahat yang cukup, hindari aktivitas yang memicu nyeri, dan konsumsi obat pereda nyeri sesuai dosis yang diresepkan. Tindak lanjut dengan kontrol jika gejala persisten atau memburuk.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.sari@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-11T11:15:00Z",
+            "diagnosisSummary": "Rinitis Alergi",
+            "doctorNotes": "Diagnosis: Rinitis Alergi\nTanggal Pemeriksaan: 11/8/2025\nStatus: completed\n\nTemuan Klinis:\nPasien mengeluh hidung tersumbat, bersin-bersin, dan gatal pada hidung. Tidak ada riwayat asma atau polip hidung. Tidak ada riwayat alergi makanan.\n\nObservasi:\nPasien menunjukkan gejala klinis yang khas untuk rinitis alergi. Tidak ada tanda-tanda infeksi sekunder.\n\nRekomendasi:\n1. Berikan resep obat antihistamin dan dekongestan untuk mengurangi gejala.\n2. Sarankan untuk menghindari pemicu alergi seperti debu, serbuk sari, dan bulu binatang.\n3. Anjurkan pasien untuk kembali jika gejala",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "david.gunawan@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-12T09:45:00Z",
+            "diagnosisSummary": "Sakit Kepala Tegang",
+            "doctorNotes": "Catatan Medis:\nPasien dengan diagnosis Sakit Kepala Tegang pada pemeriksaan tanggal 12/8/2025. Ditemukan adanya ketegangan pada otot leher dan bahu. Disarankan untuk istirahat yang cukup, menghindari stres, dan melakukan terapi fisik untuk meredakan ketegangan otot. Instruksi pemulangan telah diberikan kepada pasien.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "lisa.andini@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-13T12:00:00Z",
+            "diagnosisSummary": "Hipertensi Esensial Stadium 1",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan Hipertensi Esensial Stadium 1 pada tanggal 13/8/2025. Tekanan darah sistolik di atas 140 mmHg dan diastolik di atas 90 mmHg. Rekomendasi untuk mengontrol tekanan darah dengan pola makan sehat, olahraga teratur, dan obat antihipertensi sesuai dengan petunjuk dokter. Instruksi pemulangan untuk menjadwalkan kunjungan kembali dalam dua minggu untuk evaluasi lebih lanjut.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "robert.tanujaya@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-13T10:15:00Z",
+            "diagnosisSummary": "Infeksi Saluran Pernapasan Atas dengan Demam",
+            "doctorNotes": "Diagnosis: Infeksi Saluran Pernapasan Atas dengan Demam\nTanggal Pemeriksaan: 13/8/2025\nStatus: completed\n\nCatatan Medis:\nPasien mengalami gejala infeksi saluran pernapasan atas dengan demam. Ditemukan batuk, pilek, dan suhu tubuh meningkat. Pasien juga mengeluhkan nyeri tenggorokan dan kelelahan. Disarankan untuk istirahat yang cukup, konsumsi cairan yang cukup, dan minum obat pereda demam dan nyeri sesuai dosis yang sudah diresepkan. Instruksi pemulangan: kembali jika gejala tidak membaik atau ada gejala tambahan yang mengkhawatirkan.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "emma.wulandari@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-15T10:45:00Z",
+            "diagnosisSummary": "Aritmia Jantung",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan aritmia jantung setelah pemeriksaan pada tanggal 15/8/2025. Temuan klinis menunjukkan irama jantung tidak teratur dan frekuensi denyut jantung yang tidak stabil. Rekomendasi tindak lanjut adalah melakukan monitor jantung rutin dan konsultasi dengan ahli jantung untuk penanganan lebih lanjut.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "andi.setiawan@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-12T11:30:00Z",
+            "diagnosisSummary": "Vertigo Posisional Paroksismal Jinak",
+            "doctorNotes": "Catatan Medis:\n\nDiagnosis: Vertigo Posisional Paroksismal Jinak\nTanggal Pemeriksaan: 12/8/2025\n\nPasien mengalami gejala vertigo paroksismal saat berubah posisi kepala. Pemeriksaan fisik menunjukkan nistagmus horizontal saat melakukan manuver Dix-Hallpike. Tidak ada kelainan neurologis lain yang ditemukan.\n\nRekomendasi untuk pasien adalah melakukan terapi manuver repositioning untuk mengatasi vertigo posisional paroksismal jinak. Instruksi pemulangan mencakup pembatasan aktivitas fisik yang memicu vertigo dan follow-up dalam 1 minggu untuk evaluasi lanjutan.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.sari@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-13T13:45:00Z",
+            "diagnosisSummary": "Rinitis Alergi",
+            "doctorNotes": "Diagnosis: Rinitis Alergi\n\nCatatan Medis:\nPasien mengalami rinitis alergi dengan gejala hidung tersumbat, bersin-bersin, dan rinore. Pemeriksaan fisik menunjukkan kemerahan pada konjungtiva dan pembesaran kelenjar getah bening servikal.\n\nRekomendasi:\n1. Berikan terapi simtomatik dengan antihistamin oral.\n2. Sarankan pasien untuk menghindari pemicu alergi dan menjaga kebersihan lingkungan.\n\nInstruksi Pemulangan:\nPasien diinstruksikan untuk melakukan tindak lanjut dalam 2 minggu untuk evaluasi dan penyesuaian terapi.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "david.gunawan@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-15T12:00:00Z",
+            "diagnosisSummary": "Nyeri Dada Muskuloskeletal",
+            "doctorNotes": "Diagnosis: Nyeri Dada Muskuloskeletal\nTanggal Pemeriksaan: 15/8/2025\nStatus: completed\n\nCatatan Medis:\nPasien mengeluh nyeri dada yang terlokalisasi di daerah otot. Tidak ditemukan gejala lain yang mencurigakan selama pemeriksaan fisik. Rekomendasi untuk istirahat yang cukup, hindari aktivitas fisik yang berat, dan konsumsi obat pereda nyeri sesuai kebutuhan. Disarankan untuk kembali jika gejala tidak membaik dalam waktu seminggu.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "lisa.andini@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-14T11:15:00Z",
+            "diagnosisSummary": "Migren dengan Aura",
+            "doctorNotes": "Catatan Medis:\n\nPasien didiagnosis dengan Migren dengan Aura berdasarkan gejala yang terjadi pada pemeriksaan tanggal 14/8/2025. Ditemukan adanya riwayat nyeri kepala berdenyut, disertai dengan aura visual sebelum serangan migren. Rekomendasi untuk pasien adalah menghindari pemicu migren, menjaga pola tidur yang teratur, dan konsultasi dengan dokter untuk pengelolaan lebih lanjut.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "robert.tanujaya@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-18T09:45:00Z",
+            "diagnosisSummary": "Hipertensi Esensial Stadium 1",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan Hipertensi Esensial Stadium 1 pada tanggal 18/8/2025. Tekanan darah sistolik di atas 140 mmHg dan diastolik di atas 90 mmHg. Disarankan untuk mengikuti diet rendah garam, olahraga teratur, dan pengukuran tekanan darah rutin. Pasien diminta untuk menghindari stres dan mematuhi resep obat antihipertensi yang diberikan.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "emma.wulandari@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-15T10:00:00Z",
+            "diagnosisSummary": "Infeksi Saluran Pernapasan Atas dengan Demam",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan Infeksi Saluran Pernapasan Atas dengan Demam pada tanggal 15/8/2025. Ditemukan gejala batuk, pilek, dan demam. Rekomendasi untuk istirahat yang cukup, minum banyak air, dan konsumsi obat demam sesuai dosis yang disarankan. Disarankan untuk melakukan follow-up jika gejala tidak membaik dalam 3 hari.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "andi.setiawan@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-19T10:15:00Z",
+            "diagnosisSummary": "Sakit Kepala Tegang",
+            "doctorNotes": "Catatan Medis:\nPasien datang dengan keluhan sakit kepala tegang. Pada pemeriksaan fisik, ditemukan tegangan otot leher dan bahu. Disarankan untuk istirahat yang cukup, hindari stres, dan konsumsi obat pereda nyeri jika diperlukan. Follow-up dalam 1 minggu jika keluhan tidak membaik.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.sari@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-22T10:45:00Z",
+            "diagnosisSummary": "Aritmia Jantung",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan aritmia jantung pada tanggal 22/8/2025. Temuan klinis menunjukkan irama jantung tidak teratur. Rekomendasi untuk melakukan monitor jantung rutin dan konsultasi lanjutan dengan ahli jantung.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "david.gunawan@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-22T10:30:00Z",
+            "diagnosisSummary": "Rinitis Alergi",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan rinitis alergi pada tanggal 22/8/2025. Temuan klinis meliputi hidung tersumbat, bersin-bersin, dan gatal pada hidung. Rekomendasi untuk tindak lanjut adalah menghindari pemicu alergi, menggunakan obat antihistamin, dan berkonsultasi dengan spesialis alergi untuk penanganan lebih lanjut.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "lisa.andini@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-22T11:45:00Z",
+            "diagnosisSummary": "Nyeri Dada Muskuloskeletal",
+            "doctorNotes": "Catatan Medis:\nPasien mengeluh nyeri dada muskuloskeletal pada tanggal 22/8/2025. Pemeriksaan menunjukkan adanya nyeri tekan pada otot dada dengan gerakan tertentu. Disarankan untuk istirahat yang cukup, menghindari aktivitas yang memicu nyeri, dan melakukan terapi fisik untuk memperkuat otot dada. Instruksi pemulangan diberikan kepada pasien untuk mengikuti rencana perawatan yang disarankan.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "robert.tanujaya@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-21T10:00:00Z",
+            "diagnosisSummary": "Vertigo Posisional Paroksismal Jinak",
+            "doctorNotes": "Diagnosis: Vertigo Posisional Paroksismal Jinak\nTanggal Pemeriksaan: 21/8/2025\nStatus: completed\n\nCatatan Medis:\nPasien didiagnosis dengan Vertigo Posisional Paroksismal Jinak berdasarkan gejala yang dialami. Pemeriksaan fisik menunjukkan nistagmus horizontal dan vertigo saat posisi kepala berubah. Rekomendasi untuk menjalani terapi gerakan kepala Epley dan diinstruksikan untuk menghindari posisi yang memicu gejala. Discharge dengan pantauan lebih lanjut setelah 2 minggu.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "emma.wulandari@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-25T11:15:00Z",
+            "diagnosisSummary": "Hipertensi Esensial Stadium 1",
+            "doctorNotes": "Diagnosis: Hipertensi Esensial Stadium 1\nTanggal Pemeriksaan: 25/8/2025\nStatus: completed\n\nPasien mengalami Hipertensi Esensial Stadium 1 berdasarkan pemeriksaan medis yang dilakukan. Tekanan darah sistolik dan diastolik berada di rentang yang tinggi. Disarankan untuk menjalani pola makan sehat, mengurangi konsumsi garam, dan rutin berolahraga. Tindak lanjut dengan pemeriksaan tekanan darah rutin dan konsultasi dengan dokter secara berkala.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "andi.setiawan@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-25T09:45:00Z",
+            "diagnosisSummary": "Infeksi Saluran Pernapasan Atas dengan Demam",
+            "doctorNotes": "Catatan Medis:\n\nPasien didiagnosis dengan Infeksi Saluran Pernapasan Atas dengan Demam. Pada pemeriksaan tanggal 25/8/2025, ditemukan gejala batuk, pilek, dan demam. Terdapat juga kemerahan pada tenggorokan dan peningkatan suhu tubuh. Rekomendasi untuk istirahat yang cukup, konsumsi obat yang diresepkan, dan minum banyak cairan. Instruksi pemulangan dengan periksa kembali jika gejala tidak membaik dalam 3 hari.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.sari@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-26T12:00:00Z",
+            "diagnosisSummary": "Migren dengan Aura",
+            "doctorNotes": "Diagnosis: Migren dengan Aura\nTanggal Pemeriksaan: 26/8/2025\nStatus: completed\n\nPasien datang dengan keluhan nyeri kepala sebelah yang disertai dengan gejala aura seperti silau dan mual. Pemeriksaan fisik menunjukkan tekanan darah dan suhu tubuh dalam batas normal. Rekomendasi untuk pasien adalah menghindari pemicu migren, istirahat yang cukup, dan mengonsumsi obat yang diresepkan sesuai petunjuk dokter. Pasien diinstruksikan untuk kembali jika gejala memburuk atau timbul gejala baru.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "david.gunawan@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-27T10:15:00Z",
+            "diagnosisSummary": "Aritmia Jantung",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan aritmia jantung pada tanggal 27/8/2025. Ditemukan irama jantung tidak teratur selama pemeriksaan. Rekomendasi untuk melakukan tes lanjutan untuk menentukan jenis aritmia dan merencanakan pengobatan yang sesuai. Instruksi pemulangan dengan menjaga pola makan sehat dan hindari faktor pemicu aritmia.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "lisa.andini@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-08-27T10:45:00Z",
+            "diagnosisSummary": "Rinitis Alergi",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan rinitis alergi pada tanggal 27/8/2025. Temuan klinis menunjukkan gejala bersin, gatal pada hidung, dan pilek. Rekomendasi untuk tindak lanjut adalah menghindari pemicu alergi, menggunakan obat antihistamin, dan menjaga kebersihan lingkungan.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "robert.tanujaya@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-08-29T11:30:00Z",
+            "diagnosisSummary": "Nyeri Dada Muskuloskeletal",
+            "doctorNotes": "Catatan Medis:\nPasien mengeluh nyeri dada muskuloskeletal pada tanggal 29/8/2025. Pemeriksaan fisik menunjukkan tidak adanya kelainan pada jantung dan paru-paru. Rekomendasi untuk melakukan terapi fisik dan penggunaan analgesik topikal untuk mengurangi nyeri. Instruksi pemulangan diberikan untuk istirahat yang cukup dan hindari aktivitas fisik yang berat.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "emma.wulandari@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-08-28T11:45:00Z",
+            "diagnosisSummary": "Sakit Kepala Tegang",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan Sakit Kepala Tegang pada tanggal 28/8/2025. Temuan klinis menunjukkan adanya ketegangan otot di daerah kepala dan leher. Rekomendasi untuk pasien adalah istirahat yang cukup, menghindari faktor pemicu, dan melakukan latihan relaksasi otot. Follow-up diperlukan jika gejala tidak membaik dalam beberapa hari.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "andi.setiawan@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-09-01T10:00:00Z",
+            "diagnosisSummary": "Hipertensi Esensial Stadium 1",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan Hipertensi Esensial Stadium 1 pada tanggal 1/9/2025. Tekanan darah sistolik dan diastolik meningkat di atas batas normal. Rekomendasi untuk mengikuti pola makan rendah garam, olahraga teratur, dan minum obat antihipertensi sesuai petunjuk dokter. Pasien diminta untuk melakukan pantauan tekanan darah secara rutin.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.sari@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-09-01T11:15:00Z",
+            "diagnosisSummary": "Infeksi Saluran Pernapasan Atas dengan Demam",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan Infeksi Saluran Pernapasan Atas dengan Demam pada tanggal 1/9/2025. Temuan klinis menunjukkan gejala batuk, pilek, dan demam. Rekomendasi untuk tindak lanjut adalah istirahat yang cukup, konsumsi banyak cairan, dan mengonsumsi obat pereda demam seperti parasetamol sesuai dosis. Pasien diinstruksikan untuk kembali jika gejala memburuk atau tidak membaik dalam 3 hari.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "david.gunawan@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-09-02T09:45:00Z",
+            "diagnosisSummary": "Vertigo Posisional Paroksismal Jinak",
+            "doctorNotes": "Diagnosis:\nVertigo Posisional Paroksismal Jinak\n\nTemuan Klinis:\nPasien mengalami episode vertigo saat berubah posisi kepala, disertai dengan rasa pusing dan mual.\n\nRekomendasi:\nMemberikan terapi rehabilitasi vestibular untuk mengurangi gejala vertigo dan menjaga keseimbangan. Instruksi untuk menghindari perubahan posisi kepala yang tiba-tiba.\n\nInstruksi Pemulangan:\nJadwal kembali untuk evaluasi lebih lanjut dalam 2 minggu. Anjurkan pasien untuk konsultasi jika gejala vertigo memburuk atau tidak membaik setelah terapi rehabilitasi vestibular.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "lisa.andini@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-09-03T12:00:00Z",
+            "diagnosisSummary": "Aritmia Jantung",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan aritmia jantung pada tanggal 3/9/2025. Temuan klinis menunjukkan detak jantung tidak teratur. Rekomendasi untuk dilakukan pemantauan jantung rutin dan konsultasi dengan ahli jantung untuk penanganan lebih lanjut.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "robert.tanujaya@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-09-03T10:15:00Z",
+            "diagnosisSummary": "Rinitis Alergi",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan rinitis alergi pada tanggal 3/9/2025. Temuan klinis meliputi hidung tersumbat, bersin-bersin, dan gatal pada hidung dan mata. Rekomendasi tindak lanjut termasuk menghindari pemicu alergi, menggunakan obat antihistamin, dan konsultasi lanjutan jika gejala tidak membaik.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "emma.wulandari@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-09-05T10:45:00Z",
+            "diagnosisSummary": "Nyeri Dada Muskuloskeletal",
+            "doctorNotes": "Diagnosis: Nyeri dada muskuloskeletal\n\nTemuan klinis: Pasien mengeluh nyeri dada yang terlokalisasi, terutama saat melakukan gerakan atau tekanan pada daerah tersebut. Tidak ada riwayat trauma atau penyakit jantung.\n\nRekomendasi: Disarankan untuk istirahat yang cukup, hindari aktivitas yang memperparah nyeri dada, dan minum obat pereda nyeri jika diperlukan. Jika gejala tidak membaik, pasien disarankan untuk kembali berkonsultasi dengan dokter untuk evaluasi lebih lanjut.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "andi.setiawan@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-09-04T10:30:00Z",
+            "diagnosisSummary": "Migren dengan Aura",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan Migren dengan Aura berdasarkan pemeriksaan pada tanggal 4/9/2025. Temuan klinis meliputi gejala aura seperti gangguan penglihatan dan disertai dengan nyeri kepala yang parah. Rekomendasi untuk tindak lanjut adalah memberikan terapi penghilang nyeri dan menghindari pemicu serangan migren yang diketahui. Pasien disarankan untuk mengikuti jadwal kontrol rutin untuk pemantauan lebih lanjut.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.sari@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-09-05T11:45:00Z",
+            "diagnosisSummary": "Hipertensi Esensial Stadium 1",
+            "doctorNotes": "Diagnosis: Hipertensi Esensial Stadium 1\n\nTanggal Pemeriksaan: 5/9/2025\n\nTemuan klinis:\n- Tekanan darah sistolik 140 mmHg\n- Tekanan darah diastolik 90 mmHg\n- Tidak ada kelainan pada pemeriksaan fisik lainnya\n\nRekomendasi:\n- Terapi farmakologis dengan obat antihipertensi\n- Edukasi pasien tentang pentingnya mengontrol tekanan darah secara berkala\n- Diet rendah garam dan lemak, serta olahraga teratur direkomendasikan\n\nInstruksi pemulangan:\n- Jadwal kembali untuk evaluasi tekanan darah dalam 2 minggu\n- Disarankan untuk memantau tekanan darah sendiri di rumah dan mencatatnya secara berkala\n- Menghind",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "david.gunawan@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-09-05T10:00:00Z",
+            "diagnosisSummary": "Infeksi Saluran Pernapasan Atas dengan Demam",
+            "doctorNotes": "Diagnosis: Infeksi Saluran Pernapasan Atas dengan Demam\nTanggal Pemeriksaan: 5/9/2025\nStatus: completed\n\nPasien mengalami gejala infeksi saluran pernapasan atas dengan demam. Pemeriksaan fisik menunjukkan adanya batuk, pilek, dan suhu tubuh meningkat. Rekomendasi untuk istirahat cukup, konsumsi obat pereda demam, dan minum banyak cairan.\n\nTindak lanjut: Kembali untuk evaluasi jika gejala memburuk atau tidak kunjung membaik dalam 3-5 hari.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "lisa.andini@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-09-09T11:15:00Z",
+            "diagnosisSummary": "Sakit Kepala Tegang",
+            "doctorNotes": "Diagnosis: Sakit Kepala Tegang\nTanggal Pemeriksaan: 9/9/2025\n\nCatatan Medis:\nPasien datang dengan keluhan sakit kepala tegang. Pemeriksaan fisik menunjukkan ketegangan pada otot leher dan bahu. Tidak ada tanda-tanda neurologis yang mencurigakan.\n\nRekomendasi:\n1. Berikan analgesik untuk mengurangi nyeri.\n2. Sarankan untuk menghindari pemicu stres dan latihan relaksasi otot.\n\nInstruksi Pemulangan:\nKembali untuk evaluasi jika keluhan sakit kepala tegang tidak membaik dalam 1 minggu.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "robert.tanujaya@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-09-10T10:45:00Z",
+            "diagnosisSummary": "Aritmia Jantung",
+            "doctorNotes": "Catatan Medis:\nPasien didiagnosis dengan aritmia jantung pada tanggal 10/9/2025. Temuan klinis menunjukkan detak jantung tidak teratur dan tidak teratur. Rekomendasi untuk tindak lanjut termasuk pemberian terapi obat antiaritmia dan pemantauan rutin detak jantung. Pasien diinstruksikan untuk mengikuti jadwal kontrol berikutnya.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "emma.wulandari@email.com",
+            "doctorEmail": "amanda.kusuma@clinic.com",
+            "examinationDate": "2025-09-10T12:00:00Z",
+            "diagnosisSummary": "Rinitis Alergi",
+            "doctorNotes": "Diagnosis: Rinitis Alergi\n\nPada pemeriksaan tanggal 10/9/2025, pasien didiagnosis menderita rinitis alergi berdasarkan gejala hidung tersumbat, bersin-bersin, dan gatal pada hidung. Ditemukan adanya kemerahan pada konjungtiva mata.\n\nRekomendasi untuk pasien adalah menghindari pemicu alergi, mengonsumsi obat antihistamin sesuai dosis yang diresepkan, dan melakukan terapi imunoterapi jika diperlukan. Instruksi pemulangan adalah untuk kembali berkonsultasi jika gejala tidak membaik dalam waktu 2 minggu.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "andi.setiawan@email.com",
+            "doctorEmail": "sarah.wijaya@clinic.com",
+            "examinationDate": "2025-09-12T10:15:00Z",
+            "diagnosisSummary": "Nyeri Dada Muskuloskeletal",
+            "doctorNotes": "Catatan Medis:\nPasien mengeluh nyeri dada muskuloskeletal. Pemeriksaan menemukan adanya nyeri tekan pada area muskuloskeletal dada tanpa adanya gejala klinis yang mencurigakan. Rekomendasi untuk istirahat yang cukup, hindari aktivitas yang memperparah nyeri, dan pertimbangkan terapi fisik untuk memperkuat otot dada.",
+            "status": "completed"
+        },
+        {
+            "patientEmail": "maria.sari@email.com",
+            "doctorEmail": "michael.santoso@clinic.com",
+            "examinationDate": "2025-09-11T10:45:00Z",
+            "diagnosisSummary": "Vertigo Posisional Paroksismal Jinak",
+            "doctorNotes": "Diagnosis: Vertigo Posisional Paroksismal Jinak\n\nTanggal Pemeriksaan: 11/9/2025\n\nTemuan Klinis: Pasien mengalami gejala vertigo saat perubahan posisi kepala. Tidak ada kelainan lain yang ditemukan pada pemeriksaan fisik.\n\nRekomendasi: Berikan instruksi untuk melakukan manuver Epley. Anjurkan pasien untuk menghindari posisi yang memicu gejala vertigo. Instruksikan pasien untuk kembali jika gejala vertigo berlanjut atau memburuk.",
+            "status": "completed"
         }
     ]
 }

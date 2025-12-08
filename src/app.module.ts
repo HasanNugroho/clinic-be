@@ -12,6 +12,7 @@ import { RagModule } from './modules/rag/rag.module';
 import { BullModule } from '@nestjs/bullmq';
 import mongoose from 'mongoose';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
+import { QdrantModule } from './modules/qdrant/qdrant.module';
 
 const { ObjectId } = mongoose.Types;
 ObjectId.prototype.valueOf = function () {
@@ -57,6 +58,7 @@ ObjectId.prototype.valueOf = function () {
     QueuesModule,
     RagModule,
     DashboardModule,
+    QdrantModule,
   ],
   providers: [],
 })

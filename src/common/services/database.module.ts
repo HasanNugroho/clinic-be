@@ -14,6 +14,10 @@ import {
   RegistrationSchema,
 } from 'src/modules/registrations/schemas/registration.schema';
 import { User, UserSchema } from 'src/modules/users/schemas/user.schema';
+import {
+  Dashboard,
+  DashboardSchema,
+} from 'src/modules/dashboard/schemas/dashboard.schema';
 
 @Module({
   imports: [
@@ -23,6 +27,7 @@ import { User, UserSchema } from 'src/modules/users/schemas/user.schema';
       { name: Registration.name, schema: RegistrationSchema },
       { name: Examination.name, schema: ExaminationSchema },
       { name: Queue.name, schema: QueueSchema },
+      { name: Dashboard.name, schema: DashboardSchema },
     ]),
   ],
   exports: [MongooseModule],

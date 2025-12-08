@@ -10,12 +10,15 @@ import { Queue as BullQueue } from 'bullmq';
 import { transformObjectId } from '../../common/utils/transform-objectid.util';
 import { WebSocketGateway } from './websocket/queue.gateway';
 import { SortOrder } from '../../common/dtos/pagination.dto';
+import { Registration } from '../registrations/schemas/registration.schema';
 
 @Injectable()
 export class QueuesService {
   constructor(
     @InjectModel(Queue.name)
     private queueModel: Model<Queue>,
+    @InjectModel(Registration.name)
+    private registrationModel: Model<Registration>,
     @InjectQueue('checkup-queue')
     private checkupQueue: BullQueue,
     private queueGateway: WebSocketGateway,
@@ -328,6 +331,7 @@ export class QueuesService {
 
   /**
    * Bulk import queues from JSON data
+   * Validates and links registrationId based on patient, doctor, and date
    */
   async bulkImport(queues: any[]): Promise<{ success: number; failed: number; errors: any[] }> {
     let success = 0;
@@ -352,12 +356,49 @@ export class QueuesService {
           continue;
         }
 
-        // Create queue
+        // Find registration by patient, doctor, and date
+        const queueDate = new Date(queueData.queueDate);
+        const registrationDate = new Date(queueDate);
+        registrationDate.setHours(0, 0, 0, 0);
+
+        const registration = await this.registrationModel.findOne({
+          patientId: new Types.ObjectId(patient._id),
+          doctorId: new Types.ObjectId(doctor._id),
+          registrationDate: {
+            $gte: registrationDate,
+            $lt: new Date(registrationDate.getTime() + 24 * 60 * 60 * 1000)
+          }
+        });
+
+        if (!registration) {
+          failed++;
+          errors.push({
+            patientEmail: queueData.patientEmail,
+            doctorEmail: queueData.doctorEmail,
+            queueDate: queueData.queueDate,
+            error: 'No matching registration found for this patient-doctor-date combination'
+          });
+          continue;
+        }
+
+        // Validate queue date is not greater than registration date
+        if (queueDate < registrationDate) {
+          failed++;
+          errors.push({
+            patientEmail: queueData.patientEmail,
+            doctorEmail: queueData.doctorEmail,
+            error: 'Queue date cannot be earlier than registration date'
+          });
+          continue;
+        }
+
+        // Create queue with registrationId
         const created = await this.queueModel.create({
-          patientId: patient._id,
-          doctorId: doctor._id,
+          registrationId: new Types.ObjectId(registration._id),
+          patientId: new Types.ObjectId(patient._id),
+          doctorId: new Types.ObjectId(doctor._id),
           queueNumber: queueData.queueNumber,
-          queueDate: new Date(queueData.queueDate),
+          queueDate: queueDate,
           status: queueData.status,
         });
 
