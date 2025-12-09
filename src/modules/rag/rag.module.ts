@@ -9,6 +9,7 @@ import { User, UserSchema } from '../users/schemas/user.schema';
 import { Dashboard, DashboardSchema } from '../dashboard/schemas/dashboard.schema';
 import { EmbeddingModule } from '../../common/services/embedding/embedding.modul';
 import { RedisModule } from 'src/common/services/redis/redis.modul';
+import { QdrantModule } from '../qdrant/qdrant.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { RedisModule } from 'src/common/services/redis/redis.modul';
       { name: Dashboard.name, schema: DashboardSchema },
     ]),
     EmbeddingModule,
-    RedisModule
+    RedisModule,
+    QdrantModule,
   ],
   controllers: [RagController],
   providers: [RagService],

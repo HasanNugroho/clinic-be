@@ -8,6 +8,12 @@ export interface QdrantPoint {
     payload: Record<string, any>;
 }
 
+export class QdrantSearchResponse {
+    id: string;
+    score: number;
+    payload: any;
+}
+
 @Injectable()
 export class QdrantService {
     private readonly logger = new Logger(QdrantService.name);
@@ -149,7 +155,7 @@ export class QdrantService {
         limit: number = 10,
         scoreThreshold: number = 0.5,
         filters?: Record<string, any>,
-    ): Promise<any[]> {
+    ): Promise<QdrantSearchResponse[]> {
         try {
             const searchParams: any = {
                 vector,
@@ -159,14 +165,16 @@ export class QdrantService {
             };
 
             // Add filter if provided
-            if (filters) {
+            if (filters && Object.keys(filters).length > 0) {
                 const mustConditions = Object.entries(filters).map(([key, value]) => ({
                     key,
                     match: {
                         value,
                     },
                 }));
-                searchParams.query_filter.must = mustConditions;
+                searchParams.query_filter = {
+                    must: mustConditions,
+                };
             }
 
             const results = await this.client.search(collectionName, searchParams);

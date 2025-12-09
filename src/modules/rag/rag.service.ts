@@ -12,6 +12,7 @@ import { UserContext } from '../users/interfaces/user.interface';
 import { randomUUID } from 'crypto';
 import { AiAssistantResponse, RagQueryDto, RetrievalResult } from './rag.dto';
 import OpenAI from 'openai';
+import { QdrantSearchResponse, QdrantService } from '../qdrant/qdrant.service';
 
 @Injectable()
 export class RagService {
@@ -33,6 +34,7 @@ export class RagService {
     private dashboardModel: Model<Dashboard>,
     private embeddingService: EmbeddingService,
     private redisService: RedisService,
+    private qdrantService: QdrantService,
   ) {
     this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
@@ -231,13 +233,24 @@ export class RagService {
     userContext: UserContext,
   ): Promise<RetrievalResult[]> {
     const results: RetrievalResult[] = [];
-    const collections = ['doctorschedules', 'examinations', 'registrations', 'dashboards'];
+    const collections = [
+      { name: 'doctorschedules', qdrantName: 'doctor_schedules' },
+      { name: 'examinations', qdrantName: 'examinations' },
+      { name: 'registrations', qdrantName: 'registrations' },
+      { name: 'dashboards', qdrantName: 'dashboards' },
+    ];
 
     // Generate embedding for the query
     const queryEmbedding = await this.embeddingService.generateEmbedding(query);
 
+    // Search Qdrant for all collections in parallel
     const searches = collections.map((collection) =>
-      this.vectorSearch(collection, queryEmbedding, userContext),
+      this.searchQdrantAndRetrieve(
+        collection.name,
+        collection.qdrantName,
+        queryEmbedding,
+        userContext,
+      ),
     );
 
     const searchResults = await Promise.all(searches);
@@ -246,31 +259,60 @@ export class RagService {
     return results;
   }
 
-  private async vectorSearch(
+  /**
+   * Search Qdrant by filter first, then retrieve and map data from MongoDB
+   * Flow: Search Qdrant -> Get IDs -> Retrieve from MongoDB -> Map results
+   */
+  private async searchQdrantAndRetrieve(
     collection: string,
+    qdrantCollection: string,
     queryEmbedding: number[],
     userContext: UserContext,
   ): Promise<RetrievalResult[]> {
     const model = this.getModelForCollection(collection);
     if (!model) return [];
 
-    const projection = this.getRoleProjection(collection, userContext.role);
-    const filters = this.getRoleFilters(collection, userContext);
-
     try {
+      // Step 1: Get role-based filters
+      const mongoFilters = this.getRoleFilters(collection, userContext);
+
+      // Step 2: Search Qdrant with vector similarity and role-based filters
+      this.logger.debug(`Searching Qdrant collection: ${qdrantCollection}`, {
+        collection: qdrantCollection,
+        filters: mongoFilters,
+        role: userContext.role,
+      });
+      const qdrantResults = await this.qdrantService.search(
+        qdrantCollection,
+        queryEmbedding,
+        10, // limit
+        0.5, // scoreThreshold
+        mongoFilters, // Apply role-based filters to Qdrant search
+      );
+
+      if (!qdrantResults || qdrantResults.length === 0) {
+        this.logger.debug(`No results found in Qdrant for ${qdrantCollection}`);
+        return [];
+      }
+
+      // Step 3: Extract IDs from Qdrant results
+      const qdrantIds = qdrantResults.map((result) => new Types.ObjectId(result.id));
+      const scoreMap = new Map(qdrantResults.map((r) => [r.id, r.score]));
+
+      // Step 4: Retrieve data from MongoDB with role-based filtering
+      const projection = this.getRoleProjection(collection, userContext.role);
+      const filters = mongoFilters;
+
       const pipeline: any[] = [
         {
-          $vectorSearch: {
-            index: `${collection}_embedding_index`,
-            path: 'embedding',
-            queryVector: queryEmbedding,
-            numCandidates: 100,
-            limit: 10,
-            filter: filters,
+          $match: {
+            _id: { $in: qdrantIds },
+            ...filters,
           },
         },
       ];
 
+      // Add lookups for related data
       pipeline.push(
         {
           $lookup: {
@@ -308,30 +350,31 @@ export class RagService {
       }
 
       pipeline.push({
-        $project: {
-          ...projection,
-          score: { $meta: 'vectorSearchScore' },
-        },
+        $project: projection,
       });
 
-      const results = await model.aggregate(pipeline);
+      // Step 4: Execute aggregation and map results
+      const mongoResults = await model.aggregate(pipeline);
 
-      return results.map((doc) => {
-        // Convert all ObjectIds to strings in metadata
+      return mongoResults.map((doc) => {
         const convertedDoc = this.convertObjectIdsToStrings(doc);
+        const docId = doc._id.toString();
+        const score = scoreMap.get(docId) || 0;
+
         return {
           collection,
-          documentId: doc._id.toString(),
+          documentId: docId,
           snippet: this.buildSnippet(userContext.role, collection, [convertedDoc]),
-          score: doc.score,
+          score,
           metadata: convertedDoc,
         };
       });
     } catch (error) {
-      this.logger.error('Vector search failed', {
+      this.logger.error('Hybrid retrieval failed', {
         error: error.message,
         stack: error.stack,
         collection,
+        qdrantCollection,
         role: userContext.role,
       });
       return [];
