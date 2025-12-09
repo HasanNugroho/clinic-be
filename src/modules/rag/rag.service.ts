@@ -361,8 +361,6 @@ export class RagService {
         const docId = doc._id.toString();
         const score = scoreMap.get(docId) || 0;
 
-        console.log(JSON.stringify(doc, null, 2))
-
         return {
           collection,
           documentId: docId,
