@@ -72,6 +72,9 @@ jobs:
             cd ${{ secrets.PROJECT_PATH }}
 
             docker compose -f docker-compose.yml pull
-            docker compose -f docker-compose.yml down -v --remove-orphans
+            # Stop and remove containers except qdrant, preserve qdrant volumes
+            docker compose -f docker-compose.yml down --remove-orphans
             docker compose -f docker-compose.yml up -d
+            # Ensure qdrant stays active
+            docker compose -f docker-compose.qdrant.yml up -d
             docker image prune -af
