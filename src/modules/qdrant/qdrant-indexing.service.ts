@@ -94,16 +94,20 @@ export class QdrantIndexingService {
             // Handle both single and multiple dashboards
             const dashboardArray = Array.isArray(dashboards) ? dashboards : [dashboards];
 
-            // Generate embeddings for all dashboards (loop only on embedding)
+            // Generate hybrid embeddings for all dashboards
             const points: any[] = [];
             for (const dashboard of dashboardArray) {
                 const embeddingText = this.buildDashboardEmbeddingText(dashboard);
-                const embedding = await this.embeddingService.generateEmbedding(embeddingText);
+                const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(embeddingText);
 
                 points.push({
                     id: dashboard._id.toString(),
-                    vector: embedding,
+                    vector: {
+                        dense: hybridEmbedding.dense,
+                        sparse: hybridEmbedding.sparse,
+                    },
                     payload: {
+                        id: dashboard._id.toString(),
                         date: dashboard.date,
                         totalPatients: dashboard.totalPatients,
                         totalRegistrations: dashboard.totalRegistrations,
@@ -120,7 +124,7 @@ export class QdrantIndexingService {
             // Index all points in one batch call
             await this.qdrantService.indexs(this.DASHBOARD_COLLECTION, points);
 
-            this.logger.debug(`✅ ${dashboardArray.length} dashboard(s) indexed`);
+            this.logger.debug(`✅ ${dashboardArray.length} dashboard(s) indexed with hybrid embeddings`);
         } catch (error) {
             this.logger.error(`Error indexing dashboard(s):`, error);
             throw error;
@@ -179,21 +183,26 @@ export class QdrantIndexingService {
             // Handle both single and multiple registrations
             const registrationArray = Array.isArray(registrations) ? registrations : [registrations];
 
-            // Generate embeddings for all registrations (loop only on embedding)
+            // Generate hybrid embeddings for all registrations
             const points: any[] = [];
             for (const registration of registrationArray) {
                 const embeddingText = this.buildRegistrationEmbeddingText(registration);
-                const embedding = await this.embeddingService.generateEmbedding(embeddingText);
+                const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(embeddingText);
 
                 points.push({
                     id: registration._id.toString(),
-                    vector: embedding,
+                    vector: {
+                        dense: hybridEmbedding.dense,
+                        sparse: hybridEmbedding.sparse,
+                    },
                     payload: {
+                        id: registration._id.toString(),
                         registrationDate: registration.registrationDate,
                         registrationMethod: registration.registrationMethod,
                         status: registration.status,
                         doctorId: registration.doctorId,
                         patientId: registration.patientId,
+                        embeddingText,
                         type: 'registration',
                     },
                 });
@@ -202,7 +211,7 @@ export class QdrantIndexingService {
             // Index all points in one batch call
             await this.qdrantService.indexs(this.REGISTRATION_COLLECTION, points);
 
-            this.logger.debug(`✅ ${registrationArray.length} registration(s) indexed`);
+            this.logger.debug(`✅ ${registrationArray.length} registration(s) indexed with hybrid embeddings`);
         } catch (error) {
             this.logger.error(`Error indexing registration(s):`, error);
             throw error;
@@ -260,20 +269,25 @@ export class QdrantIndexingService {
             // Handle both single and multiple examinations
             const examinationArray = Array.isArray(examinations) ? examinations : [examinations];
 
-            // Generate embeddings for all examinations (loop only on embedding)
+            // Generate hybrid embeddings for all examinations
             const points: any[] = [];
             for (const examination of examinationArray) {
                 const embeddingText = this.buildExaminationEmbeddingText(examination);
-                const embedding = await this.embeddingService.generateEmbedding(embeddingText);
+                const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(embeddingText);
 
                 points.push({
                     id: examination._id.toString(),
-                    vector: embedding,
+                    vector: {
+                        dense: hybridEmbedding.dense,
+                        sparse: hybridEmbedding.sparse,
+                    },
                     payload: {
+                        id: examination._id.toString(),
                         examinationDate: examination.examinationDate,
                         status: examination.status,
                         doctorId: examination.doctorId,
                         patientId: examination.patientId,
+                        embeddingText,
                         type: 'examination',
                     },
                 });
@@ -282,7 +296,7 @@ export class QdrantIndexingService {
             // Index all points in one batch call
             await this.qdrantService.indexs(this.EXAMINATION_COLLECTION, points);
 
-            this.logger.debug(`✅ ${examinationArray.length} examination(s) indexed`);
+            this.logger.debug(`✅ ${examinationArray.length} examination(s) indexed with hybrid embeddings`);
         } catch (error) {
             this.logger.error(`Error indexing examination(s):`, error);
             throw error;
@@ -340,16 +354,20 @@ export class QdrantIndexingService {
             // Handle both single and multiple schedules
             const scheduleArray = Array.isArray(schedules) ? schedules : [schedules];
 
-            // Generate embeddings for all schedules (loop only on embedding)
+            // Generate hybrid embeddings for all schedules
             const points: any[] = [];
             for (const schedule of scheduleArray) {
                 const embeddingText = this.buildScheduleEmbeddingText(schedule);
-                const embedding = await this.embeddingService.generateEmbedding(embeddingText);
+                const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(embeddingText);
 
                 points.push({
                     id: schedule._id.toString(),
-                    vector: embedding,
+                    vector: {
+                        dense: hybridEmbedding.dense,
+                        sparse: hybridEmbedding.sparse,
+                    },
                     payload: {
+                        id: schedule._id.toString(),
                         dayOfWeek: schedule.dayOfWeek,
                         startTime: schedule.startTime,
                         endTime: schedule.endTime,
@@ -365,7 +383,7 @@ export class QdrantIndexingService {
             // Index all points in one batch call
             await this.qdrantService.indexs(this.SCHEDULE_COLLECTION, points);
 
-            this.logger.debug(`✅ ${scheduleArray.length} schedule(s) indexed`);
+            this.logger.debug(`✅ ${scheduleArray.length} schedule(s) indexed with hybrid embeddings`);
         } catch (error) {
             this.logger.error(`Error indexing schedule(s):`, error);
             throw error;
@@ -409,7 +427,7 @@ export class QdrantIndexingService {
             .map((stat: any) => `Dr. ${stat.doctorName}: ${stat.totalRegistrations} pendaftaran (${stat.totalCompleted} selesai)`)
             .join('; ');
 
-        return `Metrik Dashboard Klinik - ${formattedDate}. Total pasien: ${dashboard.totalPatients}. Total pendaftaran: ${dashboard.totalRegistrations}. Selesai: ${dashboard.totalCompleted}, Menunggu: ${dashboard.totalWaiting}, Sedang diperiksa: ${dashboard.totalExamining}, Dibatalkan: ${dashboard.totalCancelled}. Metode pendaftaran: ${methodText}. Statistik dokter: ${doctorStatsText}.`;
+        return `Laporan Metrik Dashboard Klinik - ${formattedDate}. Total pasien: ${dashboard.totalPatients}. Total pendaftaran: ${dashboard.totalRegistrations}. Selesai: ${dashboard.totalCompleted}, Menunggu: ${dashboard.totalWaiting}, Sedang diperiksa: ${dashboard.totalExamining}, Dibatalkan: ${dashboard.totalCancelled}. Metode pendaftaran: ${methodText}. Statistik dokter: ${doctorStatsText}.`;
     }
 
     private buildRegistrationEmbeddingText(registration: any): string {

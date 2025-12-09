@@ -4,9 +4,16 @@ import { QdrantClient } from '@qdrant/js-client-rest';
 
 export interface QdrantPoint {
     id: string;
-    vector: number[];
+    vector: {
+        dense: number[];
+        sparse?: {
+            indices: number[];
+            values: number[];
+        };
+    };
     payload: Record<string, any>;
 }
+
 
 export class QdrantSearchResponse {
     id: string;
@@ -32,7 +39,7 @@ export class QdrantService {
     }
 
     /**
-     * Create or recreate a collection
+     * Create or recreate a collection with hybrid vectors (dense + sparse)
      */
     async createCollection(collectionName: string): Promise<void> {
         try {
@@ -45,15 +52,20 @@ export class QdrantService {
                 return;
             }
 
-            // Create new collection
+            // Create new collection with hybrid vectors
             await this.client.createCollection(collectionName, {
                 vectors: {
-                    size: this.vectorSize,
-                    distance: 'Cosine',
+                    dense: {
+                        size: this.vectorSize,
+                        distance: 'Cosine',
+                    },
+                } as any,
+                sparse_vectors: {
+                    sparse: {},
                 },
-            });
+            } as any);
 
-            this.logger.log(`✅ Collection '${collectionName}' created successfully`);
+            this.logger.log(`✅ Hybrid collection '${collectionName}' created successfully (dense + sparse)`);
         } catch (error) {
             this.logger.error(`Error creating collection '${collectionName}':`, error);
             throw error;
@@ -78,27 +90,34 @@ export class QdrantService {
      */
     async index(
         collectionName: string,
-        id: string,
-        vector: number[],
-        payload: Record<string, any>,
+        point: QdrantPoint,
     ): Promise<void> {
         try {
+            const formattedPoint = {
+                ...point,
+                vector: {
+                    dense: point.vector.dense,
+                    sparse: point.vector.sparse ?? { indices: [], values: [] },
+                },
+            };
+
             await this.client.upsert(collectionName, {
-                points: [
-                    {
-                        id: this.stringToId(id),
-                        vector,
-                        payload,
-                    },
-                ],
+                points: [formattedPoint],
             });
 
-            this.logger.debug(`✅ Point '${id}' upserted to '${collectionName}'`);
+            this.logger.debug(
+                `✅ Hybrid point '${point.id}' upserted to '${collectionName}'`
+            );
         } catch (error) {
-            this.logger.error(`Error upserting point '${id}' to '${collectionName}':`, error);
+            this.logger.error(
+                `Error upserting hybrid point '${point.id}' to '${collectionName}':`,
+                error,
+            );
             throw error;
         }
     }
+
+
 
     /**
      * Upsert multiple points (documents) into a collection
@@ -110,7 +129,10 @@ export class QdrantService {
         try {
             const formattedPoints = points.map((p) => ({
                 id: this.stringToId(p.id),
-                vector: p.vector,
+                vector: {
+                    dense: p.vector.dense,
+                    sparse: p.vector.sparse ?? { indices: [], values: [] },
+                },
                 payload: p.payload,
             }));
 
@@ -118,12 +140,13 @@ export class QdrantService {
                 points: formattedPoints,
             });
 
-            this.logger.log(`✅ ${points.length} points upserted to '${collectionName}'`);
+            this.logger.log(`✅ ${points.length} hybrid points upserted to '${collectionName}'`);
         } catch (error) {
-            this.logger.error(`Error upserting points to '${collectionName}':`, error);
+            this.logger.error(`Error upserting hybrid points to '${collectionName}':`, error);
             throw error;
         }
     }
+
 
     /**
      * Delete a point from a collection
@@ -142,53 +165,161 @@ export class QdrantService {
     }
 
     /**
-     * Search for similar vectors in a collection with optional filtering
+     * Hybrid search combining dense vector search with sparse vector search using RRF
      * @param collectionName - Collection to search in
-     * @param vector - Query vector
+     * @param denseVector - Query dense vector for semantic search
+     * @param sparseVector - Query sparse vector for keyword/lexical search
      * @param limit - Maximum number of results
      * @param scoreThreshold - Minimum similarity score
-     * @param filter - Optional Qdrant filter for payload filtering
+     * @param filters - Optional Qdrant filter for payload filtering
      */
     async search(
         collectionName: string,
-        vector: number[],
+        denseVector: number[],
         limit: number = 10,
         scoreThreshold: number = 0.5,
         filters?: Record<string, any>,
+        sparseVector?: { indices: number[]; values: number[] },
     ): Promise<QdrantSearchResponse[]> {
         try {
-            const searchParams: any = {
-                vector,
-                limit,
+            // Build filter conditions
+            const queryFilter = this.buildQueryFilter(filters);
+
+            // Step 1: Dense vector search (semantic similarity)
+            this.logger.debug(`Dense vector search in '${collectionName}'`);
+            const denseSearchParams: any = {
+                vector: {
+                    name: 'dense',
+                    vector: denseVector,
+                },
+                limit: limit * 2,
                 score_threshold: scoreThreshold,
                 with_payload: true,
             };
+            if (queryFilter) {
+                denseSearchParams.query_filter = queryFilter;
+            }
+            const denseResults = await this.client.search(collectionName, denseSearchParams);
 
-            // Add filter if provided
-            if (filters && Object.keys(filters).length > 0) {
-                const mustConditions = Object.entries(filters).map(([key, value]) => ({
-                    key,
-                    match: {
-                        value,
-                    },
-                }));
-                searchParams.query_filter = {
-                    must: mustConditions,
-                };
+            // If no sparse vector provided, return dense results only
+            if (!sparseVector || sparseVector.indices.length === 0) {
+                return denseResults
+                    .slice(0, limit)
+                    .map((result) => ({
+                        id: result.id.toString(),
+                        score: result.score,
+                        payload: result.payload,
+                    }));
             }
 
-            const results = await this.client.search(collectionName, searchParams);
+            // Step 2: Sparse vector search (lexical/keyword matching)
+            this.logger.debug(`Sparse vector search in '${collectionName}'`);
+            const sparseSearchParams: any = {
+                vector: {
+                    name: 'sparse',
+                    vector: sparseVector,
+                },
+                limit: limit * 2,
+                with_payload: true,
+            };
+            if (queryFilter) {
+                sparseSearchParams.query_filter = queryFilter;
+            }
+            const sparseResults = await this.client.search(collectionName, sparseSearchParams);
 
-            return results.map((result) => ({
-                id: result.id.toString(),
-                score: result.score,
-                payload: result.payload,
-            }));
+            // Step 3: Merge results using Reciprocal Rank Fusion (RRF)
+            const mergedResults = this.reciprocalRankFusion(
+                denseResults,
+                sparseResults,
+                limit,
+            );
+
+            return mergedResults;
         } catch (error) {
             this.logger.error(`Error searching in '${collectionName}':`, error);
             throw error;
         }
     }
+
+
+    /**
+     * Reciprocal Rank Fusion (RRF) - combines multiple ranked lists
+     * Formula: RRF(d) = Σ(1 / (k + rank(d)))
+     * where k is typically 60
+     */
+    private reciprocalRankFusion(
+        denseResults: any[],
+        sparseResults: any[],
+        limit: number,
+    ): QdrantSearchResponse[] {
+        const k = 60; // RRF constant
+        const scoreMap = new Map<string, { score: number; payload: any; denseRank?: number; sparseRank?: number }>();
+
+        // Process dense results
+        denseResults.forEach((result, index) => {
+            const id = result.id.toString();
+            const rrfScore = 1 / (k + index + 1);
+            scoreMap.set(id, {
+                score: rrfScore,
+                payload: result.payload,
+                denseRank: index,
+            });
+        });
+
+        // Process sparse results
+        sparseResults.forEach((result, index) => {
+            const id = result.id.toString();
+            const rrfScore = 1 / (k + index + 1);
+
+            if (scoreMap.has(id)) {
+                // Combine RRF scores from both searches
+                const existing = scoreMap.get(id)!;
+                existing.score += rrfScore;
+                existing.sparseRank = index;
+            } else {
+                // Add new result from sparse search
+                scoreMap.set(id, {
+                    score: rrfScore,
+                    payload: result.payload,
+                    sparseRank: index,
+                });
+            }
+        });
+
+        // Sort by combined RRF score and return top results
+        const results = Array.from(scoreMap.values())
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit)
+            .map((item) => ({
+                id: Array.from(scoreMap.entries()).find(([_, v]) => v === item)?.[0] || '',
+                score: item.score,
+                payload: item.payload,
+            }));
+
+        this.logger.debug(`Hybrid search (RRF) completed: ${results.length} results`);
+        return results;
+    }
+
+    /**
+     * Build Qdrant query filter from MongoDB filters
+     */
+    private buildQueryFilter(filters?: Record<string, any>): any {
+        if (!filters || Object.keys(filters).length === 0) {
+            return undefined;
+        }
+
+        const mustConditions = Object.entries(filters).map(([key, value]) => ({
+            key,
+            match: {
+                value,
+            },
+        }));
+
+        return {
+            must: mustConditions,
+        };
+    }
+
 
     /**
      * Get collection info

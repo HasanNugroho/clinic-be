@@ -240,15 +240,17 @@ export class RagService {
       { name: 'dashboards', qdrantName: 'dashboards' },
     ];
 
-    // Generate embedding for the query
-    const queryEmbedding = await this.embeddingService.generateEmbedding(query);
+    // Generate hybrid embedding (dense + sparse) for the query
+    const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(query);
 
     // Search Qdrant for all collections in parallel
     const searches = collections.map((collection) =>
-      this.searchQdrantAndRetrieve(
+      this.searchHybrid(
         collection.name,
         collection.qdrantName,
-        queryEmbedding,
+        hybridEmbedding.dense,
+        hybridEmbedding.sparse,
+        query,
         userContext,
       ),
     );
@@ -263,10 +265,12 @@ export class RagService {
    * Search Qdrant by filter first, then retrieve and map data from MongoDB
    * Flow: Search Qdrant -> Get IDs -> Retrieve from MongoDB -> Map results
    */
-  private async searchQdrantAndRetrieve(
+  private async searchHybrid(
     collection: string,
     qdrantCollection: string,
-    queryEmbedding: number[],
+    denseVector: number[],
+    sparseVector: { indices: number[]; values: number[] },
+    query: string,
     userContext: UserContext,
   ): Promise<RetrievalResult[]> {
     const model = this.getModelForCollection(collection);
@@ -276,18 +280,14 @@ export class RagService {
       // Step 1: Get role-based filters
       const mongoFilters = this.getRoleFilters(collection, userContext);
 
-      // Step 2: Search Qdrant with vector similarity and role-based filters
-      this.logger.debug(`Searching Qdrant collection: ${qdrantCollection}`, {
-        collection: qdrantCollection,
-        filters: mongoFilters,
-        role: userContext.role,
-      });
+      // Step 2: Search Qdrant with hybrid vectors (dense + sparse) and role-based filters
       const qdrantResults = await this.qdrantService.search(
         qdrantCollection,
-        queryEmbedding,
-        10, // limit
-        0.5, // scoreThreshold
-        mongoFilters, // Apply role-based filters to Qdrant search
+        denseVector,
+        15,
+        0.5,
+        mongoFilters,
+        sparseVector
       );
 
       if (!qdrantResults || qdrantResults.length === 0) {
@@ -296,8 +296,8 @@ export class RagService {
       }
 
       // Step 3: Extract IDs from Qdrant results
-      const qdrantIds = qdrantResults.map((result) => new Types.ObjectId(result.id));
-      const scoreMap = new Map(qdrantResults.map((r) => [r.id, r.score]));
+      const qdrantIds = qdrantResults.map((result) => new Types.ObjectId(result.payload.id));
+      const scoreMap = new Map(qdrantResults.map((r) => [r.payload.id, r.score]));
 
       // Step 4: Retrieve data from MongoDB with role-based filtering
       const projection = this.getRoleProjection(collection, userContext.role);
@@ -360,6 +360,8 @@ export class RagService {
         const convertedDoc = this.convertObjectIdsToStrings(doc);
         const docId = doc._id.toString();
         const score = scoreMap.get(docId) || 0;
+
+        console.log(JSON.stringify(doc, null, 2))
 
         return {
           collection,
@@ -745,13 +747,14 @@ Metrik Dashboard Klinik:
   }
 
   private buildAdminSnippet(collection: string, data: any[]): string {
+
     switch (collection) {
       case 'examinations':
         return data
           .map(
             (d) => `
 Data Pemeriksaan (Non-Medis):
-- Tanggal: ${d.examinationDate}
+- Tanggal: ${JSON.stringify(d.examinationDate)}
 - Status: ${d.status}
 
 Catatan: Diagnosis dan catatan dokter disembunyikan sesuai kebijakan.
@@ -868,9 +871,15 @@ Metrik Dashboard Klinik:
 
   /**
    * Convert all ObjectIds to strings recursively
+   * Only converts ObjectId instances, preserves Date objects and other types
    */
   private convertObjectIdsToStrings(obj: any): any {
     if (obj === null || obj === undefined) return obj;
+
+    // Handle Date objects - preserve as-is
+    if (obj instanceof Date) {
+      return obj;
+    }
 
     // Handle ObjectId
     if (obj._bsontype === 'ObjectId' || (obj.toString && typeof obj.toString === 'function' && obj.constructor.name === 'ObjectId')) {
@@ -882,8 +891,8 @@ Metrik Dashboard Klinik:
       return obj.map((item) => this.convertObjectIdsToStrings(item));
     }
 
-    // Handle objects
-    if (typeof obj === 'object') {
+    // Handle objects (but not Date or other built-in types)
+    if (typeof obj === 'object' && obj.constructor === Object) {
       const converted: any = {};
       for (const key in obj) {
         if (obj.hasOwnProperty(key)) {
