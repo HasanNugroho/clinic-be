@@ -1,18 +1,19 @@
-import { Injectable, Logger, BadRequestException } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Registration } from '../registrations/schemas/registration.schema';
 import { Examination } from '../examinations/schemas/examination.schema';
-import { DayOfWeek, DoctorSchedule } from '../doctorSchedules/schemas/doctor-schedule.schema';
+import { DoctorSchedule } from '../doctorSchedules/schemas/doctor-schedule.schema';
 import { Dashboard } from '../dashboard/schemas/dashboard.schema';
 import { EmbeddingService } from '../../common/services/embedding/embedding.service';
 import { RedisService } from '../../common/services/redis/redis.service';
-import { User, UserRole } from '../users/schemas/user.schema';
+import { UserRole } from '../users/schemas/user.schema';
 import { UserContext } from '../users/interfaces/user.interface';
 import { randomUUID } from 'crypto';
 import { AiAssistantResponse, RagQueryDto, RetrievalResult } from './rag.dto';
 import OpenAI from 'openai';
-import { QdrantSearchResponse, QdrantService } from '../qdrant/qdrant.service';
+import { QdrantService } from '../qdrant/qdrant.service';
+import { SnippetBuilderService } from './services/snippet-builder.service';
 
 @Injectable()
 export class RagService {
@@ -28,13 +29,12 @@ export class RagService {
     private examinationModel: Model<Examination>,
     @InjectModel(DoctorSchedule.name)
     private doctorScheduleModel: Model<DoctorSchedule>,
-    @InjectModel(User.name)
-    private userModel: Model<User>,
     @InjectModel(Dashboard.name)
     private dashboardModel: Model<Dashboard>,
     private embeddingService: EmbeddingService,
     private redisService: RedisService,
     private qdrantService: QdrantService,
+    private snippetBuilderService: SnippetBuilderService,
   ) {
     this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
@@ -189,6 +189,7 @@ export class RagService {
       const history = await this.loadHistory(effectiveSessionId);
       const messages = this.buildMessages(query, rankedResults, userContext, history);
 
+      console.log(JSON.stringify(rankedResults, null, 2));
       // 6. Call LLM
       const llmPayload = await this.callLLM(messages);
 
@@ -287,7 +288,7 @@ export class RagService {
         15,
         0.5,
         mongoFilters,
-        sparseVector
+        sparseVector,
       );
 
       if (!qdrantResults || qdrantResults.length === 0) {
@@ -542,7 +543,29 @@ Your responsibilities:
       .map((r, idx) => `[${idx + 1}] [${r.collection}] ${r.snippet}`)
       .join('\n');
 
+    // Build user context information
+    const userContextInfo = `
+USER CONTEXT:
+- Role: ${userContext.role}
+- User ID: ${userContext.userId}
+- Name: ${userContext.fullName}
+
+INTERPRETASI PRONOUN:
+When interpreting the user's query:
+- Any first-person pronouns such as "saya", "aku", "ku", "milik saya", "punyaku",
+  or any equivalent expressions referring to "my", "mine", or "me",
+  MUST be interpreted strictly as referring to the currently logged-in user:
+    → User ID: ${userContext.userId}
+    → Role: ${userContext.role}
+    → Name: ${userContext.fullName}
+
+Do NOT generalize or assume pronouns refer to other users.
+Do NOT override explicit nouns ("jadwal semua dokter" tetap berarti semua dokter).
+Pronoun-based interpretation ONLY applies when the user uses first-person references.
+`;
+
     const system = `${instruction}
+${userContextInfo}
 ${previousTopic ? `PREVIOUS TOPIC: "${previousTopic}". Use only as supporting context; always prioritize the current query.` : ''}
 
 You are an AI assistant operating inside a medical information system and must answer ONLY using the provided context snippets.
@@ -576,14 +599,19 @@ You MUST respond in this exact JSON structure with no extra text:
 }
 
 TOPIC CHANGE LOGIC:
-${previousTopic
-        ? `- Previous topic: "${previousTopic}"
+${
+  previousTopic
+    ? `- Previous topic: "${previousTopic}"
 - Current query: "${query}"
 - Set isTopicChanged=false if the user is continuing, refining, or clarifying the same topic.
 - Set isTopicChanged=true ONLY if the user switches to a fundamentally different topic.`
-        : `- First query → isTopicChanged=false.`
-      }
+    : `- First query → isTopicChanged=false.`
+}
 
+TEMPORAL PRIORITY RULE:
+- If the user asks about "terakhir", "paling baru", "recent", or similar,
+- you MUST prioritize the context snippet with the most recent timestamp.
+- If such a snippet is provided, ignore older snippets even if semantically similar.
 
     `;
     const contextBlock = `Context:\n${context}`;
@@ -605,207 +633,7 @@ ${previousTopic
   }
 
   private buildSnippet(role: UserRole, collection: string, data: any[]): string {
-    const builders: Record<UserRole, (c: string, d: any[]) => string> = {
-      patient: this.buildPatientSnippet.bind(this),
-      doctor: this.buildDoctorSnippet.bind(this),
-      admin: this.buildAdminSnippet.bind(this),
-    };
-
-    const builder = builders[role];
-    return builder(collection, data);
-  }
-
-  private buildPatientSnippet(collection: string, data: any[]): string {
-    switch (collection) {
-      case 'doctorschedules':
-        return data
-          .map(
-            (d) => `
-Jadwal Dokter:
-- Dokter: ${d.doctor.fullName}
-- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
-- Hari: ${d.dayOfWeek}
-- Waktu: ${d.startTime} - ${d.endTime}
-- Kuota: ${d.quota}
-`,
-          )
-          .join('\n');
-
-      case 'examinations':
-        return data
-          .map(
-            (d) => `
-Ringkasan Pemeriksaan Anda:
-- Tanggal: ${d.examinationDate}
-- Status: ${d.status}
-- Ringkasan Diagnosis: ${d.diagnosisSummary}
-- Catatan Dokter: ${d.doctorNotes}
-
-Informasi ini bersifat edukatif dan bukan pengganti konsultasi langsung dengan dokter.
-`,
-          )
-          .join('\n');
-
-      case 'registrations':
-        return data
-          .map(
-            (d) => `
-Pendaftaran:
-- Tanggal Pendaftaran: ${d.registrationDate}
-- Metode: ${d.registrationMethod}
-- Status: ${d.status}
-- Nomor Antrian: ${d.queueNumber}
-- Dokter: ${d.doctor.fullName}
-- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
-`,
-          )
-          .join('\n');
-
-      case 'dashboards':
-        return data
-          .map(
-            (d) => `
-Metrik Dashboard Klinik:
-- Tanggal: ${d.date}
-- Total Pasien: ${d.totalPatients}
-- Total Pendaftaran: ${d.totalRegistrations}
-- Selesai: ${d.totalCompleted}, Menunggu: ${d.totalWaiting}, Sedang Diperiksa: ${d.totalExamining}, Dibatalkan: ${d.totalCancelled}
-- Pendaftaran Online: ${d.registrationMethod?.online ?? 0}, Offline: ${d.registrationMethod?.offline ?? 0}
-`,
-          )
-          .join('\n');
-
-      default:
-        return JSON.stringify(data, null, 2);
-    }
-  }
-
-  private buildDoctorSnippet(collection: string, data: any[]): string {
-    switch (collection) {
-      case 'examinations':
-        return data
-          .map(
-            (d) => `
-Data Pemeriksaan (Anonim):
-- Tanggal: ${d.examinationDate}
-- Status: ${d.status}
-- Ringkasan Diagnosis: ${d.diagnosisSummary}
-- Catatan Dokter: ${d.doctorNotes}
-- Dokter Pemeriksa: ${d.doctor.fullName}
-
-Catatan: Identitas pasien telah dianonimkan sesuai kebijakan privasi.
-`,
-          )
-          .join('\n');
-
-      case 'registrations':
-        return data
-          .map(
-            (d) => `
-Pendaftaran (Anonim):
-- Tanggal: ${d.registrationDate}
-- Status: ${d.status}
-- Nomor Antrian: ${d.queueNumber}
-- Dokter: ${d.doctor.fullName}
-`,
-          )
-          .join('\n');
-
-      case 'doctorschedules':
-        return data
-          .map(
-            (d) => `
-Jadwal Dokter:
-- Nama Dokter: ${d.doctor.fullName}
-- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
-- Hari: ${d.dayOfWeek}
-- Waktu: ${d.startTime} - ${d.endTime}
-- Kuota: ${d.quota}
-`,
-          )
-          .join('\n');
-
-      case 'dashboards':
-        return data
-          .map(
-            (d) => `
-Metrik Dashboard Klinik:
-- Tanggal: ${d.date}
-- Total Pasien: ${d.totalPatients}
-- Total Pendaftaran: ${d.totalRegistrations}
-- Selesai: ${d.totalCompleted}, Menunggu: ${d.totalWaiting}, Sedang Diperiksa: ${d.totalExamining}, Dibatalkan: ${d.totalCancelled}
-- Pendaftaran Online: ${d.registrationMethod?.online ?? 0}, Offline: ${d.registrationMethod?.offline ?? 0}
-`,
-          )
-          .join('\n');
-
-      default:
-        return JSON.stringify(data, null, 2);
-    }
-  }
-
-  private buildAdminSnippet(collection: string, data: any[]): string {
-
-    switch (collection) {
-      case 'examinations':
-        return data
-          .map(
-            (d) => `
-Data Pemeriksaan (Non-Medis):
-- Tanggal: ${JSON.stringify(d.examinationDate)}
-- Status: ${d.status}
-
-Catatan: Diagnosis dan catatan dokter disembunyikan sesuai kebijakan.
-`,
-          )
-          .join('\n');
-
-      case 'registrations':
-        return data
-          .map(
-            (d) => `
-Pendaftaran:
-- Tanggal: ${d.registrationDate}
-- Metode: ${d.registrationMethod}
-- Status: ${d.status}
-- Nomor Antrian: ${d.queueNumber}
-- Dokter: ${d.doctor.fullName}
-- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
-`,
-          )
-          .join('\n');
-
-      case 'doctorschedules':
-        return data
-          .map(
-            (d) => `
-Jadwal Dokter:
-- Dokter: ${d.doctor.fullName}
-- Spesialisasi: ${d.doctor.specialization ?? 'N/A'}
-- Hari: ${d.dayOfWeek}
-- Waktu: ${d.startTime} - ${d.endTime}
-- Kuota: ${d.quota}
-`,
-          )
-          .join('\n');
-
-      case 'dashboards':
-        return data
-          .map(
-            (d) => `
-Metrik Dashboard Klinik:
-- Tanggal: ${d.date}
-- Total Pasien: ${d.totalPatients}
-- Total Pendaftaran: ${d.totalRegistrations}
-- Selesai: ${d.totalCompleted}, Menunggu: ${d.totalWaiting}, Sedang Diperiksa: ${d.totalExamining}, Dibatalkan: ${d.totalCancelled}
-- Pendaftaran Online: ${d.registrationMethod?.online ?? 0}, Offline: ${d.registrationMethod?.offline ?? 0}
-`,
-          )
-          .join('\n');
-
-      default:
-        return JSON.stringify(data, null, 2);
-    }
+    return this.snippetBuilderService.buildSnippet(role, collection, data);
   }
 
   private async callLLM(
@@ -880,7 +708,10 @@ Metrik Dashboard Klinik:
     }
 
     // Handle ObjectId
-    if (obj._bsontype === 'ObjectId' || (obj.toString && typeof obj.toString === 'function' && obj.constructor.name === 'ObjectId')) {
+    if (
+      obj._bsontype === 'ObjectId' ||
+      (obj.toString && typeof obj.toString === 'function' && obj.constructor.name === 'ObjectId')
+    ) {
       return obj.toString();
     }
 

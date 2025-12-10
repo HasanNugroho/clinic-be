@@ -50,6 +50,7 @@ export class AuthService {
       sub: user._id,
       role: user.role,
       userId: user._id.toString(),
+      fullName: user.fullName,
     };
 
     // Generate access token
@@ -91,6 +92,7 @@ export class AuthService {
       sub: user._id,
       role: user.role,
       userId: user._id.toString(),
+      fullName: user.fullName,
     };
 
     const accessToken = this.jwtService.sign(payload);
