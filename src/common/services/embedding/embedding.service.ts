@@ -67,8 +67,18 @@ export class EmbeddingService {
             });
             const dense = response.data[0].embedding;
 
+            // Validate dense embedding
+            if (!dense || dense.length === 0) {
+                this.logger.error(`OpenAI API returned empty dense embedding for text: ${truncatedText.substring(0, 100)}`);
+                throw new Error(`Dense embedding is empty from OpenAI API`);
+            }
+
+            this.logger.debug(`Generated dense embedding with ${dense.length} dimensions`);
+
             // Generate sparse embedding from text
             const sparse = this.generateSparseEmbedding(truncatedText);
+
+            this.logger.debug(`Generated sparse embedding with ${sparse.indices.length} non-zero elements`);
 
             return { dense, sparse };
         } catch (error) {

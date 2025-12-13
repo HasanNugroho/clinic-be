@@ -183,16 +183,22 @@ export class RagService {
       // 1. Check topic from Redis
       const previousTopic = await this.loadTopic(effectiveSessionId);
 
-      console.log(previousTopic)
+      console.log(previousTopic);
       // 2. Prepare query for vector search
       const searchQuery = previousTopic ? `${previousTopic} ${query}` : query;
-      console.log(searchQuery)
+      console.log(searchQuery);
 
       const retrievalResults = await this.hybridRetrieval(searchQuery, userContext);
 
       const rankedResults = this.reRankResults(retrievalResults);
       const history = await this.loadHistory(effectiveSessionId);
-      const messages = this.messageBuilderService.buildMessages(query, rankedResults, userContext, history, previousTopic);
+      const messages = this.messageBuilderService.buildMessages(
+        query,
+        rankedResults,
+        userContext,
+        history,
+        previousTopic,
+      );
 
       // 6. Call LLM
       const llmPayload = await this.callLLM(messages);
@@ -209,7 +215,7 @@ export class RagService {
         sessionId: effectiveSessionId,
       };
 
-      console.log(JSON.stringify(llmPayload, null, 2))
+      console.log(JSON.stringify(llmPayload, null, 2));
       // 8. Save topic to Redis if extracted from LLM response
       if (llmPayload.questionTopic) {
         // If topic changed or no previous topic, replace with new topic
@@ -288,18 +294,16 @@ export class RagService {
       const qdrantResults = await this.qdrantService.search(
         qdrantCollection,
         denseVector,
+        sparseVector,
         15,
         0.5,
         mongoFilters,
-        sparseVector,
       );
 
       if (!qdrantResults || qdrantResults.length === 0) {
         this.logger.debug(`No results found in Qdrant for ${qdrantCollection}`);
         return [];
       }
-
-      // console.log(JSON.stringify(qdrantResults, null, 2))
 
       // Step 3: Extract IDs from Qdrant results
       const qdrantIds = qdrantResults.map((result) => new Types.ObjectId(result.payload.id));
@@ -496,7 +500,6 @@ export class RagService {
     }
     return baseFilters;
   }
-
 
   private buildSnippet(role: UserRole, collection: string, data: any[]): string {
     return this.snippetBuilderService.buildSnippet(role, collection, data);
