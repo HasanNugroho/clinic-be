@@ -20,7 +20,7 @@ export function convertObjectIdsToStrings(obj: any): any {
 
   // Handle arrays
   if (Array.isArray(obj)) {
-    return obj.map((item) => this.convertObjectIdsToStrings(item));
+    return obj.map((item) => convertObjectIdsToStrings(item));
   }
 
   // Handle objects (but not Date or other built-in types)
@@ -28,7 +28,7 @@ export function convertObjectIdsToStrings(obj: any): any {
     const converted: any = {};
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
-        converted[key] = this.convertObjectIdsToStrings(obj[key]);
+        converted[key] = convertObjectIdsToStrings(obj[key]);
       }
     }
     return converted;

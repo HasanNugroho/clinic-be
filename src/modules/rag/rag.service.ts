@@ -192,7 +192,6 @@ export class RagService {
       const history = await this.loadHistory(effectiveSessionId);
       const messages = this.messageBuilderService.buildMessages(query, rankedResults, userContext, history, previousTopic);
 
-      console.log(JSON.stringify(rankedResults, null, 2));
       // 6. Call LLM
       const llmPayload = await this.callLLM(messages);
 
