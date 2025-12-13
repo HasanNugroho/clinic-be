@@ -183,8 +183,10 @@ export class RagService {
       // 1. Check topic from Redis
       const previousTopic = await this.loadTopic(effectiveSessionId);
 
+      console.log(previousTopic)
       // 2. Prepare query for vector search
       const searchQuery = previousTopic ? `${previousTopic} ${query}` : query;
+      console.log(searchQuery)
 
       const retrievalResults = await this.hybridRetrieval(searchQuery, userContext);
 
@@ -207,6 +209,7 @@ export class RagService {
         sessionId: effectiveSessionId,
       };
 
+      console.log(JSON.stringify(llmPayload, null, 2))
       // 8. Save topic to Redis if extracted from LLM response
       if (llmPayload.questionTopic) {
         // If topic changed or no previous topic, replace with new topic
@@ -296,10 +299,11 @@ export class RagService {
         return [];
       }
 
+      // console.log(JSON.stringify(qdrantResults, null, 2))
+
       // Step 3: Extract IDs from Qdrant results
       const qdrantIds = qdrantResults.map((result) => new Types.ObjectId(result.payload.id));
       const scoreMap = new Map(qdrantResults.map((r) => [r.payload.id, r.score]));
-      const snippetMap = new Map(qdrantResults.map((r) => [r.payload.id, r.payload.embeddingText]));
 
       // Step 4: Retrieve data from MongoDB with role-based filtering
       const projection = this.getRoleProjection(collection, userContext.role);
@@ -362,11 +366,10 @@ export class RagService {
         const convertedDoc = convertObjectIdsToStrings(doc);
         const docId = doc._id.toString();
         const score = scoreMap.get(docId) || 0;
-        const snippet = snippetMap.get(docId) || this.buildSnippet(userContext.role, collection, [convertedDoc])
         return {
           collection,
           documentId: docId,
-          snippet,
+          snippet: this.buildSnippet(userContext.role, collection, [convertedDoc]),
           score,
           metadata: convertedDoc,
         };
@@ -436,7 +439,6 @@ export class RagService {
         totalCancelled: 1,
         registrationMethod: 1,
         doctorStats: 1,
-        embeddingText: 1,
       },
     };
 

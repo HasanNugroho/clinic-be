@@ -125,15 +125,6 @@ export class Dashboard {
         description: 'Updated timestamp',
     })
     updatedAt?: Date;
-
-    @Prop({ type: [Number], required: false, index: true, sparse: true })
-    embedding?: number[];
-
-    @Prop({ type: String, required: false, sparse: true })
-    embeddingText?: string;
-
-    @Prop({ type: Date, required: false, sparse: true })
-    embeddingUpdatedAt?: Date;
 }
 
 export const DashboardSchema = SchemaFactory.createForClass(Dashboard);

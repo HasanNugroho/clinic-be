@@ -151,11 +151,6 @@ ExaminationSchema.index({ status: 1 });
 function transform(doc, ret: any) {
   delete ret.__v;
 
-  // REMOVE SCHEDULE-LEVEL EMBEDDING FIELDS (if exist)
-  delete ret.embedding;
-  delete ret.embeddingText;
-  delete ret.embeddingUpdatedAt;
-
   // Convert IDs
   if (ret._id) ret._id = ret._id.toString();
 
@@ -177,9 +172,6 @@ function transform(doc, ret: any) {
       password,
       nik,
       birthDate,
-      embedding,
-      embeddingText,
-      embeddingUpdatedAt,
       __v,
       ...safeDoctor
     } = ret.doctor;
@@ -193,9 +185,6 @@ function transform(doc, ret: any) {
       password,
       nik,
       birthDate,
-      embedding,
-      embeddingText,
-      embeddingUpdatedAt,
       __v,
       ...safePatient
     } = ret.patient;

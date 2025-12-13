@@ -201,6 +201,9 @@ export class QdrantService {
             }
             const denseResults = await this.client.search(collectionName, denseSearchParams);
 
+            console.log('denseSearchParams' + JSON.stringify(denseSearchParams, null, 2))
+            console.log(JSON.stringify(denseResults, null, 2))
+
             // If no sparse vector provided, return dense results only
             if (!sparseVector || sparseVector.indices.length === 0) {
                 return denseResults

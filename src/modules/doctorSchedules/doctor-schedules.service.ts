@@ -77,9 +77,6 @@ export class DoctorSchedulesService {
               password: 0,
               nik: 0,
               birthDate: 0,
-              embedding: 0,
-              embeddingText: 0,
-              embeddingUpdatedAt: 0,
               __v: 0,
             },
           },
@@ -104,9 +101,6 @@ export class DoctorSchedulesService {
 
     pipeline.push({
       $project: {
-        embedding: 0,
-        embeddingText: 0,
-        embeddingUpdatedAt: 0,
         __v: 0,
       },
     });

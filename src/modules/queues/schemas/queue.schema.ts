@@ -143,13 +143,13 @@ QueueSchema.set('toJSON', {
     if (rest.patientId) rest.patientId = rest.patientId.toString();
     // Remove sensitive fields from populated doctor data
     if (rest.doctor) {
-      const { password, nik, birthDate, embedding, embeddingText, embeddingUpdatedAt, ...doctorData } = rest.doctor;
+      const { password, nik, birthDate, ...doctorData } = rest.doctor;
       if (doctorData._id) doctorData._id = doctorData._id.toString();
       rest.doctor = doctorData as any;
     }
     // Remove sensitive fields from populated patient data
     if (rest.patient) {
-      const { password, nik, birthDate, embedding, embeddingText, embeddingUpdatedAt, ...patientData } = rest.patient;
+      const { password, nik, birthDate, ...patientData } = rest.patient;
       if (patientData._id) patientData._id = patientData._id.toString();
       rest.patient = patientData as any;
     }
@@ -168,13 +168,13 @@ QueueSchema.set('toObject', {
     if (rest.patientId) rest.patientId = rest.patientId.toString();
     // Remove sensitive fields from populated doctor data
     if (rest.doctor) {
-      const { password, nik, birthDate, embedding, embeddingText, embeddingUpdatedAt, ...doctorData } = rest.doctor;
+      const { password, nik, birthDate, ...doctorData } = rest.doctor;
       if (doctorData._id) doctorData._id = doctorData._id.toString();
       rest.doctor = doctorData as any;
     }
     // Remove sensitive fields from populated patient data
     if (rest.patient) {
-      const { password, nik, birthDate, embedding, embeddingText, embeddingUpdatedAt, ...patientData } = rest.patient;
+      const { password, nik, birthDate, ...patientData } = rest.patient;
       if (patientData._id) patientData._id = patientData._id.toString();
       rest.patient = patientData as any;
     }

@@ -43,15 +43,6 @@ export class DoctorSchedule {
   @Prop({ required: true, default: 1 })
   quota: string;
 
-  @Prop({ type: [Number], required: false, select: false })
-  embedding?: number[];
-
-  @Prop({ required: false, select: false })
-  embeddingText?: string;
-
-  @Prop({ required: false })
-  embeddingUpdatedAt?: Date;
-
   @ApiProperty({
     required: false,
     type: User,
@@ -77,11 +68,6 @@ DoctorScheduleSchema.virtual('doctor', {
 function transform(doc, ret: any) {
   delete ret.__v;
 
-  // REMOVE SCHEDULE-LEVEL EMBEDDING FIELDS (if exist)
-  delete ret.embedding;
-  delete ret.embeddingText;
-  delete ret.embeddingUpdatedAt;
-
   // Convert IDs
   if (ret._id) ret._id = ret._id.toString();
 
@@ -95,9 +81,6 @@ function transform(doc, ret: any) {
       password,
       nik,
       birthDate,
-      embedding,
-      embeddingText,
-      embeddingUpdatedAt,
       __v,
       ...safeDoctor
     } = ret.doctor;
