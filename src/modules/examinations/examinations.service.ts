@@ -53,6 +53,13 @@ export class ExaminationsService {
     // Parse examination date
     const examinationDate = new Date(createExaminationDto.examinationDate);
 
+    // Generate examination number (count existing examinations for this patient-doctor pair)
+    const examinationCount = await this.examinationModel.countDocuments({
+      patientId: new Types.ObjectId(createExaminationDto.patientId),
+      doctorId: new Types.ObjectId(createExaminationDto.doctorId),
+    });
+    const examinationNumber = examinationCount + 1;
+
     // Create examination
     const createdExamination = new this.examinationModel({
       registrationId: new Types.ObjectId(createExaminationDto.registrationId),
@@ -61,6 +68,7 @@ export class ExaminationsService {
       examinationDate: examinationDate,
       diagnosisSummary: createExaminationDto.diagnosisSummary,
       doctorNotes: createExaminationDto.doctorNotes,
+      examinationNumber: examinationNumber,
       status: createExaminationDto.status,
     });
 
@@ -468,6 +476,7 @@ export class ExaminationsService {
           examinationDate,
           diagnosisSummary: examData.diagnosisSummary,
           doctorNotes: examData.doctorNotes,
+          examinationNumber: examData.examinationNumber,
           status: examData.status,
         });
 

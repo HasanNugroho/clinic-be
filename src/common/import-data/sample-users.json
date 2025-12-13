@@ -54,7 +54,7 @@
             "gender": "M",
             "address": "Jl. Kebon Jeruk No. 45, Jakarta Barat",
             "phoneNumber": "+628123456101",
-            "email": "andi.setiawan@email.com",
+            "email": "andi.setiawan@clinic.com",
             "password": "patient123",
             "role": "patient"
         },
@@ -65,7 +65,7 @@
             "gender": "F",
             "address": "Jl. Cempaka Putih No. 67, Jakarta Pusat",
             "phoneNumber": "+628123456102",
-            "email": "maria.sari@email.com",
+            "email": "maria.sari@clinic.com",
             "password": "patient123",
             "role": "patient"
         },
@@ -76,7 +76,7 @@
             "gender": "M",
             "address": "Jl. Menteng No. 89, Jakarta Pusat",
             "phoneNumber": "+628123456103",
-            "email": "david.gunawan@email.com",
+            "email": "david.gunawan@clinic.com",
             "password": "patient123",
             "role": "patient"
         },
@@ -87,7 +87,7 @@
             "gender": "F",
             "address": "Jl. Senopati No. 12, Jakarta Selatan",
             "phoneNumber": "+628123456104",
-            "email": "lisa.andini@email.com",
+            "email": "lisa.andini@clinic.com",
             "password": "patient123",
             "role": "patient"
         },
@@ -98,7 +98,7 @@
             "gender": "M",
             "address": "Jl. Kemang No. 34, Jakarta Selatan",
             "phoneNumber": "+628123456105",
-            "email": "robert.tanujaya@email.com",
+            "email": "robert.tanujaya@clinic.com",
             "password": "patient123",
             "role": "patient"
         },
@@ -109,7 +109,7 @@
             "gender": "F",
             "address": "Jl. Pondok Indah No. 56, Jakarta Selatan",
             "phoneNumber": "+628123456106",
-            "email": "emma.wulandari@email.com",
+            "email": "emma.wulandari@clinic.com",
             "password": "patient123",
             "role": "patient"
         }

@@ -60,6 +60,13 @@ export class Examination {
   doctorNotes: string;
 
   @ApiProperty({
+    example: '',
+    description: '',
+  })
+  @Prop({ type: Number, required: true })
+  examinationNumber: number;
+
+  @ApiProperty({
     enum: ExaminationStatus,
     example: ExaminationStatus.PENDING,
     description: 'Examination status',
@@ -78,15 +85,6 @@ export class Examination {
     description: 'Updated timestamp',
   })
   updatedAt?: Date;
-
-  @Prop({ type: [Number], required: false, select: false })
-  embedding?: number[];
-
-  @Prop({ required: false, select: false })
-  embeddingText?: string;
-
-  @Prop({ required: false })
-  embeddingUpdatedAt?: Date;
 
   @ApiProperty({
     type: Object,

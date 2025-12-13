@@ -1,350 +1,350 @@
 {
     "registrations": [
         {
-            "patientEmail": "andi.setiawan@email.com",
+            "patientEmail": "andi.setiawan@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-04T08:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "maria.sari@email.com",
+            "patientEmail": "maria.sari@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-04T09:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "david.gunawan@email.com",
+            "patientEmail": "david.gunawan@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-05T08:45:00Z",
             "registrationMethod": "offline",
             "queueNumber": 1
         },
         {
-            "patientEmail": "lisa.andini@email.com",
+            "patientEmail": "lisa.andini@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-04T10:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "robert.tanujaya@email.com",
+            "patientEmail": "robert.tanujaya@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-06T09:15:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "emma.wulandari@email.com",
+            "patientEmail": "emma.wulandari@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-05T10:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "andi.setiawan@email.com",
+            "patientEmail": "andi.setiawan@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-06T09:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "maria.sari@email.com",
+            "patientEmail": "maria.sari@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-07T10:15:00Z",
             "registrationMethod": "offline",
             "queueNumber": 1
         },
         {
-            "patientEmail": "david.gunawan@email.com",
+            "patientEmail": "david.gunawan@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-08T10:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "lisa.andini@email.com",
+            "patientEmail": "lisa.andini@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-08T11:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "robert.tanujaya@email.com",
+            "patientEmail": "robert.tanujaya@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-08T08:45:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "emma.wulandari@email.com",
+            "patientEmail": "emma.wulandari@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-09T11:00:00Z",
             "registrationMethod": "offline",
             "queueNumber": 1
         },
         {
-            "patientEmail": "andi.setiawan@email.com",
+            "patientEmail": "andi.setiawan@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-11T10:15:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "maria.sari@email.com",
+            "patientEmail": "maria.sari@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-11T10:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "david.gunawan@email.com",
+            "patientEmail": "david.gunawan@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-12T09:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "lisa.andini@email.com",
+            "patientEmail": "lisa.andini@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-13T11:15:00Z",
             "registrationMethod": "offline",
             "queueNumber": 1
         },
         {
-            "patientEmail": "robert.tanujaya@email.com",
+            "patientEmail": "robert.tanujaya@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-13T09:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "emma.wulandari@email.com",
+            "patientEmail": "emma.wulandari@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-15T10:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "andi.setiawan@email.com",
+            "patientEmail": "andi.setiawan@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-12T10:45:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "maria.sari@email.com",
+            "patientEmail": "maria.sari@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-13T13:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "david.gunawan@email.com",
+            "patientEmail": "david.gunawan@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-15T11:15:00Z",
             "registrationMethod": "offline",
             "queueNumber": 2
         },
         {
-            "patientEmail": "lisa.andini@email.com",
+            "patientEmail": "lisa.andini@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-14T10:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "robert.tanujaya@email.com",
+            "patientEmail": "robert.tanujaya@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-18T09:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "emma.wulandari@email.com",
+            "patientEmail": "emma.wulandari@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-15T09:15:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "andi.setiawan@email.com",
+            "patientEmail": "andi.setiawan@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-19T09:30:00Z",
             "registrationMethod": "offline",
             "queueNumber": 1
         },
         {
-            "patientEmail": "maria.sari@email.com",
+            "patientEmail": "maria.sari@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-22T10:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "david.gunawan@email.com",
+            "patientEmail": "david.gunawan@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-22T09:45:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "lisa.andini@email.com",
+            "patientEmail": "lisa.andini@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-22T11:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "robert.tanujaya@email.com",
+            "patientEmail": "robert.tanujaya@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-21T09:15:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "emma.wulandari@email.com",
+            "patientEmail": "emma.wulandari@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-25T10:30:00Z",
             "registrationMethod": "offline",
             "queueNumber": 1
         },
         {
-            "patientEmail": "andi.setiawan@email.com",
+            "patientEmail": "andi.setiawan@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-25T09:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "maria.sari@email.com",
+            "patientEmail": "maria.sari@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-26T11:15:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "david.gunawan@email.com",
+            "patientEmail": "david.gunawan@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-27T09:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "lisa.andini@email.com",
+            "patientEmail": "lisa.andini@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-08-27T10:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "robert.tanujaya@email.com",
+            "patientEmail": "robert.tanujaya@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-08-29T10:45:00Z",
             "registrationMethod": "offline",
             "queueNumber": 1
         },
         {
-            "patientEmail": "emma.wulandari@email.com",
+            "patientEmail": "emma.wulandari@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-08-28T11:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "andi.setiawan@email.com",
+            "patientEmail": "andi.setiawan@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-09-01T09:15:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "maria.sari@email.com",
+            "patientEmail": "maria.sari@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-09-01T10:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "david.gunawan@email.com",
+            "patientEmail": "david.gunawan@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-09-02T09:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "lisa.andini@email.com",
+            "patientEmail": "lisa.andini@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-09-03T11:15:00Z",
             "registrationMethod": "offline",
             "queueNumber": 1
         },
         {
-            "patientEmail": "robert.tanujaya@email.com",
+            "patientEmail": "robert.tanujaya@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-09-03T09:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "emma.wulandari@email.com",
+            "patientEmail": "emma.wulandari@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-09-05T10:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "andi.setiawan@email.com",
+            "patientEmail": "andi.setiawan@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-09-04T09:45:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "maria.sari@email.com",
+            "patientEmail": "maria.sari@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-09-05T11:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 2
         },
         {
-            "patientEmail": "david.gunawan@email.com",
+            "patientEmail": "david.gunawan@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-09-05T09:15:00Z",
             "registrationMethod": "offline",
             "queueNumber": 1
         },
         {
-            "patientEmail": "lisa.andini@email.com",
+            "patientEmail": "lisa.andini@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-09-09T10:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "robert.tanujaya@email.com",
+            "patientEmail": "robert.tanujaya@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-09-10T10:00:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "emma.wulandari@email.com",
+            "patientEmail": "emma.wulandari@clinic.com",
             "doctorEmail": "amanda.kusuma@clinic.com",
             "registrationDate": "2025-09-10T11:15:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "andi.setiawan@email.com",
+            "patientEmail": "andi.setiawan@clinic.com",
             "doctorEmail": "sarah.wijaya@clinic.com",
             "registrationDate": "2025-09-12T09:30:00Z",
             "registrationMethod": "online",
             "queueNumber": 1
         },
         {
-            "patientEmail": "maria.sari@email.com",
+            "patientEmail": "maria.sari@clinic.com",
             "doctorEmail": "michael.santoso@clinic.com",
             "registrationDate": "2025-09-11T10:00:00Z",
             "registrationMethod": "offline",

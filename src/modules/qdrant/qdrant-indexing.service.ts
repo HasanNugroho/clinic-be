@@ -458,6 +458,9 @@ export class QdrantIndexingService {
     private buildExaminationEmbeddingText(examination: any): string {
         const fields: Record<string, any> = {};
 
+        if (examination.examinationNumber) {
+            fields['pemeriksaan ke'] = examination.examinationNumber;
+        }
         if (examination.examinationDate) {
             fields['tanggal pemeriksaan'] = examination.examinationDate.toISOString().split('T')[0];
         }

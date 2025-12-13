@@ -250,7 +250,6 @@ export class RagService {
         collection.qdrantName,
         hybridEmbedding.dense,
         hybridEmbedding.sparse,
-        query,
         userContext,
       ),
     );
@@ -270,7 +269,6 @@ export class RagService {
     qdrantCollection: string,
     denseVector: number[],
     sparseVector: { indices: number[]; values: number[] },
-    query: string,
     userContext: UserContext,
   ): Promise<RetrievalResult[]> {
     const model = this.getModelForCollection(collection);
@@ -407,6 +405,7 @@ export class RagService {
         examinationDate: 1,
         diagnosisSummary: 1,
         doctorNotes: 1,
+        examinationNumber: 1,
         status: 1,
         'doctor.fullName': 1,
         'doctor.specialization': 1,
@@ -687,6 +686,7 @@ Metrik Dashboard Klinik:
           .map(
             (d) => `
 Data Pemeriksaan (Anonim):
+- Pemeriksaan Ke: ${d.examinationNumber}
 - Tanggal: ${d.examinationDate}
 - Status: ${d.status}
 - Ringkasan Diagnosis: ${d.diagnosisSummary}
