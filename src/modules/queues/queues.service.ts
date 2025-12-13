@@ -7,7 +7,7 @@ import { QueryQueueDto, QueuePaginatedResponse } from './dto/query-queue.dto';
 import { NextQueueDto } from './dto/next-queue.dto';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue as BullQueue } from 'bullmq';
-import { transformObjectId } from '../../common/utils/transform-objectid.util';
+import { convertObjectIdsToStrings } from '../../common/utils/transform-objectid.util';
 import { WebSocketGateway } from './websocket/queue.gateway';
 import { SortOrder } from '../../common/dtos/pagination.dto';
 import { Registration } from '../registrations/schemas/registration.schema';
@@ -180,7 +180,7 @@ export class QueuesService {
       throw new NotFoundException(`Queue with ID ${id} not found`);
     }
 
-    return transformObjectId<Queue>(queue);
+    return convertObjectIdsToStrings(queue);
   }
 
   async getCurrentQueue(doctorId: string, queueDate: string): Promise<Queue | null> {
@@ -200,7 +200,7 @@ export class QueuesService {
       .lean()
       .exec();
 
-    return currentQueue ? transformObjectId<Queue>(currentQueue) : null;
+    return currentQueue ? convertObjectIdsToStrings(currentQueue) : null;
   }
 
   async callNextQueue(nextQueueDto: NextQueueDto): Promise<Queue> {
@@ -307,7 +307,7 @@ export class QueuesService {
       .lean()
       .exec();
 
-    return transformObjectId<Queue[]>(queues);
+    return convertObjectIdsToStrings(queues);
   }
 
   /**
@@ -326,7 +326,7 @@ export class QueuesService {
       throw new NotFoundException('Queue not found');
     }
 
-    return transformObjectId<Queue>(populated);
+    return convertObjectIdsToStrings(populated);
   }
 
   /**

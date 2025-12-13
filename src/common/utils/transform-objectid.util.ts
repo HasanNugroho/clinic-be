@@ -1,29 +1,38 @@
-export function transformObjectId<T>(data: any): T {
-  if (!data) return data;
+/**
+ * Convert all ObjectIds to strings recursively
+ * Only converts ObjectId instances, preserves Date objects and other types
+ */
+export function convertObjectIdsToStrings(obj: any): any {
+  if (obj === null || obj === undefined) return obj;
 
-  const convert = (obj: any): any => {
-    if (Array.isArray(obj)) {
-      return obj.map(item => convert(item));
-    }
-
-    if (obj && typeof obj === 'object') {
-      const newObj: any = {};
-      for (const key of Object.keys(obj)) {
-        const value = obj[key];
-
-        if (key === '_id' && value) {
-          newObj[key] = value.toString();
-        } else if (value && typeof value === 'object') {
-          newObj[key] = convert(value);
-        } else {
-          newObj[key] = value;
-        }
-      }
-      return newObj;
-    }
-
+  // Handle Date objects - preserve as-is
+  if (obj instanceof Date) {
     return obj;
-  };
+  }
 
-  return convert(data);
+  // Handle ObjectId
+  if (
+    obj._bsontype === 'ObjectId' ||
+    (obj.toString && typeof obj.toString === 'function' && obj.constructor.name === 'ObjectId')
+  ) {
+    return obj.toString();
+  }
+
+  // Handle arrays
+  if (Array.isArray(obj)) {
+    return obj.map((item) => this.convertObjectIdsToStrings(item));
+  }
+
+  // Handle objects (but not Date or other built-in types)
+  if (typeof obj === 'object' && obj.constructor === Object) {
+    const converted: any = {};
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        converted[key] = this.convertObjectIdsToStrings(obj[key]);
+      }
+    }
+    return converted;
+  }
+
+  return obj;
 }
