@@ -296,6 +296,7 @@ export class RagService {
       // Step 3: Extract IDs from Qdrant results
       const qdrantIds = qdrantResults.map((result) => new Types.ObjectId(result.payload.id));
       const scoreMap = new Map(qdrantResults.map((r) => [r.payload.id, r.score]));
+      const snippetMap = new Map(qdrantResults.map((r) => [r.payload.id, r.payload.embeddingText]));
 
       // Step 4: Retrieve data from MongoDB with role-based filtering
       const projection = this.getRoleProjection(collection, userContext.role);
@@ -358,11 +359,11 @@ export class RagService {
         const convertedDoc = this.convertObjectIdsToStrings(doc);
         const docId = doc._id.toString();
         const score = scoreMap.get(docId) || 0;
-
+        const snippet = snippetMap.get(docId) || this.buildSnippet(userContext.role, collection, [convertedDoc])
         return {
           collection,
           documentId: docId,
-          snippet: this.buildSnippet(userContext.role, collection, [convertedDoc]),
+          snippet,
           score,
           metadata: convertedDoc,
         };
@@ -635,6 +636,7 @@ Jadwal Dokter:
           .map(
             (d) => `
 Ringkasan Pemeriksaan Anda:
+- Pemeriksaan Ke: ${d.examinationNumber}
 - Tanggal: ${d.examinationDate}
 - Status: ${d.status}
 - Ringkasan Diagnosis: ${d.diagnosisSummary}

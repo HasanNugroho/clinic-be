@@ -7,7 +7,7 @@ import { Dashboard } from '../dashboard/schemas/dashboard.schema';
 import { Registration } from '../registrations/schemas/registration.schema';
 import { Examination } from '../examinations/schemas/examination.schema';
 import { DoctorSchedule } from '../doctorSchedules/schemas/doctor-schedule.schema';
-
+import { numberToIndonesianOrdinal } from '../../common/utils/keyword-number.util';
 @Injectable()
 export class QdrantIndexingService {
     private readonly logger = new Logger(QdrantIndexingService.name);
@@ -227,7 +227,8 @@ export class QdrantIndexingService {
 
             const examinations = await this.examinationModel
                 .find()
-                .populate('doctorId', 'fullName specialization');
+                .populate('doctorId', 'fullName specialization')
+                .populate('patientId', 'fullName');
 
             this.logger.log(`🏥 Found ${examinations.length} examinations to index`);
 
@@ -393,19 +394,35 @@ export class QdrantIndexingService {
     /**
      * Index all collections
      */
-    async indexAll(): Promise<{ dashboards: number; registrations: number; examinations: number; schedules: number }> {
+    async index(collections?: ('dashboards' | 'registrations' | 'examinations' | 'schedules')[]): Promise<{ dashboards: number; registrations: number; examinations: number; schedules: number }> {
         try {
-            this.logger.log('🔄 Starting full indexing of all collections...');
+            this.logger.log('🔄 Starting indexing...');
 
-            const dashboards = await this.indexAllDashboards();
-            const registrations = await this.indexAllRegistrations();
-            const examinations = await this.indexAllExaminations();
-            const schedules = await this.indexAllSchedules();
+            // Default to all collections if not specified
+            const collectionsToIndex = collections || ['dashboards', 'registrations', 'examinations', 'schedules'];
 
-            this.logger.log('✅ Full indexing completed');
+            let dashboards = 0;
+            let registrations = 0;
+            let examinations = 0;
+            let schedules = 0;
+
+            if (collectionsToIndex.includes('dashboards')) {
+                dashboards = await this.indexAllDashboards();
+            }
+            if (collectionsToIndex.includes('registrations')) {
+                registrations = await this.indexAllRegistrations();
+            }
+            if (collectionsToIndex.includes('examinations')) {
+                examinations = await this.indexAllExaminations();
+            }
+            if (collectionsToIndex.includes('schedules')) {
+                schedules = await this.indexAllSchedules();
+            }
+
+            this.logger.log('✅ Indexing completed');
             return { dashboards, registrations, examinations, schedules };
         } catch (error) {
-            this.logger.error('Error during full indexing:', error);
+            this.logger.error('Error during indexing:', error);
             throw error;
         }
     }
@@ -458,8 +475,11 @@ export class QdrantIndexingService {
     private buildExaminationEmbeddingText(examination: any): string {
         const fields: Record<string, any> = {};
 
+        if (examination.patientId?.fullName) {
+            fields['nama pasien'] = examination.patientId.fullName;
+        }
         if (examination.examinationNumber) {
-            fields['pemeriksaan ke'] = examination.examinationNumber;
+            fields['pemeriksaan ke'] = numberToIndonesianOrdinal(examination.examinationNumber);
         }
         if (examination.examinationDate) {
             fields['tanggal pemeriksaan'] = examination.examinationDate.toISOString().split('T')[0];
@@ -524,7 +544,7 @@ export class QdrantIndexingService {
 
             // Step 3: Index all data
             this.logger.log('📋 Step 3: Indexing all data...');
-            const results = await this.indexAll();
+            const results = await this.index(['dashboards', 'registrations', 'examinations', 'schedules']);
             this.logger.log('✅ All data indexed');
 
             this.logger.log('🎉 Full reindexing completed successfully');

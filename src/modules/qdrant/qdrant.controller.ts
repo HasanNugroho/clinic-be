@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Logger } from '@nestjs/common';
+import { Controller, Post, UseGuards, Logger, Body } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { UserRole } from '../users/schemas/user.schema';
 import { Roles } from 'src/common/decorators/roles.decorator';
@@ -7,6 +7,7 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { QdrantIndexingService } from 'src/modules/qdrant/qdrant-indexing.service';
 import { QdrantService } from 'src/modules/qdrant/qdrant.service';
 import { ApiHttpResponse } from 'src/common/decorators/api-response.decorator';
+import { QdrantIndexRequestDto, QdrantIndexResponseDto, QdrantInitializeResponseDto, QdrantReindexResponseDto } from './qdrant.dto';
 
 @ApiTags('Qdrant Vector Search')
 @Controller('qdrant')
@@ -29,8 +30,8 @@ export class QdrantController {
             'Collections: dashboards, registrations, examinations, doctor_schedules. ' +
             'Only accessible by admin users.',
     })
-    @ApiHttpResponse(200, 'Collections initialized successfully')
-    async initializeCollections(): Promise<any> {
+    @ApiHttpResponse(200, 'Collections initialized successfully', QdrantInitializeResponseDto)
+    async initializeCollections(): Promise<QdrantInitializeResponseDto> {
         this.logger.log('Initializing Qdrant collections');
 
         await this.qdrantIndexingService.initializeCollections();
@@ -47,24 +48,25 @@ export class QdrantController {
     }
 
     @Roles(UserRole.ADMIN)
-    @Post('index-all')
+    @Post('index')
     @ApiOperation({
-        summary: 'Index all collections to Qdrant',
+        summary: 'Index selected collections to Qdrant',
         description:
-            'Generate embeddings and index all records (dashboards, registrations, examinations, schedules) to Qdrant. ' +
-            'This is a comprehensive indexing operation that processes all collections sequentially. ' +
+            'Index documents from MongoDB to Qdrant vector database. ' +
+            'If no collections are specified, all collections will be indexed. ' +
+            'Supported collections: dashboards, registrations, examinations, schedules. ' +
             'Only accessible by admin users.',
     })
-    @ApiHttpResponse(200, 'All collections indexed successfully')
-    async indexAll(): Promise<any> {
-        this.logger.log('Starting full indexing of all collections');
-
-        const results = await this.qdrantIndexingService.indexAll();
-
+    @ApiHttpResponse(200, 'Indexing completed successfully', QdrantIndexResponseDto)
+    async index(
+        @Body() dto: QdrantIndexRequestDto,
+    ): Promise<QdrantIndexResponseDto> {
+        this.logger.log(`Indexing collections: ${dto.collections?.join(', ') || 'all'}`);
+        const results = await this.qdrantIndexingService.index(dto.collections);
         return {
             success: true,
             statusCode: 200,
-            message: 'All collections indexed successfully',
+            message: dto.collections ? `Collections [${dto.collections.join(', ')}] indexed successfully` : 'All collections indexed successfully',
             data: {
                 dashboards: results.dashboards,
                 registrations: results.registrations,
@@ -88,8 +90,8 @@ export class QdrantController {
             'This operation clears all vector data and rebuilds from scratch. ' +
             'Only accessible by admin users.',
     })
-    @ApiHttpResponse(200, 'All collections reindexed successfully')
-    async reindexAll(): Promise<any> {
+    @ApiHttpResponse(200, 'All collections reindexed successfully', QdrantReindexResponseDto)
+    async reindexAll(): Promise<QdrantReindexResponseDto> {
         this.logger.log('Starting full reindexing of all collections');
 
         const results = await this.qdrantIndexingService.reindexAll();
