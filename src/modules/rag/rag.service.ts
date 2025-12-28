@@ -26,8 +26,94 @@ import {
 export class RagService {
   private openai: OpenAI;
   private readonly logger = new Logger(RagService.name);
-  private readonly HISTORY_TTL = 86400; // 24 hours in seconds
+
+  private readonly HISTORY_TTL = 86400;
   private readonly HISTORY_KEY_PREFIX = 'rag:conversation:';
+  private readonly TOPIC_KEY_PREFIX = 'ai:assistant:topic:';
+  private readonly DEFAULT_SEARCH_LIMIT = 25;
+  private readonly DEFAULT_SCORE_THRESHOLD = 0.5;
+  private readonly DEFAULT_DATABASE_SCORE = 1.0;
+  private readonly MAX_CONTEXT_SOURCES = 15;
+  private readonly MIN_RELEVANCE_SCORE = 0.6;
+
+  private readonly COLLECTION_MAPPINGS = [
+    { name: 'doctorschedules', qdrantName: 'doctor_schedules' },
+    { name: 'examinations', qdrantName: 'examinations' },
+    { name: 'registrations', qdrantName: 'registrations' },
+    { name: 'dashboards', qdrantName: 'dashboards' },
+    { name: 'clinicinfos', qdrantName: 'clinic_info' },
+  ];
+
+  private readonly COLLECTION_KEYWORDS = {
+    examinations: [
+      'pemeriksaan',
+      'diagnosis',
+      'diagnosa',
+      'hasil pemeriksaan',
+      'catatan dokter',
+      'status pemeriksaan',
+      'diperiksa',
+      'pemeriksaan medis',
+    ],
+    registrations: [
+      'pendaftaran',
+      'registrasi',
+      'daftar',
+      'antrian',
+      'nomor antrian',
+      'keluhan',
+      'metode pendaftaran',
+      'status pendaftaran',
+    ],
+    doctorschedules: [
+      'jadwal',
+      'jadwal dokter',
+      'jadwal praktik',
+      'jam praktik',
+      'hari praktik',
+      'kuota',
+      'ketersediaan',
+      'waktu praktik',
+      'spesialisasi',
+      'ada dokter',
+      'dokter tersedia',
+      'dokter praktik',
+      'dokter buka',
+    ],
+    dashboards: [
+      'dashboard',
+      'metrik',
+      'statistik',
+      'laporan',
+      'total pasien',
+      'total pendaftaran',
+      'ringkasan',
+      'analisis',
+      'grafik',
+    ],
+    clinicinfos: [
+      'informasi klinik',
+      'jam buka',
+      'jam operasional',
+      'layanan',
+      'fasilitas',
+      'alur',
+      'prosedur',
+      'cara',
+      'persyaratan',
+      'check-in',
+      'ruang tunggu',
+      'apotek',
+      'laboratorium',
+      'imunisasi',
+      'spesialis',
+      'pembatalan',
+      'reschedule',
+      'cara daftar',
+      'gimana daftar',
+      'bagaimana daftar',
+    ],
+  };
 
   constructor(
     @InjectModel(Registration.name)
@@ -50,131 +136,6 @@ export class RagService {
     this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
 
-  private buildTopicKey(sessionId: string): string {
-    return `ai:assistant:topic:${sessionId}`;
-  }
-
-  /**
-   * Load conversation history from Redis
-   * @param sessionId - Unique session identifier
-   * @returns Array of conversation messages
-   */
-  private async loadHistory(
-    sessionId: string,
-  ): Promise<Array<{ role: 'user' | 'assistant'; content: string }>> {
-    try {
-      const key = `${this.HISTORY_KEY_PREFIX}${sessionId}`;
-      const history = await this.redisService.get(key);
-
-      if (!history) {
-        return [];
-      }
-
-      this.logger.debug(`Loaded history for session ${sessionId}`, {
-        messageCount: history.length,
-      });
-
-      return history;
-    } catch (error) {
-      this.logger.error('Failed to load conversation history', {
-        error: error.message,
-        stack: error.stack,
-        sessionId,
-      });
-      return [];
-    }
-  }
-
-  /**
-   * Save conversation history to Redis
-   * @param sessionId - Unique session identifier
-   * @param history - Array of conversation messages
-   */
-  private async saveHistory(
-    sessionId: string,
-    history: Array<{ role: 'user' | 'assistant'; content: string }>,
-  ): Promise<void> {
-    try {
-      const key = `${this.HISTORY_KEY_PREFIX}${sessionId}`;
-
-      // Save with TTL (24 hours)
-      await this.redisService.set(key, history, this.HISTORY_TTL);
-
-      this.logger.debug(`Saved history for session ${sessionId}`, {
-        messageCount: history.length,
-        ttl: this.HISTORY_TTL,
-      });
-    } catch (error) {
-      this.logger.error('Failed to save conversation history', {
-        error: error.message,
-        stack: error.stack,
-        sessionId,
-      });
-    }
-  }
-
-  /**
-   * Clear conversation history from Redis
-   * @param sessionId - Unique session identifier
-   */
-  async clearHistory(sessionId: string): Promise<void> {
-    try {
-      const key = `${this.HISTORY_KEY_PREFIX}${sessionId}`;
-      await this.redisService.del(key);
-
-      this.logger.debug(`Cleared history for session ${sessionId}`);
-    } catch (error) {
-      this.logger.error('Failed to clear conversation history', {
-        error: error.message,
-        stack: error.stack,
-        sessionId,
-      });
-    }
-  }
-
-  /**
-   * Loads conversation topic from Redis
-   *
-   * Retrieves the stored conversation topic for context continuity.
-   * Returns null if no topic found or on error.
-   *
-   * @param {string} sessionId - Session identifier
-   * @returns {Promise<string | null>} Current conversation topic or null
-   *
-   * @private
-   */
-  private async loadTopic(sessionId: string): Promise<string> {
-    try {
-      const key = this.buildTopicKey(sessionId);
-      const topic = await this.redisService.get(key);
-      return topic || '';
-    } catch (e) {
-      this.logger.warn(`Failed to load topic for ${sessionId}: ${e.message}`);
-      return '';
-    }
-  }
-
-  /**
-   * Saves conversation topic to Redis
-   *
-   * Stores the current conversation topic with TTL for context continuity.
-   *
-   * @param {string} sessionId - Session identifier
-   * @param {string} topic - Current conversation topic
-   * @returns {Promise<void>}
-   *
-   * @private
-   * @note Topic is stored for 2 hours
-   */
-  private async saveTopic(sessionId: string, topic: string): Promise<void> {
-    try {
-      const key = this.buildTopicKey(sessionId);
-      await this.redisService.set(key, topic, this.HISTORY_TTL);
-    } catch (e) {
-      this.logger.warn(`Failed to save topic for ${sessionId}: ${e.message}`);
-    }
-  }
-
   /**
    * Query RAG system with vector similarity search
    * @param query - User query string
@@ -187,66 +148,46 @@ export class RagService {
     const { query, sessionId } = input;
     const startTime = Date.now();
     const effectiveSessionId = sessionId || randomUUID();
+
     try {
-      // 1. Check topic from Redis
       const previousTopic = await this.loadTopic(effectiveSessionId);
+      this.logger.debug(`Previous topic for session ${effectiveSessionId}: ${previousTopic}`);
 
-      console.log(previousTopic);
-      // 2. Extract temporal information from query
       const temporalInfo = this.temporalExtractionService.extractTemporalInfo(query);
-      this.logger.debug(`Temporal info extracted: ${JSON.stringify(temporalInfo)}`);
+      this.logger.debug(`Temporal info: ${JSON.stringify(temporalInfo)}`);
 
-      // 3. Prepare query for vector search
-      const searchQuery = previousTopic ? `${previousTopic} ${query}` : query;
-      console.log(searchQuery);
+      const searchQuery = this.buildSearchQuery(query, previousTopic);
+      this.logger.debug(`Search query: ${searchQuery}`);
 
       const retrievalResults = await this.hybridRetrieval(searchQuery, userContext, temporalInfo);
+      const shouldSkipRerank = temporalInfo.hasTemporalQuery && temporalInfo.sortOrder;
+      const rankedResults = shouldSkipRerank
+        ? retrievalResults
+        : this.reRankResults(retrievalResults);
 
-      let rankedResults = retrievalResults;
-      if (!temporalInfo.hasTemporalQuery) {
-        rankedResults = this.reRankResults(retrievalResults);
-      }
+      const limitedResults = this.limitSourcesByScore(rankedResults);
 
       const history = await this.loadHistory(effectiveSessionId);
       const messages = this.messageBuilderService.buildMessages(
         query,
-        rankedResults,
+        limitedResults,
         userContext,
         history,
         previousTopic,
       );
 
-      // 6. Call LLM
       const llmPayload = await this.callLLM(messages);
 
-      // 7. Prepare response
-      const response: AiAssistantResponse = {
+      const response = this.buildResponse(
         query,
-        answer: this.sanitizeAnswer(llmPayload.answer || 'No response generated.'),
-        sources: rankedResults,
-        processingTimeMs: Date.now() - startTime,
-        followUpQuestion: llmPayload.followUpQuestion,
-        needsMoreInfo: llmPayload.needsMoreInfo,
-        suggestedFollowUps: llmPayload.suggestedFollowUps,
-        sessionId: effectiveSessionId,
-      };
+        llmPayload,
+        rankedResults,
+        effectiveSessionId,
+        startTime,
+      );
 
-      // 8. Save topic to Redis if extracted from LLM response
-      if (llmPayload.questionTopic) {
-        // If topic changed or no previous topic, replace with new topic
-        if (llmPayload.isTopicChanged || !previousTopic) {
-          await this.saveTopic(effectiveSessionId, llmPayload.questionTopic);
-        }
-      }
-
-      // 8. Persist conversation history and cache result
-      const updatedHistory: Array<{ role: 'user' | 'assistant'; content: string }> = [
-        ...history,
-        { role: 'user', content: query },
-        { role: 'assistant', content: response.answer },
-      ];
-
-      await this.saveHistory(effectiveSessionId, updatedHistory);
+      await this.updateTopicIfNeeded(effectiveSessionId, llmPayload, previousTopic);
+      await this.persistConversation(effectiveSessionId, query, response.answer, history);
 
       return response;
     } catch (error) {
@@ -255,83 +196,110 @@ export class RagService {
     }
   }
 
+  private buildSearchQuery(query: string, previousTopic: string): string {
+    return previousTopic ? `${previousTopic} ${query}` : query;
+  }
+
+  private buildResponse(
+    query: string,
+    llmPayload: any,
+    rankedResults: RetrievalResult[],
+    sessionId: string,
+    startTime: number,
+  ): AiAssistantResponse {
+    const filteredSources = this.filterSourcesByDocumentIds(
+      rankedResults,
+      llmPayload.sourceDocumentIds,
+    );
+
+    return {
+      query,
+      answer: this.sanitizeAnswer(llmPayload.answer || 'No response generated.'),
+      sources: filteredSources,
+      processingTimeMs: Date.now() - startTime,
+      followUpQuestion: llmPayload.followUpQuestion,
+      needsMoreInfo: llmPayload.needsMoreInfo,
+      suggestedFollowUps: llmPayload.suggestedFollowUps,
+      sessionId,
+    };
+  }
+
+  private filterSourcesByDocumentIds(
+    results: RetrievalResult[],
+    sourceDocumentIds?: string[],
+  ): RetrievalResult[] {
+    if (!sourceDocumentIds || sourceDocumentIds.length === 0) {
+      return results;
+    }
+
+    const filteredResults = results.filter((result) =>
+      sourceDocumentIds.includes(result.documentId),
+    );
+
+    if (filteredResults.length === 0) {
+      this.logger.warn('No sources matched the provided sourceDocumentIds, returning all results');
+      return results;
+    }
+
+    this.logger.debug(
+      `Filtered sources from ${results.length} to ${filteredResults.length} based on LLM citation`,
+    );
+    return filteredResults;
+  }
+
+  private async updateTopicIfNeeded(
+    sessionId: string,
+    llmPayload: any,
+    previousTopic: string,
+  ): Promise<void> {
+    if (llmPayload.questionTopic && (llmPayload.isTopicChanged || !previousTopic)) {
+      await this.saveTopic(sessionId, llmPayload.questionTopic);
+    }
+  }
+
+  private async persistConversation(
+    sessionId: string,
+    query: string,
+    answer: string,
+    history: Array<{ role: 'user' | 'assistant'; content: string }>,
+  ): Promise<void> {
+    const updatedHistory = [
+      ...history,
+      { role: 'user' as const, content: query },
+      { role: 'assistant' as const, content: answer },
+    ];
+    await this.saveHistory(sessionId, updatedHistory);
+  }
+
   private predictCollectionFromQuery(query: string): string[] {
     const queryLower = query.toLowerCase();
     const predictions: string[] = [];
 
-    const collectionKeywords = {
-      examinations: [
-        'pemeriksaan',
-        'diagnosis',
-        'diagnosa',
-        'hasil pemeriksaan',
-        'catatan dokter',
-        'status pemeriksaan',
-        'diperiksa',
-        'pemeriksaan medis',
-      ],
-      registrations: [
-        'pendaftaran',
-        'registrasi',
-        'daftar',
-        'antrian',
-        'nomor antrian',
-        'keluhan',
-        'metode pendaftaran',
-        'status pendaftaran',
-      ],
-      doctorschedules: [
-        'jadwal',
-        'jadwal dokter',
-        'jadwal praktik',
-        'jam praktik',
-        'hari praktik',
-        'kuota',
-        'ketersediaan',
-        'waktu praktik',
-        'spesialisasi',
-      ],
-      dashboards: [
-        'dashboard',
-        'metrik',
-        'statistik',
-        'laporan',
-        'total pasien',
-        'total pendaftaran',
-        'ringkasan',
-        'analisis',
-        'grafik',
-      ],
-      clinicinfos: [
-        'informasi klinik',
-        'jam buka',
-        'jam operasional',
-        'layanan',
-        'fasilitas',
-        'alur',
-        'prosedur',
-        'cara',
-        'persyaratan',
-        'check-in',
-        'ruang tunggu',
-        'apotek',
-        'laboratorium',
-        'imunisasi',
-        'spesialis',
-        'pembatalan',
-        'reschedule',
-      ],
-    };
+    const doctorAvailabilityPatterns = [
+      /\bada dokter\b/i,
+      /\bdokter (tersedia|praktik|buka|ada)\b/i,
+      /\b(jadwal|jam) (dokter|praktik)\b/i,
+    ];
 
-    for (const [collection, keywords] of Object.entries(collectionKeywords)) {
+    const hasDoctorAvailabilityQuery = doctorAvailabilityPatterns.some((pattern) =>
+      pattern.test(queryLower),
+    );
+
+    for (const [collection, keywords] of Object.entries(this.COLLECTION_KEYWORDS)) {
       if (keywords.some((keyword) => queryLower.includes(keyword))) {
         predictions.push(collection);
       }
     }
 
-    return predictions.length > 0
-      ? predictions
-      : ['doctorschedules', 'examinations', 'registrations', 'dashboards', 'clinicinfos'];
+    if (hasDoctorAvailabilityQuery && !predictions.includes('doctorschedules')) {
+      predictions.unshift('doctorschedules');
+    }
+
+    return predictions.length > 0 ? predictions : this.getAllCollectionNames();
+  }
+
+  private getAllCollectionNames(): string[] {
+    return this.COLLECTION_MAPPINGS.map((c) => c.name);
   }
 
   private async hybridRetrieval(
@@ -339,22 +307,15 @@ export class RagService {
     userContext: UserContext,
     temporalInfo: TemporalInfo,
   ): Promise<RetrievalResult[]> {
-    const results: RetrievalResult[] = [];
-    const allCollections = [
-      { name: 'doctorschedules', qdrantName: 'doctor_schedules' },
-      { name: 'examinations', qdrantName: 'examinations' },
-      { name: 'registrations', qdrantName: 'registrations' },
-      { name: 'dashboards', qdrantName: 'dashboards' },
-      { name: 'clinicinfos', qdrantName: 'clinic_info' },
-    ];
-
     const predictedCollections = this.predictCollectionFromQuery(query);
-    const collections = allCollections.filter((c) => predictedCollections.includes(c.name));
+    const collections = this.COLLECTION_MAPPINGS.filter((c) =>
+      predictedCollections.includes(c.name),
+    );
 
-    // Generate hybrid embedding (dense + sparse) for the query
+    this.logger.debug(`Predicted collections for query: ${predictedCollections.join(', ')}`);
+
     const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(query);
 
-    // Search Qdrant for all collections in parallel with temporal filtering
     const searches = collections.map((collection) =>
       this.searchHybrid(
         collection.name,
@@ -367,18 +328,9 @@ export class RagService {
     );
 
     const searchResults = await Promise.all(searches);
-    searchResults.forEach((collectionResults) => results.push(...collectionResults));
-
-    return results;
+    return searchResults.flat();
   }
 
-  /**
-   * Search Qdrant by filter first, then retrieve and map data from MongoDB
-   * Flow: Search Qdrant -> Get IDs -> Retrieve from MongoDB -> Map results
-   *
-   * Special case: If temporalInfo.hasTemporalQuery is true, skip Qdrant and search directly from MongoDB
-   * This is useful for temporal queries that require date-based sorting/filtering
-   */
   private async searchHybrid(
     collection: string,
     qdrantCollection: string,
@@ -391,23 +343,12 @@ export class RagService {
     if (!model) return [];
 
     try {
-      // Step 1: Get role-based filters
       const mongoFilters = this.getRoleFilters(collection, userContext);
+      const temporalFilter = this.buildTemporalFilter(collection, temporalInfo);
 
-      // Step 2: Build temporal filter based on collection type
-      let temporalFilter = null;
-      if (temporalInfo?.hasTemporalQuery) {
-        const dateField = this.getDateFieldForCollection(collection);
-        if (dateField) {
-          temporalFilter = this.temporalExtractionService.buildTemporalFilter(temporalInfo);
-          this.logger.debug(
-            `Applied temporal filter to ${collection}: ${JSON.stringify(temporalFilter)}`,
-          );
-        }
-      }
+      const shouldUseTemporalSearch = temporalInfo.hasTemporalQuery && temporalFilter !== null;
 
-      // CASE 1: Database-only search for temporal queries
-      if (temporalInfo.hasTemporalQuery) {
+      if (shouldUseTemporalSearch) {
         this.logger.debug(`Using database-only search for temporal query in ${collection}`);
         return await this.searchFromDatabaseOnly(
           collection,
@@ -419,113 +360,28 @@ export class RagService {
         );
       }
 
-      // CASE 2: Hybrid search (Qdrant + MongoDB)
-      // Step 3: Search Qdrant with hybrid vectors (dense + sparse), role-based filters, and temporal filters
       const qdrantResults = await this.qdrantService.search(
         qdrantCollection,
         denseVector,
         sparseVector,
-        25,
-        0.5,
+        this.DEFAULT_SEARCH_LIMIT,
+        this.DEFAULT_SCORE_THRESHOLD,
         mongoFilters,
       );
 
-      if (!qdrantResults || qdrantResults.length === 0) {
+      if (!qdrantResults?.length) {
         this.logger.debug(`No results found in Qdrant for ${qdrantCollection}`);
         return [];
       }
 
-      // Step 4: Extract IDs from Qdrant results
-      const qdrantIds = qdrantResults.map((result) => new Types.ObjectId(result.payload.id));
-      const scoreMap = new Map(qdrantResults.map((r) => [r.payload.id, r.score]));
-      const embeddingTextMap = new Map(
-        qdrantResults.map((r) => [r.payload.id, r.payload.embeddingText]),
+      return await this.enrichResultsFromMongoDB(
+        collection,
+        model,
+        qdrantResults,
+        mongoFilters,
+        temporalInfo,
+        userContext,
       );
-      const dateMap = new Map(qdrantResults.map((r) => [r.payload.id, r.payload.date]));
-
-      // Step 5: Retrieve data from MongoDB with role-based filtering
-      const projection = this.getRoleProjection(collection, userContext.role);
-      const filters = mongoFilters;
-
-      const pipeline: any[] = [
-        {
-          $match: {
-            _id: { $in: qdrantIds },
-            ...filters,
-          },
-        },
-      ];
-
-      // Add lookups for related data
-      pipeline.push(
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'doctorId',
-            foreignField: '_id',
-            as: 'doctor',
-          },
-        },
-        {
-          $unwind: {
-            path: '$doctor',
-            preserveNullAndEmptyArrays: true,
-          },
-        },
-      );
-
-      if (['examinations', 'registrations'].includes(collection)) {
-        pipeline.push(
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'patientId',
-              foreignField: '_id',
-              as: 'patient',
-            },
-          },
-          {
-            $unwind: {
-              path: '$patient',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-        );
-      }
-
-      pipeline.push({
-        $project: projection,
-      });
-
-      // Apply sorting if sortOrder is specified
-      if (temporalInfo?.sortOrder) {
-        const dateField = this.getDateFieldForCollection(collection);
-        if (dateField) {
-          const sortDirection = temporalInfo.sortOrder === 'asc' ? 1 : -1;
-          pipeline.push({
-            $sort: { [dateField]: sortDirection },
-          });
-        }
-      }
-
-      // Step 6: Execute aggregation and map results
-      const mongoResults = await model.aggregate(pipeline);
-
-      return mongoResults.map((doc) => {
-        const convertedDoc = convertObjectIdsToStrings(doc);
-        const docId = doc._id.toString();
-        const score = scoreMap.get(docId) || 0;
-        const embeddingText = embeddingTextMap.get(docId) || '';
-        const date = dateMap.get(docId) || null;
-        return {
-          collection,
-          documentId: docId,
-          snippet: embeddingText,
-          score,
-          metadata: convertedDoc,
-          date,
-        };
-      });
     } catch (error) {
       this.logger.error('Hybrid retrieval failed', {
         error: error.message,
@@ -538,10 +394,55 @@ export class RagService {
     }
   }
 
-  /**
-   * Search directly from MongoDB without Qdrant
-   * Used for temporal queries that require date-based sorting/filtering
-   */
+  private buildTemporalFilter(collection: string, temporalInfo: TemporalInfo): any {
+    if (!temporalInfo?.hasTemporalQuery) return null;
+
+    const dateField = this.getDateFieldForCollection(collection);
+    if (!dateField) {
+      this.logger.debug(`Collection ${collection} has no date field, skipping temporal filter`);
+      return null;
+    }
+
+    const filter = this.temporalExtractionService.buildTemporalFilter(temporalInfo);
+    this.logger.debug(`Applied temporal filter to ${collection}: ${JSON.stringify(filter)}`);
+    return filter;
+  }
+
+  private async enrichResultsFromMongoDB(
+    collection: string,
+    model: any,
+    qdrantResults: any[],
+    mongoFilters: any,
+    temporalInfo: TemporalInfo,
+    userContext: UserContext,
+  ): Promise<RetrievalResult[]> {
+    const qdrantIds = qdrantResults.map((result) => new Types.ObjectId(result.payload.id));
+    const scoreMap = new Map(qdrantResults.map((r) => [r.payload.id, r.score]));
+    const embeddingTextMap = new Map(
+      qdrantResults.map((r) => [r.payload.id, r.payload.embeddingText]),
+    );
+    const dateMap = new Map(qdrantResults.map((r) => [r.payload.id, r.payload.date]));
+
+    const projection = this.getRoleProjection(collection, userContext.role);
+    const pipeline = this.buildAggregationPipeline(
+      collection,
+      { _id: { $in: qdrantIds }, ...mongoFilters },
+      projection,
+      temporalInfo,
+    );
+
+    const mongoResults = await model.aggregate(pipeline);
+
+    return mongoResults.map((doc) => ({
+      collection,
+      documentId: doc._id.toString(),
+      snippet: embeddingTextMap.get(doc._id.toString()) || '',
+      score: scoreMap.get(doc._id.toString()) || 0,
+      metadata: convertObjectIdsToStrings(doc),
+      date: dateMap.get(doc._id.toString()) || null,
+    }));
+  }
+
   private async searchFromDatabaseOnly(
     collection: string,
     model: any,
@@ -554,85 +455,26 @@ export class RagService {
       const projection = this.getRoleProjection(collection, userContext.role);
       const dateField = this.getDateFieldForCollection(collection);
 
-      const pipeline: any[] = [
-        {
-          $match: {
-            ...mongoFilters,
-            ...(temporalFilter || {}),
-          },
-        },
-      ];
-
-      // Add lookups for related data
-      pipeline.push(
-        {
-          $lookup: {
-            from: 'users',
-            localField: 'doctorId',
-            foreignField: '_id',
-            as: 'doctor',
-          },
-        },
-        {
-          $unwind: {
-            path: '$doctor',
-            preserveNullAndEmptyArrays: true,
-          },
-        },
+      const matchFilters = { ...mongoFilters, ...(temporalFilter || {}) };
+      const pipeline = this.buildAggregationPipeline(
+        collection,
+        matchFilters,
+        projection,
+        temporalInfo,
       );
 
-      if (['examinations', 'registrations'].includes(collection)) {
-        pipeline.push(
-          {
-            $lookup: {
-              from: 'users',
-              localField: 'patientId',
-              foreignField: '_id',
-              as: 'patient',
-            },
-          },
-          {
-            $unwind: {
-              path: '$patient',
-              preserveNullAndEmptyArrays: true,
-            },
-          },
-        );
-      }
+      pipeline.push({ $limit: temporalInfo.limit || this.DEFAULT_SEARCH_LIMIT });
 
-      pipeline.push({
-        $project: projection,
-      });
-
-      // Apply sorting based on temporal info
-      if (temporalInfo?.sortOrder && dateField) {
-        const sortDirection = temporalInfo.sortOrder === 'asc' ? 1 : -1;
-        pipeline.push({
-          $sort: { [dateField]: sortDirection },
-        });
-      }
-
-      pipeline.push({
-        $limit: temporalInfo.limit || 25,
-      });
-
-      // Execute aggregation
       const mongoResults = await model.aggregate(pipeline);
 
-      return mongoResults.map((doc) => {
-        const convertedDoc = convertObjectIdsToStrings(doc);
-        const docId = doc._id.toString();
-        const date = dateField ? doc[dateField] : null;
-
-        return {
-          collection,
-          documentId: docId,
-          snippet: this.generateSnippet(doc, collection),
-          score: 1.0, // Default score for database-only results
-          metadata: convertedDoc,
-          date,
-        };
-      });
+      return mongoResults.map((doc) => ({
+        collection,
+        documentId: doc._id.toString(),
+        snippet: this.generateSnippet(doc, collection),
+        score: this.DEFAULT_DATABASE_SCORE,
+        metadata: convertObjectIdsToStrings(doc),
+        date: dateField ? doc[dateField] : null,
+      }));
     } catch (error) {
       this.logger.error('Database-only search failed', {
         error: error.message,
@@ -643,10 +485,63 @@ export class RagService {
     }
   }
 
-  /**
-   * Generate a text snippet from document data
-   * Used when searching directly from database without Qdrant's embeddingText
-   */
+  private buildAggregationPipeline(
+    collection: string,
+    matchFilters: any,
+    projection: any,
+    temporalInfo?: TemporalInfo,
+  ): any[] {
+    const pipeline: any[] = [{ $match: matchFilters }];
+
+    pipeline.push(
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'doctorId',
+          foreignField: '_id',
+          as: 'doctor',
+        },
+      },
+      {
+        $unwind: {
+          path: '$doctor',
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    );
+
+    if (['examinations', 'registrations'].includes(collection)) {
+      pipeline.push(
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'patientId',
+            foreignField: '_id',
+            as: 'patient',
+          },
+        },
+        {
+          $unwind: {
+            path: '$patient',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+      );
+    }
+
+    pipeline.push({ $project: projection });
+
+    if (temporalInfo?.sortOrder) {
+      const dateField = this.getDateFieldForCollection(collection);
+      if (dateField) {
+        const sortDirection = temporalInfo.sortOrder === 'asc' ? 1 : -1;
+        pipeline.push({ $sort: { [dateField]: sortDirection } });
+      }
+    }
+
+    return pipeline;
+  }
+
   private generateSnippet(doc: any, collection: string): string {
     return this.embeddingTextBuilderService.buildEmbeddingText(collection, doc);
   }
@@ -663,7 +558,17 @@ export class RagService {
   }
 
   private getRoleProjection(collection: string, role: UserRole): any {
-    const baseProjection = {
+    const baseProjection = this.getBaseProjection(collection);
+    const fieldsToRemove = this.getFieldsToRemoveByRole(role, collection);
+
+    const projection = { ...baseProjection };
+    fieldsToRemove.forEach((field) => delete projection[field]);
+
+    return projection;
+  }
+
+  private getBaseProjection(collection: string): any {
+    const projections: Record<string, any> = {
       doctorschedules: {
         dayOfWeek: 1,
         startTime: 1,
@@ -714,8 +619,11 @@ export class RagService {
       },
     };
 
-    /** LIST FIELD YANG HARUS DI-HIDE PER ROLE */
-    const fieldsToRemove: Record<UserRole, any> = {
+    return projections[collection] || {};
+  }
+
+  private getFieldsToRemoveByRole(role: UserRole, collection: string): string[] {
+    const fieldsToRemove: Record<UserRole, Record<string, string[]>> = {
       patient: {
         examinations: ['doctorId'],
         registrations: ['doctorId'],
@@ -723,7 +631,6 @@ export class RagService {
         dashboards: [],
         clinicinfos: [],
       },
-
       doctor: {
         examinations: ['patientId', "'patient.fullName'"],
         registrations: ['patientId', "'patient.fullName'"],
@@ -731,7 +638,6 @@ export class RagService {
         dashboards: [],
         clinicinfos: [],
       },
-
       admin: {
         examinations: ['diagnosisSummary', 'doctorNotes', 'patientId', "'patient.fullName'"],
         registrations: ['patientId', "'patient.fullName'"],
@@ -741,49 +647,32 @@ export class RagService {
       },
     };
 
-    // Start from base projection
-    const projection = { ...(baseProjection[collection] || {}) };
-
-    // Remove forbidden fields
-    const removeList = fieldsToRemove[role]?.[collection] || [];
-    for (const field of removeList) {
-      delete projection[field];
-    }
-
-    return projection;
+    return fieldsToRemove[role]?.[collection] || [];
   }
 
-  private getRoleFilters(collection: string, userContext: UserContext) {
-    const baseFilters: any = {};
+  private getRoleFilters(collection: string, userContext: UserContext): any {
+    const filters: any = {};
+    const isRelevantCollection = ['registrations', 'examinations'].includes(collection);
 
-    if (
-      userContext.role === UserRole.DOCTOR &&
-      ['registrations', 'examinations'].includes(collection)
-    ) {
-      baseFilters.doctorId = new Types.ObjectId(userContext.userId);
+    if (!isRelevantCollection) return filters;
+
+    if (userContext.role === UserRole.DOCTOR) {
+      filters.doctorId = new Types.ObjectId(userContext.userId);
+    } else if (userContext.role === UserRole.PATIENT) {
+      filters.patientId = new Types.ObjectId(userContext.userId);
     }
 
-    if (
-      userContext.role === UserRole.PATIENT &&
-      ['registrations', 'examinations'].includes(collection)
-    ) {
-      baseFilters.patientId = new Types.ObjectId(userContext.userId);
-    }
-    return baseFilters;
+    return filters;
   }
 
-  /**
-   * Get the date field name for a collection to use in temporal filtering
-   */
   private getDateFieldForCollection(collection: string): string | null {
-    const dateFieldMap: Record<string, string | null> = {
+    const dateFields: Record<string, string> = {
       examinations: 'examinationDate',
       registrations: 'registrationDate',
       dashboards: 'date',
-      doctorschedules: null,
       clinicinfos: 'createdAt',
     };
-    return dateFieldMap[collection] || null;
+    return dateFields[collection] || null;
   }
 
   private async callLLM(
@@ -795,6 +684,7 @@ export class RagService {
     suggestedFollowUps?: string[];
     questionTopic?: string;
     isTopicChanged?: boolean;
+    sourceDocumentIds?: string[];
   }> {
     try {
       const response = await this.openai.chat.completions.create({
@@ -828,20 +718,109 @@ export class RagService {
     }
   }
 
-  // Sort by score descending
   private reRankResults(results: RetrievalResult[]): RetrievalResult[] {
-    return results.sort((a, b) => b.score - a.score);
+    return [...results].sort((a, b) => b.score - a.score);
+  }
+
+  private limitSourcesByScore(results: RetrievalResult[]): RetrievalResult[] {
+    const filteredByScore = results.filter((result) => result.score >= this.MIN_RELEVANCE_SCORE);
+
+    const limitedResults = filteredByScore.slice(0, this.MAX_CONTEXT_SOURCES);
+
+    if (limitedResults.length < results.length) {
+      this.logger.debug(
+        `Limited sources from ${results.length} to ${limitedResults.length} ` +
+          `(score threshold: ${this.MIN_RELEVANCE_SCORE}, max: ${this.MAX_CONTEXT_SOURCES})`,
+      );
+    }
+
+    return limitedResults;
+  }
+
+  private buildTopicKey(sessionId: string): string {
+    return `${this.TOPIC_KEY_PREFIX}${sessionId}`;
+  }
+
+  private async loadHistory(
+    sessionId: string,
+  ): Promise<Array<{ role: 'user' | 'assistant'; content: string }>> {
+    try {
+      const key = `${this.HISTORY_KEY_PREFIX}${sessionId}`;
+      const history = await this.redisService.get(key);
+
+      if (!history) return [];
+
+      this.logger.debug(`Loaded history for session ${sessionId}: ${history.length} messages`);
+      return history;
+    } catch (error) {
+      this.logger.error('Failed to load conversation history', {
+        error: error.message,
+        stack: error.stack,
+        sessionId,
+      });
+      return [];
+    }
+  }
+
+  private async saveHistory(
+    sessionId: string,
+    history: Array<{ role: 'user' | 'assistant'; content: string }>,
+  ): Promise<void> {
+    try {
+      const key = `${this.HISTORY_KEY_PREFIX}${sessionId}`;
+      await this.redisService.set(key, history, this.HISTORY_TTL);
+      this.logger.debug(`Saved history for session ${sessionId}: ${history.length} messages`);
+    } catch (error) {
+      this.logger.error('Failed to save conversation history', {
+        error: error.message,
+        stack: error.stack,
+        sessionId,
+      });
+    }
+  }
+
+  async clearHistory(sessionId: string): Promise<void> {
+    try {
+      const key = `${this.HISTORY_KEY_PREFIX}${sessionId}`;
+      await this.redisService.del(key);
+      this.logger.debug(`Cleared history for session ${sessionId}`);
+    } catch (error) {
+      this.logger.error('Failed to clear conversation history', {
+        error: error.message,
+        stack: error.stack,
+        sessionId,
+      });
+    }
+  }
+
+  private async loadTopic(sessionId: string): Promise<string> {
+    try {
+      const key = this.buildTopicKey(sessionId);
+      const topic = await this.redisService.get(key);
+      return topic || '';
+    } catch (error) {
+      this.logger.warn(`Failed to load topic for ${sessionId}: ${error.message}`);
+      return '';
+    }
+  }
+
+  private async saveTopic(sessionId: string, topic: string): Promise<void> {
+    try {
+      const key = this.buildTopicKey(sessionId);
+      await this.redisService.set(key, topic, this.HISTORY_TTL);
+    } catch (error) {
+      this.logger.warn(`Failed to save topic for ${sessionId}: ${error.message}`);
+    }
   }
 
   private sanitizeAnswer(answer: string): string {
     if (!answer) return answer;
-    let out = answer;
-    // Replace markdown links [text](url) -> text
-    out = out.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi, '$1');
-    // Remove bare URLs
-    out = out.replace(/https?:\/\/[^\s)]+/gi, '').trim();
-    // Collapse extra spaces created by removals
-    out = out.replace(/\s{2,}/g, ' ').replace(/\s+\./g, '.');
-    return out;
+
+    return answer
+      .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/gi, '$1')
+      .replace(/https?:\/\/[^\s)]+/gi, '')
+      .replace(/\s{2,}/g, ' ')
+      .replace(/\s+\./g, '.')
+      .trim();
   }
 }
