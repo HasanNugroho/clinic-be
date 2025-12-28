@@ -14,10 +14,8 @@ import {
   RegistrationSchema,
 } from 'src/modules/registrations/schemas/registration.schema';
 import { User, UserSchema } from 'src/modules/users/schemas/user.schema';
-import {
-  Dashboard,
-  DashboardSchema,
-} from 'src/modules/dashboard/schemas/dashboard.schema';
+import { Dashboard, DashboardSchema } from 'src/modules/dashboard/schemas/dashboard.schema';
+import { ClinicInfo, ClinicInfoSchema } from 'src/modules/clinic-info/schemas/clinic-info.schema';
 
 @Module({
   imports: [
@@ -28,8 +26,9 @@ import {
       { name: Examination.name, schema: ExaminationSchema },
       { name: Queue.name, schema: QueueSchema },
       { name: Dashboard.name, schema: DashboardSchema },
+      { name: ClinicInfo.name, schema: ClinicInfoSchema },
     ]),
   ],
   exports: [MongooseModule],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

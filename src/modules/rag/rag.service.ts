@@ -5,6 +5,7 @@ import { Registration } from '../registrations/schemas/registration.schema';
 import { Examination } from '../examinations/schemas/examination.schema';
 import { DoctorSchedule } from '../doctorSchedules/schemas/doctor-schedule.schema';
 import { Dashboard } from '../dashboard/schemas/dashboard.schema';
+import { ClinicInfo } from '../clinic-info/schemas/clinic-info.schema';
 import { EmbeddingService } from '../../common/services/embedding/embedding.service';
 import { RedisService } from '../../common/services/redis/redis.service';
 import { UserRole } from '../users/schemas/user.schema';
@@ -37,6 +38,8 @@ export class RagService {
     private doctorScheduleModel: Model<DoctorSchedule>,
     @InjectModel(Dashboard.name)
     private dashboardModel: Model<Dashboard>,
+    @InjectModel(ClinicInfo.name)
+    private clinicInfoModel: Model<ClinicInfo>,
     private embeddingService: EmbeddingService,
     private redisService: RedisService,
     private qdrantService: QdrantService,
@@ -228,7 +231,6 @@ export class RagService {
         sessionId: effectiveSessionId,
       };
 
-      console.log(JSON.stringify(llmPayload, null, 2));
       // 8. Save topic to Redis if extracted from LLM response
       if (llmPayload.questionTopic) {
         // If topic changed or no previous topic, replace with new topic
@@ -300,6 +302,25 @@ export class RagService {
         'analisis',
         'grafik',
       ],
+      clinicinfos: [
+        'informasi klinik',
+        'jam buka',
+        'jam operasional',
+        'layanan',
+        'fasilitas',
+        'alur',
+        'prosedur',
+        'cara',
+        'persyaratan',
+        'check-in',
+        'ruang tunggu',
+        'apotek',
+        'laboratorium',
+        'imunisasi',
+        'spesialis',
+        'pembatalan',
+        'reschedule',
+      ],
     };
 
     for (const [collection, keywords] of Object.entries(collectionKeywords)) {
@@ -310,7 +331,7 @@ export class RagService {
 
     return predictions.length > 0
       ? predictions
-      : ['doctorschedules', 'examinations', 'registrations', 'dashboards'];
+      : ['doctorschedules', 'examinations', 'registrations', 'dashboards', 'clinicinfos'];
   }
 
   private async hybridRetrieval(
@@ -324,6 +345,7 @@ export class RagService {
       { name: 'examinations', qdrantName: 'examinations' },
       { name: 'registrations', qdrantName: 'registrations' },
       { name: 'dashboards', qdrantName: 'dashboards' },
+      { name: 'clinicinfos', qdrantName: 'clinic_info' },
     ];
 
     const predictedCollections = this.predictCollectionFromQuery(query);
@@ -539,9 +561,6 @@ export class RagService {
             ...(temporalFilter || {}),
           },
         },
-        {
-          $limit: temporalInfo.limit || 25,
-        },
       ];
 
       // Add lookups for related data
@@ -593,9 +612,8 @@ export class RagService {
         });
       }
 
-      // Limit results (default 25 to match Qdrant search limit)
       pipeline.push({
-        $limit: temporalInfo?.limit || 25,
+        $limit: temporalInfo.limit || 25,
       });
 
       // Execute aggregation
@@ -639,6 +657,7 @@ export class RagService {
       examinations: this.examinationModel,
       registrations: this.registrationModel,
       dashboards: this.dashboardModel,
+      clinicinfos: this.clinicInfoModel,
     };
     return models[collection] || null;
   }
@@ -687,6 +706,12 @@ export class RagService {
         registrationMethod: 1,
         doctorStats: 1,
       },
+      clinicinfos: {
+        title: 1,
+        category: 1,
+        content: 1,
+        createdAt: 1,
+      },
     };
 
     /** LIST FIELD YANG HARUS DI-HIDE PER ROLE */
@@ -696,6 +721,7 @@ export class RagService {
         registrations: ['doctorId'],
         doctorschedules: [],
         dashboards: [],
+        clinicinfos: [],
       },
 
       doctor: {
@@ -703,6 +729,7 @@ export class RagService {
         registrations: ['patientId', "'patient.fullName'"],
         doctorschedules: [],
         dashboards: [],
+        clinicinfos: [],
       },
 
       admin: {
@@ -710,6 +737,7 @@ export class RagService {
         registrations: ['patientId', "'patient.fullName'"],
         doctorschedules: [],
         dashboards: [],
+        clinicinfos: [],
       },
     };
 
@@ -752,7 +780,8 @@ export class RagService {
       examinations: 'examinationDate',
       registrations: 'registrationDate',
       dashboards: 'date',
-      doctorschedules: null, // Doctor schedules don't have temporal filtering
+      doctorschedules: null,
+      clinicinfos: 'createdAt',
     };
     return dateFieldMap[collection] || null;
   }

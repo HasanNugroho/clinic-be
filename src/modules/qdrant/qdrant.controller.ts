@@ -32,7 +32,7 @@ export class QdrantController {
     summary: 'Initialize all Qdrant collections',
     description:
       'Create all necessary Qdrant vector collections for RAG system. ' +
-      'Collections: dashboards, registrations, examinations, doctor_schedules. ' +
+      'Collections: dashboards, registrations, examinations, doctor_schedules, clinic_info. ' +
       'Only accessible by admin users.',
   })
   @ApiHttpResponse(200, 'Collections initialized successfully', QdrantInitializeResponseDto)
@@ -46,7 +46,13 @@ export class QdrantController {
       statusCode: 200,
       message: 'Qdrant collections initialized successfully',
       data: {
-        collections: ['dashboards', 'registrations', 'examinations', 'doctor_schedules'],
+        collections: [
+          'dashboards',
+          'registrations',
+          'examinations',
+          'doctor_schedules',
+          'clinic_info',
+        ],
         timestamp: new Date().toISOString(),
       },
     };
@@ -59,7 +65,7 @@ export class QdrantController {
     description:
       'Index documents from MongoDB to Qdrant vector database. ' +
       'If no collections are specified, all collections will be indexed. ' +
-      'Supported collections: dashboards, registrations, examinations, schedules. ' +
+      'Supported collections: dashboards, registrations, examinations, schedules, clinic_info. ' +
       'Only accessible by admin users.',
   })
   @ApiHttpResponse(200, 'Indexing completed successfully', QdrantIndexResponseDto)
@@ -77,8 +83,13 @@ export class QdrantController {
         registrations: results.registrations,
         examinations: results.examinations,
         schedules: results.schedules,
+        clinicInfos: results.clinicInfos,
         total:
-          results.dashboards + results.registrations + results.examinations + results.schedules,
+          results.dashboards +
+          results.registrations +
+          results.examinations +
+          results.schedules +
+          results.clinicInfos,
         timestamp: new Date().toISOString(),
       },
     };
@@ -111,8 +122,13 @@ export class QdrantController {
         registrations: results.registrations,
         examinations: results.examinations,
         schedules: results.schedules,
+        clinicInfos: results.clinicInfos,
         total:
-          results.dashboards + results.registrations + results.examinations + results.schedules,
+          results.dashboards +
+          results.registrations +
+          results.examinations +
+          results.schedules +
+          results.clinicInfos,
         timestamp: new Date().toISOString(),
       },
     };

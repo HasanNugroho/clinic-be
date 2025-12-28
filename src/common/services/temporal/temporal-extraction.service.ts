@@ -287,7 +287,7 @@ export class TemporalExtractionService {
     }
 
     // Default limit for temporal queries
-    return 10;
+    return 15;
   }
 
   /**

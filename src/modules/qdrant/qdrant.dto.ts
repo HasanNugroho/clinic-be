@@ -6,6 +6,7 @@ export enum QdrantCollection {
   REGISTRATIONS = 'registrations',
   EXAMINATIONS = 'examinations',
   SCHEDULES = 'schedules',
+  CLINIC_INFO = 'clinic_info',
 }
 
 export class QdrantRequestDto {
@@ -49,6 +50,13 @@ export class QdrantIndexResultDto {
     type: 'number',
   })
   schedules: number;
+
+  @ApiProperty({
+    description: 'Number of clinic info indexed',
+    example: 4,
+    type: 'number',
+  })
+  clinicInfos: number;
 }
 
 export class QdrantIndexResponseDto {
@@ -81,7 +89,8 @@ export class QdrantIndexResponseDto {
       registrations: { type: 'number', example: 150 },
       examinations: { type: 'number', example: 200 },
       schedules: { type: 'number', example: 50 },
-      total: { type: 'number', example: 410 },
+      clinicInfos: { type: 'number', example: 4 },
+      total: { type: 'number', example: 414 },
       timestamp: { type: 'string', example: '2025-12-13T11:14:00.000Z' },
     },
   })
@@ -90,6 +99,7 @@ export class QdrantIndexResponseDto {
     registrations: number;
     examinations: number;
     schedules: number;
+    clinicInfos: number;
     total: number;
     timestamp: string;
   };
@@ -124,7 +134,7 @@ export class QdrantInitializeResponseDto {
       collections: {
         type: 'array',
         items: { type: 'string' },
-        example: ['dashboards', 'registrations', 'examinations', 'doctor_schedules'],
+        example: ['dashboards', 'registrations', 'examinations', 'doctor_schedules', 'clinic_info'],
       },
       timestamp: { type: 'string', example: '2025-12-13T11:14:00.000Z' },
     },
@@ -165,7 +175,8 @@ export class QdrantReindexResponseDto {
       registrations: { type: 'number', example: 150 },
       examinations: { type: 'number', example: 200 },
       schedules: { type: 'number', example: 50 },
-      total: { type: 'number', example: 410 },
+      clinicInfos: { type: 'number', example: 4 },
+      total: { type: 'number', example: 414 },
       timestamp: { type: 'string', example: '2025-12-13T11:14:00.000Z' },
     },
   })
@@ -174,6 +185,7 @@ export class QdrantReindexResponseDto {
     registrations: number;
     examinations: number;
     schedules: number;
+    clinicInfos: number;
     total: number;
     timestamp: string;
   };

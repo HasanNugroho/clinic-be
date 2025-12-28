@@ -166,6 +166,34 @@ export class EmbeddingTextBuilderService {
   }
 
   /**
+   * Build embedding text for clinic info data
+   */
+  buildClinicInfoEmbeddingText(clinicInfo: any): string {
+    const parts: string[] = [];
+
+    if (clinicInfo.title) {
+      parts.push(`Informasi: ${clinicInfo.title}`);
+    }
+
+    if (clinicInfo.category) {
+      const categoryMap = {
+        open_hours: 'Jam Operasional',
+        examination_flow: 'Alur Pemeriksaan',
+        services: 'Layanan Klinik',
+        registration_info: 'Informasi Pendaftaran',
+      };
+      const categoryName = categoryMap[clinicInfo.category] || clinicInfo.category;
+      parts.push(`Kategori: ${categoryName}`);
+    }
+
+    if (clinicInfo.content) {
+      parts.push(clinicInfo.content);
+    }
+
+    return parts.join('\n\n');
+  }
+
+  /**
    * Build embedding text based on collection type
    */
   buildEmbeddingText(collection: string, doc: any): string {
@@ -179,6 +207,9 @@ export class EmbeddingTextBuilderService {
       case 'doctor_schedules':
       case 'doctorschedules':
         return this.buildScheduleEmbeddingText(doc);
+      case 'clinic_info':
+      case 'clinicinfos':
+        return this.buildClinicInfoEmbeddingText(doc);
       default:
         return JSON.stringify(doc).substring(0, 200);
     }

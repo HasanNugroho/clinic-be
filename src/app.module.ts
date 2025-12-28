@@ -13,6 +13,7 @@ import { BullModule } from '@nestjs/bullmq';
 import mongoose from 'mongoose';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { QdrantModule } from './modules/qdrant/qdrant.module';
+import { ClinicInfoModule } from './modules/clinic-info/clinic-info.module';
 
 const { ObjectId } = mongoose.Types;
 ObjectId.prototype.valueOf = function () {
@@ -59,7 +60,8 @@ ObjectId.prototype.valueOf = function () {
     RagModule,
     DashboardModule,
     QdrantModule,
+    ClinicInfoModule,
   ],
   providers: [],
 })
-export class AppModule { }
+export class AppModule {}

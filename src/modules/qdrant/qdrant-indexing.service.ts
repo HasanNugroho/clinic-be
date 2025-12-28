@@ -7,6 +7,7 @@ import { Dashboard } from '../dashboard/schemas/dashboard.schema';
 import { Registration } from '../registrations/schemas/registration.schema';
 import { Examination } from '../examinations/schemas/examination.schema';
 import { DoctorSchedule } from '../doctorSchedules/schemas/doctor-schedule.schema';
+import { ClinicInfo } from '../clinic-info/schemas/clinic-info.schema';
 import { QdrantCollection, QdrantRequestDto } from './qdrant.dto';
 import { EmbeddingTextBuilderService } from '../rag/services/embedding-text-builder.service';
 @Injectable()
@@ -18,12 +19,14 @@ export class QdrantIndexingService {
   private readonly REGISTRATION_COLLECTION = 'registrations';
   private readonly EXAMINATION_COLLECTION = 'examinations';
   private readonly SCHEDULE_COLLECTION = 'doctor_schedules';
+  private readonly CLINIC_INFO_COLLECTION = 'clinic_info';
 
   constructor(
     @InjectModel(Dashboard.name) private dashboardModel: Model<Dashboard>,
     @InjectModel(Registration.name) private registrationModel: Model<Registration>,
     @InjectModel(Examination.name) private examinationModel: Model<Examination>,
     @InjectModel(DoctorSchedule.name) private doctorScheduleModel: Model<DoctorSchedule>,
+    @InjectModel(ClinicInfo.name) private clinicInfoModel: Model<ClinicInfo>,
     private qdrantService: QdrantService,
     private embeddingService: EmbeddingService,
     private embeddingTextBuilderService: EmbeddingTextBuilderService,
@@ -47,6 +50,9 @@ export class QdrantIndexingService {
       }
       if (collections && collections.includes(QdrantCollection.SCHEDULES)) {
         await this.qdrantService.createCollection(this.SCHEDULE_COLLECTION);
+      }
+      if (collections && collections.includes(QdrantCollection.CLINIC_INFO)) {
+        await this.qdrantService.createCollection(this.CLINIC_INFO_COLLECTION);
       }
 
       this.logger.log('✅ All collections initialized successfully');
@@ -412,6 +418,87 @@ export class QdrantIndexingService {
   }
 
   /**
+   * Index all clinic info (parallel processing)
+   */
+  async indexAllClinicInfo(): Promise<number> {
+    try {
+      this.logger.log('🔄 Indexing all clinic info...');
+
+      const clinicInfos = await this.clinicInfoModel.find();
+      this.logger.log(`📋 Found ${clinicInfos.length} clinic info to index`);
+
+      if (clinicInfos.length === 0) {
+        return 0;
+      }
+
+      const BATCH_SIZE = 10;
+      let successCount = 0;
+      let processedCount = 0;
+
+      for (let i = 0; i < clinicInfos.length; i += BATCH_SIZE) {
+        const batch = clinicInfos.slice(i, i + BATCH_SIZE);
+        try {
+          await this.indexClinicInfo(batch);
+          successCount += batch.length;
+        } catch (error) {
+          this.logger.error(`Error indexing clinic info batch:`, error);
+        }
+        processedCount += batch.length;
+
+        const progress = Math.round((processedCount / clinicInfos.length) * 100);
+        this.logger.log(`   Progress: ${progress}% (${processedCount}/${clinicInfos.length})`);
+      }
+
+      this.logger.log(`✅ Clinic info indexing completed: ${successCount}/${clinicInfos.length}`);
+      return successCount;
+    } catch (error) {
+      this.logger.error('Error indexing all clinic info:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Index multiple clinic info
+   */
+  async indexClinicInfo(clinicInfos: any | any[]): Promise<void> {
+    try {
+      const clinicInfoArray = Array.isArray(clinicInfos) ? clinicInfos : [clinicInfos];
+
+      const points: any[] = [];
+      for (const clinicInfo of clinicInfoArray) {
+        const embeddingText =
+          this.embeddingTextBuilderService.buildClinicInfoEmbeddingText(clinicInfo);
+        const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(embeddingText);
+
+        points.push({
+          id: clinicInfo._id.toString(),
+          vector: {
+            dense: hybridEmbedding.dense,
+            keywords: hybridEmbedding.sparse,
+          },
+          payload: {
+            id: clinicInfo._id.toString(),
+            title: clinicInfo.title,
+            category: clinicInfo.category,
+            createdAt: clinicInfo.createdAt,
+            embeddingText,
+            type: 'clinic_info',
+          },
+        });
+      }
+
+      await this.qdrantService.indexs(this.CLINIC_INFO_COLLECTION, points);
+
+      this.logger.debug(
+        `✅ ${clinicInfoArray.length} clinic info(s) indexed with hybrid embeddings`,
+      );
+    } catch (error) {
+      this.logger.error(`Error indexing clinic info(s):`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Index all collections
    */
   async index(collections?: QdrantCollection[]): Promise<{
@@ -419,6 +506,7 @@ export class QdrantIndexingService {
     registrations: number;
     examinations: number;
     schedules: number;
+    clinicInfos: number;
   }> {
     try {
       this.logger.log('🔄 Starting indexing...');
@@ -429,12 +517,14 @@ export class QdrantIndexingService {
         'registrations',
         'examinations',
         'schedules',
+        'clinic_info',
       ];
 
       let dashboards = 0;
       let registrations = 0;
       let examinations = 0;
       let schedules = 0;
+      let clinicInfos = 0;
 
       if (collectionsToIndex.includes('dashboards')) {
         dashboards = await this.indexAllDashboards();
@@ -448,9 +538,12 @@ export class QdrantIndexingService {
       if (collectionsToIndex.includes('schedules')) {
         schedules = await this.indexAllSchedules();
       }
+      if (collectionsToIndex.includes('clinic_info')) {
+        clinicInfos = await this.indexAllClinicInfo();
+      }
 
       this.logger.log('✅ Indexing completed');
-      return { dashboards, registrations, examinations, schedules };
+      return { dashboards, registrations, examinations, schedules, clinicInfos };
     } catch (error) {
       this.logger.error('Error during indexing:', error);
       throw error;
@@ -468,6 +561,7 @@ export class QdrantIndexingService {
     registrations: number;
     examinations: number;
     schedules: number;
+    clinicInfos: number;
   }> {
     try {
       this.logger.log('🔄 Starting full reindexing process...');
@@ -478,6 +572,7 @@ export class QdrantIndexingService {
       await this.qdrantService.deleteCollection(this.REGISTRATION_COLLECTION).catch(() => null);
       await this.qdrantService.deleteCollection(this.EXAMINATION_COLLECTION).catch(() => null);
       await this.qdrantService.deleteCollection(this.SCHEDULE_COLLECTION).catch(() => null);
+      await this.qdrantService.deleteCollection(this.CLINIC_INFO_COLLECTION).catch(() => null);
       this.logger.log('✅ All collections deleted');
 
       // Step 2: Create collections
@@ -487,6 +582,7 @@ export class QdrantIndexingService {
         QdrantCollection.REGISTRATIONS,
         QdrantCollection.EXAMINATIONS,
         QdrantCollection.SCHEDULES,
+        QdrantCollection.CLINIC_INFO,
       ]);
       this.logger.log('✅ All collections created');
 
@@ -497,6 +593,7 @@ export class QdrantIndexingService {
         QdrantCollection.REGISTRATIONS,
         QdrantCollection.EXAMINATIONS,
         QdrantCollection.SCHEDULES,
+        QdrantCollection.CLINIC_INFO,
       ]);
       this.logger.log('✅ All data indexed');
 
