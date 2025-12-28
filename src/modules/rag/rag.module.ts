@@ -4,14 +4,20 @@ import { RagService } from './rag.service';
 import { EmbeddingModule } from '../../common/services/embedding/embedding.modul';
 import { RedisModule } from 'src/common/services/redis/redis.modul';
 import { QdrantModule } from '../qdrant/qdrant.module';
-import { SnippetBuilderService } from './services/snippet-builder.service';
 import { MessageBuilderService } from './services/message-builder.service';
+import { EmbeddingTextBuilderService } from './services/embedding-text-builder.service';
 import { DatabaseModule } from 'src/common/services/database.module';
+import { TemporalExtractionService } from '../../common/services/temporal/temporal-extraction.service';
 
 @Module({
   imports: [DatabaseModule, EmbeddingModule, RedisModule, QdrantModule],
   controllers: [RagController],
-  providers: [RagService, SnippetBuilderService, MessageBuilderService],
+  providers: [
+    RagService,
+    MessageBuilderService,
+    EmbeddingTextBuilderService,
+    TemporalExtractionService,
+  ],
   exports: [RagService],
 })
-export class RagModule { }
+export class RagModule {}

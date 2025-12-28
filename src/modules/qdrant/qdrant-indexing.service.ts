@@ -7,8 +7,8 @@ import { Dashboard } from '../dashboard/schemas/dashboard.schema';
 import { Registration } from '../registrations/schemas/registration.schema';
 import { Examination } from '../examinations/schemas/examination.schema';
 import { DoctorSchedule } from '../doctorSchedules/schemas/doctor-schedule.schema';
-import { numberToIndonesianOrdinal } from '../../common/utils/keyword-number.util';
 import { QdrantCollection, QdrantRequestDto } from './qdrant.dto';
+import { EmbeddingTextBuilderService } from '../rag/services/embedding-text-builder.service';
 @Injectable()
 export class QdrantIndexingService {
   private readonly logger = new Logger(QdrantIndexingService.name);
@@ -26,6 +26,7 @@ export class QdrantIndexingService {
     @InjectModel(DoctorSchedule.name) private doctorScheduleModel: Model<DoctorSchedule>,
     private qdrantService: QdrantService,
     private embeddingService: EmbeddingService,
+    private embeddingTextBuilderService: EmbeddingTextBuilderService,
   ) {}
 
   /**
@@ -106,7 +107,8 @@ export class QdrantIndexingService {
       // Generate hybrid embeddings for all dashboards
       const points: any[] = [];
       for (const dashboard of dashboardArray) {
-        const embeddingText = this.buildDashboardEmbeddingText(dashboard);
+        const embeddingText =
+          this.embeddingTextBuilderService.buildDashboardEmbeddingText(dashboard);
         const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(embeddingText);
 
         points.push({
@@ -197,7 +199,8 @@ export class QdrantIndexingService {
       // Generate hybrid embeddings for all registrations
       const points: any[] = [];
       for (const registration of registrationArray) {
-        const embeddingText = this.buildRegistrationEmbeddingText(registration);
+        const embeddingText =
+          this.embeddingTextBuilderService.buildRegistrationEmbeddingText(registration);
         const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(embeddingText);
 
         points.push({
@@ -208,7 +211,7 @@ export class QdrantIndexingService {
           },
           payload: {
             id: registration._id.toString(),
-            registrationDate: registration.registrationDate,
+            date: registration.registrationDate,
             registrationMethod: registration.registrationMethod,
             status: registration.status,
             doctorId: registration.doctorId._id,
@@ -286,7 +289,8 @@ export class QdrantIndexingService {
       // Generate hybrid embeddings for all examinations
       const points: any[] = [];
       for (const examination of examinationArray) {
-        const embeddingText = this.buildExaminationEmbeddingText(examination);
+        const embeddingText =
+          this.embeddingTextBuilderService.buildExaminationEmbeddingText(examination);
         const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(embeddingText);
 
         points.push({
@@ -297,7 +301,7 @@ export class QdrantIndexingService {
           },
           payload: {
             id: examination._id.toString(),
-            examinationDate: examination.examinationDate,
+            date: examination.examinationDate,
             status: examination.status,
             doctorId: examination.doctorId._id,
             patientId: examination.patientId._id,
@@ -373,7 +377,7 @@ export class QdrantIndexingService {
       // Generate hybrid embeddings for all schedules
       const points: any[] = [];
       for (const schedule of scheduleArray) {
-        const embeddingText = this.buildScheduleEmbeddingText(schedule);
+        const embeddingText = this.embeddingTextBuilderService.buildScheduleEmbeddingText(schedule);
         const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(embeddingText);
 
         points.push({
@@ -454,101 +458,6 @@ export class QdrantIndexingService {
   }
 
   // ============ Embedding Text Builders ============
-
-  private buildDashboardEmbeddingText(dashboard: any): string {
-    const dateObj = new Date(dashboard.date);
-    const formattedDate = dateObj.toLocaleDateString('id-ID', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-
-    const methodText = `${dashboard.registrationMethod.online} pendaftaran online dan ${dashboard.registrationMethod.offline} pendaftaran offline`;
-
-    const doctorStatsText = dashboard.doctorStats
-      .map(
-        (stat: any) =>
-          `Dr. ${stat.doctorName}: ${stat.totalRegistrations} pendaftaran (${stat.totalCompleted} selesai)`,
-      )
-      .join('; ');
-
-    return `Laporan Metrik Dashboard Klinik - ${formattedDate}. Total pasien: ${dashboard.totalPatients}. Total pendaftaran: ${dashboard.totalRegistrations}. Selesai: ${dashboard.totalCompleted}, Menunggu: ${dashboard.totalWaiting}, Sedang diperiksa: ${dashboard.totalExamining}, Dibatalkan: ${dashboard.totalCancelled}. Metode pendaftaran: ${methodText}. Statistik dokter: ${doctorStatsText}.`;
-  }
-
-  private buildRegistrationEmbeddingText(registration: any): string {
-    const fields: Record<string, any> = {};
-
-    if (registration.registrationDate) {
-      fields['tanggal pendaftaran'] = registration.registrationDate.toISOString().split('T')[0];
-    }
-    if (registration.registrationMethod) {
-      fields['metode pendaftaran'] = registration.registrationMethod;
-    }
-    if (registration.status) {
-      fields['status'] = registration.status;
-    }
-    if (registration.queueNumber) {
-      fields['nomor antrian'] = registration.queueNumber;
-    }
-    if (registration.doctorId?.fullName) {
-      fields['nama dokter'] = registration.doctorId.fullName;
-    }
-    if (registration.doctorId?.specialization) {
-      fields['spesialisasi dokter'] = registration.doctorId.specialization;
-    }
-
-    return this.embeddingService.buildEmbeddingText(fields);
-  }
-
-  private buildExaminationEmbeddingText(examination: any): string {
-    const fields: Record<string, any> = {};
-
-    if (examination.patientId?.fullName) {
-      fields['nama pasien'] = examination.patientId.fullName;
-    }
-    if (examination.examinationNumber) {
-      fields['pemeriksaan ke'] = numberToIndonesianOrdinal(examination.examinationNumber);
-    }
-    if (examination.examinationDate) {
-      fields['tanggal pemeriksaan'] = examination.examinationDate.toISOString().split('T')[0];
-    }
-    if (examination.status) {
-      fields['status'] = examination.status;
-    }
-    if (examination.diagnosisSummary) {
-      fields['ringkasan diagnosis'] = examination.diagnosisSummary;
-    }
-    if (examination.doctorNotes) {
-      fields['catatan dokter'] = examination.doctorNotes;
-    }
-    if (examination.doctorId?.fullName) {
-      fields['nama dokter'] = examination.doctorId.fullName;
-    }
-    if (examination.doctorId?.specialization) {
-      fields['spesialisasi dokter'] = examination.doctorId.specialization;
-    }
-
-    return this.embeddingService.buildEmbeddingText(fields);
-  }
-
-  private buildScheduleEmbeddingText(schedule: any): string {
-    const fields: Record<string, any> = {
-      'hari praktik': schedule.dayOfWeek,
-      'jam mulai': schedule.startTime,
-      'jam berakhir': schedule.endTime,
-      kuota: schedule.quota,
-    };
-
-    if (schedule.doctorId?.fullName) {
-      fields['nama dokter'] = schedule.doctorId.fullName;
-    }
-    if (schedule.doctorId?.specialization) {
-      fields['spesialisasi dokter'] = schedule.doctorId.specialization;
-    }
-
-    return this.embeddingService.buildEmbeddingText(fields);
-  }
 
   /**
    * Reindex all collections (delete and recreate)

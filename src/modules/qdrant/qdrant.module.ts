@@ -4,14 +4,12 @@ import { QdrantIndexingService } from 'src/modules/qdrant/qdrant-indexing.servic
 import { EmbeddingModule } from 'src/common/services/embedding/embedding.modul';
 import { DatabaseModule } from 'src/common/services/database.module';
 import { QdrantService } from './qdrant.service';
+import { EmbeddingTextBuilderService } from '../rag/services/embedding-text-builder.service';
 
 @Module({
-    imports: [
-        DatabaseModule,
-        EmbeddingModule,
-    ],
-    controllers: [QdrantController],
-    providers: [QdrantIndexingService, QdrantService],
-    exports: [QdrantIndexingService, QdrantService],
+  imports: [DatabaseModule, EmbeddingModule],
+  controllers: [QdrantController],
+  providers: [QdrantIndexingService, QdrantService, EmbeddingTextBuilderService],
+  exports: [QdrantIndexingService, QdrantService],
 })
-export class QdrantModule { }
+export class QdrantModule {}

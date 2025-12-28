@@ -238,20 +238,16 @@ export class QdrantService {
       if (queryFilter) {
         queryParams.filter = queryFilter;
       }
-      if (collectionName === 'examinations') {
-        this.logger.debug(`Examinations search params: ${JSON.stringify(queryFilter, null, 2)}`);
-      }
 
       // Use query() for hybrid search with prefetch and RRF
       const queryResult = await this.client.query(collectionName, queryParams);
 
-      if (collectionName === 'examinations') {
-        this.logger.debug(`Examinations search params: ${JSON.stringify(queryResult, null, 2)}`);
-      }
       // Extract points from query result
       const results = queryResult.points || [];
 
-      this.logger.debug(`Hybrid RRF search completed: ${results.length} results`);
+      this.logger.debug(
+        `Hybrid RRF search completed: ${results.length} results in '${collectionName}'`,
+      );
 
       return results.map((result) => ({
         id: result.id.toString(),

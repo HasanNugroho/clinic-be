@@ -13,9 +13,13 @@ import { randomUUID } from 'crypto';
 import { AiAssistantResponse, RagQueryDto, RetrievalResult } from './rag.dto';
 import OpenAI from 'openai';
 import { QdrantService } from '../qdrant/qdrant.service';
-import { SnippetBuilderService } from './services/snippet-builder.service';
 import { MessageBuilderService } from './services/message-builder.service';
+import { EmbeddingTextBuilderService } from './services/embedding-text-builder.service';
 import { convertObjectIdsToStrings } from 'src/common/utils/transform-objectid.util';
+import {
+  TemporalExtractionService,
+  TemporalInfo,
+} from '../../common/services/temporal/temporal-extraction.service';
 
 @Injectable()
 export class RagService {
@@ -36,8 +40,9 @@ export class RagService {
     private embeddingService: EmbeddingService,
     private redisService: RedisService,
     private qdrantService: QdrantService,
-    private snippetBuilderService: SnippetBuilderService,
     private messageBuilderService: MessageBuilderService,
+    private temporalExtractionService: TemporalExtractionService,
+    private embeddingTextBuilderService: EmbeddingTextBuilderService,
   ) {
     this.openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
   }
@@ -184,13 +189,21 @@ export class RagService {
       const previousTopic = await this.loadTopic(effectiveSessionId);
 
       console.log(previousTopic);
-      // 2. Prepare query for vector search
+      // 2. Extract temporal information from query
+      const temporalInfo = this.temporalExtractionService.extractTemporalInfo(query);
+      this.logger.debug(`Temporal info extracted: ${JSON.stringify(temporalInfo)}`);
+
+      // 3. Prepare query for vector search
       const searchQuery = previousTopic ? `${previousTopic} ${query}` : query;
       console.log(searchQuery);
 
-      const retrievalResults = await this.hybridRetrieval(searchQuery, userContext);
+      const retrievalResults = await this.hybridRetrieval(searchQuery, userContext, temporalInfo);
 
-      const rankedResults = this.reRankResults(retrievalResults);
+      let rankedResults = retrievalResults;
+      if (!temporalInfo.hasTemporalQuery) {
+        rankedResults = this.reRankResults(retrievalResults);
+      }
+
       const history = await this.loadHistory(effectiveSessionId);
       const messages = this.messageBuilderService.buildMessages(
         query,
@@ -207,7 +220,7 @@ export class RagService {
       const response: AiAssistantResponse = {
         query,
         answer: this.sanitizeAnswer(llmPayload.answer || 'No response generated.'),
-        sources: rankedResults.slice(0, 5),
+        sources: rankedResults,
         processingTimeMs: Date.now() - startTime,
         followUpQuestion: llmPayload.followUpQuestion,
         needsMoreInfo: llmPayload.needsMoreInfo,
@@ -240,22 +253,86 @@ export class RagService {
     }
   }
 
+  private predictCollectionFromQuery(query: string): string[] {
+    const queryLower = query.toLowerCase();
+    const predictions: string[] = [];
+
+    const collectionKeywords = {
+      examinations: [
+        'pemeriksaan',
+        'diagnosis',
+        'diagnosa',
+        'hasil pemeriksaan',
+        'catatan dokter',
+        'status pemeriksaan',
+        'diperiksa',
+        'pemeriksaan medis',
+      ],
+      registrations: [
+        'pendaftaran',
+        'registrasi',
+        'daftar',
+        'antrian',
+        'nomor antrian',
+        'keluhan',
+        'metode pendaftaran',
+        'status pendaftaran',
+      ],
+      doctorschedules: [
+        'jadwal',
+        'jadwal dokter',
+        'jadwal praktik',
+        'jam praktik',
+        'hari praktik',
+        'kuota',
+        'ketersediaan',
+        'waktu praktik',
+        'spesialisasi',
+      ],
+      dashboards: [
+        'dashboard',
+        'metrik',
+        'statistik',
+        'laporan',
+        'total pasien',
+        'total pendaftaran',
+        'ringkasan',
+        'analisis',
+        'grafik',
+      ],
+    };
+
+    for (const [collection, keywords] of Object.entries(collectionKeywords)) {
+      if (keywords.some((keyword) => queryLower.includes(keyword))) {
+        predictions.push(collection);
+      }
+    }
+
+    return predictions.length > 0
+      ? predictions
+      : ['doctorschedules', 'examinations', 'registrations', 'dashboards'];
+  }
+
   private async hybridRetrieval(
     query: string,
     userContext: UserContext,
+    temporalInfo: TemporalInfo,
   ): Promise<RetrievalResult[]> {
     const results: RetrievalResult[] = [];
-    const collections = [
+    const allCollections = [
       { name: 'doctorschedules', qdrantName: 'doctor_schedules' },
       { name: 'examinations', qdrantName: 'examinations' },
       { name: 'registrations', qdrantName: 'registrations' },
       { name: 'dashboards', qdrantName: 'dashboards' },
     ];
 
+    const predictedCollections = this.predictCollectionFromQuery(query);
+    const collections = allCollections.filter((c) => predictedCollections.includes(c.name));
+
     // Generate hybrid embedding (dense + sparse) for the query
     const hybridEmbedding = await this.embeddingService.generateHybridEmbedding(query);
 
-    // Search Qdrant for all collections in parallel
+    // Search Qdrant for all collections in parallel with temporal filtering
     const searches = collections.map((collection) =>
       this.searchHybrid(
         collection.name,
@@ -263,6 +340,7 @@ export class RagService {
         hybridEmbedding.dense,
         hybridEmbedding.sparse,
         userContext,
+        temporalInfo,
       ),
     );
 
@@ -275,6 +353,9 @@ export class RagService {
   /**
    * Search Qdrant by filter first, then retrieve and map data from MongoDB
    * Flow: Search Qdrant -> Get IDs -> Retrieve from MongoDB -> Map results
+   *
+   * Special case: If temporalInfo.hasTemporalQuery is true, skip Qdrant and search directly from MongoDB
+   * This is useful for temporal queries that require date-based sorting/filtering
    */
   private async searchHybrid(
     collection: string,
@@ -282,6 +363,7 @@ export class RagService {
     denseVector: number[],
     sparseVector: { indices: number[]; values: number[] },
     userContext: UserContext,
+    temporalInfo: TemporalInfo,
   ): Promise<RetrievalResult[]> {
     const model = this.getModelForCollection(collection);
     if (!model) return [];
@@ -290,12 +372,38 @@ export class RagService {
       // Step 1: Get role-based filters
       const mongoFilters = this.getRoleFilters(collection, userContext);
 
-      // Step 2: Search Qdrant with hybrid vectors (dense + sparse) and role-based filters
+      // Step 2: Build temporal filter based on collection type
+      let temporalFilter = null;
+      if (temporalInfo?.hasTemporalQuery) {
+        const dateField = this.getDateFieldForCollection(collection);
+        if (dateField) {
+          temporalFilter = this.temporalExtractionService.buildTemporalFilter(temporalInfo);
+          this.logger.debug(
+            `Applied temporal filter to ${collection}: ${JSON.stringify(temporalFilter)}`,
+          );
+        }
+      }
+
+      // CASE 1: Database-only search for temporal queries
+      if (temporalInfo.hasTemporalQuery) {
+        this.logger.debug(`Using database-only search for temporal query in ${collection}`);
+        return await this.searchFromDatabaseOnly(
+          collection,
+          model,
+          mongoFilters,
+          temporalFilter,
+          temporalInfo,
+          userContext,
+        );
+      }
+
+      // CASE 2: Hybrid search (Qdrant + MongoDB)
+      // Step 3: Search Qdrant with hybrid vectors (dense + sparse), role-based filters, and temporal filters
       const qdrantResults = await this.qdrantService.search(
         qdrantCollection,
         denseVector,
         sparseVector,
-        15,
+        25,
         0.5,
         mongoFilters,
       );
@@ -305,11 +413,15 @@ export class RagService {
         return [];
       }
 
-      // Step 3: Extract IDs from Qdrant results
+      // Step 4: Extract IDs from Qdrant results
       const qdrantIds = qdrantResults.map((result) => new Types.ObjectId(result.payload.id));
       const scoreMap = new Map(qdrantResults.map((r) => [r.payload.id, r.score]));
+      const embeddingTextMap = new Map(
+        qdrantResults.map((r) => [r.payload.id, r.payload.embeddingText]),
+      );
+      const dateMap = new Map(qdrantResults.map((r) => [r.payload.id, r.payload.date]));
 
-      // Step 4: Retrieve data from MongoDB with role-based filtering
+      // Step 5: Retrieve data from MongoDB with role-based filtering
       const projection = this.getRoleProjection(collection, userContext.role);
       const filters = mongoFilters;
 
@@ -363,19 +475,33 @@ export class RagService {
         $project: projection,
       });
 
-      // Step 4: Execute aggregation and map results
+      // Apply sorting if sortOrder is specified
+      if (temporalInfo?.sortOrder) {
+        const dateField = this.getDateFieldForCollection(collection);
+        if (dateField) {
+          const sortDirection = temporalInfo.sortOrder === 'asc' ? 1 : -1;
+          pipeline.push({
+            $sort: { [dateField]: sortDirection },
+          });
+        }
+      }
+
+      // Step 6: Execute aggregation and map results
       const mongoResults = await model.aggregate(pipeline);
 
       return mongoResults.map((doc) => {
         const convertedDoc = convertObjectIdsToStrings(doc);
         const docId = doc._id.toString();
         const score = scoreMap.get(docId) || 0;
+        const embeddingText = embeddingTextMap.get(docId) || '';
+        const date = dateMap.get(docId) || null;
         return {
           collection,
           documentId: docId,
-          snippet: this.buildSnippet(userContext.role, collection, [convertedDoc]),
+          snippet: embeddingText,
           score,
           metadata: convertedDoc,
+          date,
         };
       });
     } catch (error) {
@@ -388,6 +514,123 @@ export class RagService {
       });
       return [];
     }
+  }
+
+  /**
+   * Search directly from MongoDB without Qdrant
+   * Used for temporal queries that require date-based sorting/filtering
+   */
+  private async searchFromDatabaseOnly(
+    collection: string,
+    model: any,
+    mongoFilters: any,
+    temporalFilter: any,
+    temporalInfo: TemporalInfo,
+    userContext: UserContext,
+  ): Promise<RetrievalResult[]> {
+    try {
+      const projection = this.getRoleProjection(collection, userContext.role);
+      const dateField = this.getDateFieldForCollection(collection);
+
+      const pipeline: any[] = [
+        {
+          $match: {
+            ...mongoFilters,
+            ...(temporalFilter || {}),
+          },
+        },
+        {
+          $limit: temporalInfo.limit || 25,
+        },
+      ];
+
+      // Add lookups for related data
+      pipeline.push(
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'doctorId',
+            foreignField: '_id',
+            as: 'doctor',
+          },
+        },
+        {
+          $unwind: {
+            path: '$doctor',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+      );
+
+      if (['examinations', 'registrations'].includes(collection)) {
+        pipeline.push(
+          {
+            $lookup: {
+              from: 'users',
+              localField: 'patientId',
+              foreignField: '_id',
+              as: 'patient',
+            },
+          },
+          {
+            $unwind: {
+              path: '$patient',
+              preserveNullAndEmptyArrays: true,
+            },
+          },
+        );
+      }
+
+      pipeline.push({
+        $project: projection,
+      });
+
+      // Apply sorting based on temporal info
+      if (temporalInfo?.sortOrder && dateField) {
+        const sortDirection = temporalInfo.sortOrder === 'asc' ? 1 : -1;
+        pipeline.push({
+          $sort: { [dateField]: sortDirection },
+        });
+      }
+
+      // Limit results (default 25 to match Qdrant search limit)
+      pipeline.push({
+        $limit: temporalInfo?.limit || 25,
+      });
+
+      // Execute aggregation
+      const mongoResults = await model.aggregate(pipeline);
+
+      return mongoResults.map((doc) => {
+        const convertedDoc = convertObjectIdsToStrings(doc);
+        const docId = doc._id.toString();
+        const date = dateField ? doc[dateField] : null;
+
+        return {
+          collection,
+          documentId: docId,
+          snippet: this.generateSnippet(doc, collection),
+          score: 1.0, // Default score for database-only results
+          metadata: convertedDoc,
+          date,
+        };
+      });
+    } catch (error) {
+      this.logger.error('Database-only search failed', {
+        error: error.message,
+        stack: error.stack,
+        collection,
+      });
+      return [];
+    }
+  }
+
+  /**
+   * Generate a text snippet from document data
+   * Used when searching directly from database without Qdrant's embeddingText
+   */
+  private generateSnippet(doc: any, collection: string): string {
+    return this.embeddingTextBuilderService.buildEmbeddingText(collection, doc);
   }
 
   private getModelForCollection(collection: string): Model<any> | null {
@@ -501,8 +744,17 @@ export class RagService {
     return baseFilters;
   }
 
-  private buildSnippet(role: UserRole, collection: string, data: any[]): string {
-    return this.snippetBuilderService.buildSnippet(role, collection, data);
+  /**
+   * Get the date field name for a collection to use in temporal filtering
+   */
+  private getDateFieldForCollection(collection: string): string | null {
+    const dateFieldMap: Record<string, string | null> = {
+      examinations: 'examinationDate',
+      registrations: 'registrationDate',
+      dashboards: 'date',
+      doctorschedules: null, // Doctor schedules don't have temporal filtering
+    };
+    return dateFieldMap[collection] || null;
   }
 
   private async callLLM(
@@ -549,7 +801,7 @@ export class RagService {
 
   // Sort by score descending
   private reRankResults(results: RetrievalResult[]): RetrievalResult[] {
-    return results.sort((a, b) => b.score - a.score).slice(0, 8);
+    return results.sort((a, b) => b.score - a.score);
   }
 
   private sanitizeAnswer(answer: string): string {
