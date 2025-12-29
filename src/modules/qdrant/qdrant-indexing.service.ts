@@ -121,7 +121,7 @@ export class QdrantIndexingService {
           id: dashboard._id.toString(),
           vector: {
             dense: hybridEmbedding.dense,
-            keywords: hybridEmbedding.sparse,
+            bm25: hybridEmbedding.sparse,
           },
           payload: {
             id: dashboard._id.toString(),
@@ -213,7 +213,7 @@ export class QdrantIndexingService {
           id: registration._id.toString(),
           vector: {
             dense: hybridEmbedding.dense,
-            keywords: hybridEmbedding.sparse,
+            bm25: hybridEmbedding.sparse,
           },
           payload: {
             id: registration._id.toString(),
@@ -303,7 +303,7 @@ export class QdrantIndexingService {
           id: examination._id.toString(),
           vector: {
             dense: hybridEmbedding.dense,
-            keywords: hybridEmbedding.sparse,
+            bm25: hybridEmbedding.sparse,
           },
           payload: {
             id: examination._id.toString(),
@@ -390,7 +390,7 @@ export class QdrantIndexingService {
           id: schedule._id.toString(),
           vector: {
             dense: hybridEmbedding.dense,
-            keywords: hybridEmbedding.sparse,
+            bm25: hybridEmbedding.sparse,
           },
           payload: {
             id: schedule._id.toString(),
@@ -474,7 +474,7 @@ export class QdrantIndexingService {
           id: clinicInfo._id.toString(),
           vector: {
             dense: hybridEmbedding.dense,
-            keywords: hybridEmbedding.sparse,
+            bm25: hybridEmbedding.sparse,
           },
           payload: {
             id: clinicInfo._id.toString(),

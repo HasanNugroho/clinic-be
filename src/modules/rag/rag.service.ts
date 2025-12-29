@@ -30,11 +30,12 @@ export class RagService {
   private readonly HISTORY_TTL = 86400;
   private readonly HISTORY_KEY_PREFIX = 'rag:conversation:';
   private readonly TOPIC_KEY_PREFIX = 'ai:assistant:topic:';
+  private readonly LAST_QUERY_KEY_PREFIX = 'rag:last_query:';
   private readonly DEFAULT_SEARCH_LIMIT = 25;
   private readonly DEFAULT_SCORE_THRESHOLD = 0.5;
   private readonly DEFAULT_DATABASE_SCORE = 1.0;
-  private readonly MAX_CONTEXT_SOURCES = 15;
-  private readonly MIN_RELEVANCE_SCORE = 0.6;
+  private readonly MAX_CONTEXT_SOURCES = 25;
+  private readonly MIN_RELEVANCE_SCORE = 0.5;
 
   private readonly COLLECTION_MAPPINGS = [
     { name: 'doctorschedules', qdrantName: 'doctor_schedules' },
@@ -151,26 +152,27 @@ export class RagService {
 
     try {
       const previousTopic = await this.loadTopic(effectiveSessionId);
-      this.logger.debug(`Previous topic for session ${effectiveSessionId}: ${previousTopic}`);
+      const previousQuery = await this.loadLastQuery(effectiveSessionId);
+      this.logger.debug(`Previous topic: ${previousTopic}, Previous query: ${previousQuery}`);
 
       const temporalInfo = this.temporalExtractionService.extractTemporalInfo(query);
       this.logger.debug(`Temporal info: ${JSON.stringify(temporalInfo)}`);
 
-      const searchQuery = this.buildSearchQuery(query, previousTopic);
+      const searchQuery = this.buildSearchQuery(query, previousTopic, previousQuery);
       this.logger.debug(`Search query: ${searchQuery}`);
 
       const retrievalResults = await this.hybridRetrieval(searchQuery, userContext, temporalInfo);
-      const shouldSkipRerank = temporalInfo.hasTemporalQuery && temporalInfo.sortOrder;
+      const shouldSkipRerank = temporalInfo.hasTemporalQuery;
       const rankedResults = shouldSkipRerank
         ? retrievalResults
         : this.reRankResults(retrievalResults);
 
-      const limitedResults = this.limitSourcesByScore(rankedResults);
+      // const limitedResults = this.limitSourcesByScore(rankedResults);
 
       const history = await this.loadHistory(effectiveSessionId);
       const messages = this.messageBuilderService.buildMessages(
         query,
-        limitedResults,
+        rankedResults,
         userContext,
         history,
         previousTopic,
@@ -187,6 +189,7 @@ export class RagService {
       );
 
       await this.updateTopicIfNeeded(effectiveSessionId, llmPayload, previousTopic);
+      await this.saveLastQuery(effectiveSessionId, query);
       await this.persistConversation(effectiveSessionId, query, response.answer, history);
 
       return response;
@@ -196,8 +199,30 @@ export class RagService {
     }
   }
 
-  private buildSearchQuery(query: string, previousTopic: string): string {
-    return previousTopic ? `${previousTopic} ${query}` : query;
+  private buildSearchQuery(query: string, previousTopic: string, previousQuery: string): string {
+    if (!previousQuery) {
+      return query;
+    }
+
+    const shouldUsePreviousQuery = this.shouldUsePreviousQueryContext(query, previousQuery);
+
+    if (shouldUsePreviousQuery) {
+      this.logger.debug('Using previous query for context continuity');
+      return `${previousQuery} ${query}`;
+    }
+
+    return query;
+  }
+
+  private shouldUsePreviousQueryContext(query: string, previousQuery: string): boolean {
+    const queryWords = query.toLowerCase().trim().split(/\s+/);
+    const isShortQuery = queryWords.length <= 5;
+
+    const hasQuestionMark = query.includes('?');
+
+    const hasPronouns = /\b(nya|dia|mereka|itu|ini|tersebut|ada|lain)\b/i.test(query);
+
+    return (isShortQuery && hasQuestionMark) || hasPronouns;
   }
 
   private buildResponse(
@@ -810,6 +835,26 @@ export class RagService {
       await this.redisService.set(key, topic, this.HISTORY_TTL);
     } catch (error) {
       this.logger.warn(`Failed to save topic for ${sessionId}: ${error.message}`);
+    }
+  }
+
+  private async loadLastQuery(sessionId: string): Promise<string> {
+    try {
+      const key = `${this.LAST_QUERY_KEY_PREFIX}${sessionId}`;
+      const lastQuery = await this.redisService.get(key);
+      return lastQuery || '';
+    } catch (error) {
+      this.logger.warn(`Failed to load last query for ${sessionId}: ${error.message}`);
+      return '';
+    }
+  }
+
+  private async saveLastQuery(sessionId: string, query: string): Promise<void> {
+    try {
+      const key = `${this.LAST_QUERY_KEY_PREFIX}${sessionId}`;
+      await this.redisService.set(key, query, this.HISTORY_TTL);
+    } catch (error) {
+      this.logger.warn(`Failed to save last query for ${sessionId}: ${error.message}`);
     }
   }
 

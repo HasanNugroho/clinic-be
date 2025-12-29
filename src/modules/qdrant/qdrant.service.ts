@@ -6,7 +6,7 @@ export interface QdrantPoint {
   id: string | number;
   vector: {
     '': number[]; // Dense vector with empty string key
-    keywords?: {
+    bm25?: {
       indices: number[];
       values: number[];
     };
@@ -60,7 +60,8 @@ export class QdrantService {
           },
         },
         sparse_vectors: {
-          keywords: {},
+          // keywords: {},
+          bm25: {},
         },
       } as any);
 
@@ -95,7 +96,7 @@ export class QdrantService {
         id: typeof point.id === 'string' ? this.stringToId(point.id) : point.id,
         vector: {
           '': point.vector[''],
-          keywords: point.vector.keywords ?? { indices: [], values: [] },
+          bm25: point.vector.bm25 ?? { indices: [], values: [] },
         },
         payload: point.payload,
       };
@@ -123,7 +124,7 @@ export class QdrantService {
         id: typeof p.id === 'string' ? this.stringToId(p.id) : p.id,
         vector: {
           dense: p.vector['dense'] || p.vector[''], // Support both named and unnamed
-          keywords: p.vector.keywords ?? { indices: [], values: [] },
+          bm25: p.vector.bm25 ?? { indices: [], values: [] },
         },
         payload: p.payload,
       }));
@@ -219,7 +220,7 @@ export class QdrantService {
               indices: sparseVector.indices,
               values: sparseVector.values,
             },
-            using: 'keywords', // Your sparse vector name
+            using: 'bm25', // BM25 sparse vector name
             limit: limit * 2,
           },
           {
