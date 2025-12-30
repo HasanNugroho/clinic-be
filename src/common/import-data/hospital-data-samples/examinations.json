@@ -1,0 +1,463 @@
+{
+  "examinations": [
+    {
+      "patientEmail": "emma.thompson@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-06-02T09:15:00Z",
+      "diagnosisSummary": "Penyakit Jantung - Penyakit Arteri Koroner",
+      "doctorNotes": "Pasien didiagnosis dengan Penyakit Jantung pada 02/06/2025. Temuan klinis menunjukkan penyakit arteri koroner dengan nyeri dada dan peningkatan penanda jantung. Prosedur angioplasti direkomendasikan. Pasien disarankan untuk mengikuti program rehabilitasi jantung, menjaga diet rendah kolesterol, dan mengonsumsi obat yang diresepkan secara teratur. Janji temu lanjutan dijadwalkan dalam 2 minggu untuk evaluasi pasca-prosedur.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "john.smith@email.com",
+      "doctorEmail": "dr.michael.endocrinology@hospital.com",
+      "examinationDate": "2025-06-02T09:45:00Z",
+      "diagnosisSummary": "Diabetes Mellitus Tipe 2",
+      "doctorNotes": "Pasien didiagnosis dengan Diabetes Mellitus Tipe 2 pada 02/06/2025. Kadar glukosa darah meningkat pada 180 mg/dL. HbA1c pada 8,5%. Terapi insulin dimulai bersama dengan modifikasi diet. Pasien diedukasi tentang pemantauan glukosa darah, pemberian insulin, dan pentingnya olahraga teratur. Tindak lanjut direkomendasikan dalam 4 minggu untuk menilai respons pengobatan.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "sophia.davis@email.com",
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "examinationDate": "2025-06-03T09:30:00Z",
+      "diagnosisSummary": "Patah Tulang Lengan - Fraktur Radius Distal",
+      "doctorNotes": "Pasien datang dengan patah tulang lengan (radius distal) pada 03/06/2025. Rontgen mengkonfirmasi fraktur bergeser. Reduksi tertutup dilakukan dan bidai dipasang. Pasien disarankan untuk menjaga lengan tetap tinggi, mengompres dengan es untuk pembengkakan, dan menghindari aktivitas menahan beban. Obat pereda nyeri diresepkan. Tindak lanjut dalam 1 minggu untuk pemasangan gips dan rontgen berikutnya dalam 6 minggu.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "william.johnson@email.com",
+      "doctorEmail": "dr.robert.neurology@hospital.com",
+      "examinationDate": "2025-06-09T10:45:00Z",
+      "diagnosisSummary": "Stroke - Stroke Iskemik",
+      "doctorNotes": "Pasien didiagnosis dengan stroke iskemik pada 09/06/2025. CT scan mengungkapkan infark serebral di wilayah arteri serebral tengah kiri. Terapi trombolitik segera diberikan. Defisit neurologis termasuk kelemahan sisi kanan dan kesulitan berbicara. Pasien memerlukan rehabilitasi intensif termasuk terapi fisik, terapi okupasi, dan terapi wicara. Obat diresepkan untuk mencegah kekambuhan. Pemantauan ketat diperlukan.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "olivia.martinez@email.com",
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "examinationDate": "2025-06-10T10:00:00Z",
+      "diagnosisSummary": "Kanker - Kanker Payudara Stadium II",
+      "doctorNotes": "Pasien didiagnosis dengan kanker payudara (Stadium II) pada 10/06/2025. Biopsi mengkonfirmasi karsinoma duktal invasif. Rencana pengobatan meliputi pengangkatan bedah (lumpektomi) diikuti dengan kemoterapi dan terapi radiasi. Pasien diberi konseling tentang pilihan pengobatan, efek samping, dan prognosis. Rujukan ke perawat onkologi untuk edukasi kemoterapi. Dukungan psikologis direkomendasikan. Tindak lanjut dijadwalkan pasca-operasi.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "james.brown@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-06-11T11:15:00Z",
+      "diagnosisSummary": "Hipertensi - Hipertensi Esensial",
+      "doctorNotes": "Pasien didiagnosis dengan hipertensi esensial pada 11/06/2025. Pembacaan tekanan darah 150/95 mmHg. Tidak ada kerusakan organ akhir yang terdeteksi. Obat antihipertensi dimulai (ACE inhibitor). Pasien diberi konseling tentang modifikasi gaya hidup termasuk diet rendah natrium, olahraga teratur, manajemen berat badan, dan pengurangan stres. Pemantauan tekanan darah di rumah direkomendasikan. Tindak lanjut dalam 4 minggu untuk menilai efektivitas obat.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "isabella.wilson@email.com",
+      "doctorEmail": "dr.jennifer.surgery@hospital.com",
+      "examinationDate": "2025-06-12T10:15:00Z",
+      "diagnosisSummary": "Apendisitis - Apendisitis Akut",
+      "doctorNotes": "Pasien didiagnosis dengan apendisitis akut pada 12/06/2025. Presentasi klinis meliputi nyeri kuadran kanan bawah, demam, dan peningkatan jumlah sel darah putih. USG mengkonfirmasi apendiks yang meradang. Apendektomi darurat dilakukan dengan sukses. Perawatan pasca-operasi meliputi antibiotik, manajemen nyeri, dan perawatan luka. Pasien disarankan tentang tanda-tanda infeksi dan kapan harus mencari perhatian medis. Tindak lanjut dalam 2 minggu untuk pengangkatan jahitan.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "michael.garcia@email.com",
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "examinationDate": "2025-06-17T11:00:00Z",
+      "diagnosisSummary": "Patah Tulang Kaki - Fraktur Shaft Tibia",
+      "doctorNotes": "Pasien datang dengan patah tulang kaki (fraktur shaft tibia) pada 17/06/2025. Rontgen mengungkapkan fraktur bergeser yang memerlukan intervensi bedah. Reduksi terbuka dan fiksasi internal (ORIF) dilakukan dengan penempatan paku intramedular. Pasien diinstruksikan tentang status non-weight bearing, penggunaan kruk, dan perawatan gips. Rujukan terapi fisik untuk rehabilitasi. Manajemen nyeri dan terapi antikoagulasi dimulai. Tindak lanjut dalam 2 minggu.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "ava.anderson@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-06-18T11:15:00Z",
+      "diagnosisSummary": "Serangan Jantung - Infark Miokard Akut",
+      "doctorNotes": "Pasien didiagnosis dengan infark miokard akut (serangan jantung) pada 18/06/2025. EKG menunjukkan elevasi segmen ST. Kateterisasi jantung darurat dilakukan dengan penempatan stent di arteri koroner yang tersumbat. Enzim jantung meningkat signifikan. Pasien distabilkan di ICU. Obat termasuk agen antiplatelet, beta-blocker, dan statin. Program rehabilitasi jantung sangat penting. Modifikasi gaya hidup dibahas. Tindak lanjut ketat diperlukan.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "daniel.lee@email.com",
+      "doctorEmail": "dr.thomas.immunology@hospital.com",
+      "examinationDate": "2025-06-24T11:45:00Z",
+      "diagnosisSummary": "Reaksi Alergi - Anafilaksis Berat",
+      "doctorNotes": "Pasien mengalami reaksi alergi berat (anafilaksis) pada 24/06/2025. Gejala termasuk kesulitan bernapas, pembengkakan wajah, dan hipotensi. Injeksi epinefrin segera diberikan dengan perbaikan cepat. Alergen diidentifikasi sebagai kacang tanah. Pasien diedukasi tentang penghindaran alergen, diresepkan EpiPen untuk penggunaan darurat, dan disarankan untuk memakai gelang peringatan medis. Tes alergi direkomendasikan. Tindak lanjut dalam 1 minggu.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "emma.thompson@email.com",
+      "doctorEmail": "dr.david.pulmonology@hospital.com",
+      "examinationDate": "2025-06-25T09:30:00Z",
+      "diagnosisSummary": "Infeksi Saluran Pernapasan - Pneumonia",
+      "doctorNotes": "Pasien didiagnosis dengan pneumonia yang didapat dari komunitas pada 25/06/2025. Rontgen dada menunjukkan konsolidasi lobus bawah kanan. Gejala termasuk batuk produktif, demam, dan sesak napas. Terapi antibiotik dimulai (azitromisin). Pasien disarankan tentang hidrasi yang memadai, istirahat, dan latihan pernapasan. Pemantauan saturasi oksigen di rumah. Rontgen dada tindak lanjut dalam 4 minggu untuk mengkonfirmasi resolusi.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "john.smith@email.com",
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "examinationDate": "2025-07-01T11:45:00Z",
+      "diagnosisSummary": "Kanker Prostat - Kanker Prostat Terlokalisasi",
+      "doctorNotes": "Pasien didiagnosis dengan kanker prostat terlokalisasi pada 01/07/2025. Tingkat PSA meningkat pada 12 ng/mL. Biopsi mengkonfirmasi adenokarsinoma (skor Gleason 7). Pilihan pengobatan dibahas termasuk terapi radiasi, operasi, dan pengawasan aktif. Pasien memilih terapi radiasi. Rujukan ke ahli onkologi radiasi selesai. Efek samping dan prognosis dijelaskan. Pemantauan PSA reguler dijadwalkan. Tindak lanjut dalam 3 bulan.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "sophia.davis@email.com",
+      "doctorEmail": "dr.patricia.obstetrics@hospital.com",
+      "examinationDate": "2025-07-02T11:00:00Z",
+      "diagnosisSummary": "Persalinan - Persalinan Vaginal Normal",
+      "doctorNotes": "Pasien melahirkan bayi sehat melalui persalinan vaginal normal pada 02/07/2025. Persalinan berlangsung normal selama 8 jam. Tidak ada komplikasi selama persalinan. Ibu dan bayi dalam kondisi stabil. Instruksi perawatan postnatal diberikan termasuk dukungan menyusui, perawatan perineum, dan tanda-tanda komplikasi postpartum. Skrining bayi baru lahir selesai. Janji temu tindak lanjut dijadwalkan dalam 6 minggu untuk pemeriksaan postpartum.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "william.johnson@email.com",
+      "doctorEmail": "dr.james.urology@hospital.com",
+      "examinationDate": "2025-07-07T09:45:00Z",
+      "diagnosisSummary": "Batu Ginjal - Nefrolitiasis",
+      "doctorNotes": "Pasien didiagnosis dengan batu ginjal (nefrolitiasis) pada 07/07/2025. CT scan mengungkapkan batu 8mm di ureter kiri menyebabkan hidronefrosis. Nyeri pinggang parah dikelola dengan analgesik. Prosedur litotripsi dijadwalkan untuk memecah batu. Pasien disarankan tentang peningkatan asupan cairan, modifikasi diet untuk mencegah kekambuhan. Saring urin untuk menangkap fragmen batu untuk analisis. Pencitraan tindak lanjut dalam 2 minggu pasca-prosedur.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "olivia.martinez@email.com",
+      "doctorEmail": "dr.maria.rheumatology@hospital.com",
+      "examinationDate": "2025-07-08T11:15:00Z",
+      "diagnosisSummary": "Osteoartritis - Osteoartritis Lutut",
+      "doctorNotes": "Pasien didiagnosis dengan osteoartritis lutut pada 08/07/2025. Rontgen menunjukkan penyempitan ruang sendi dan pembentukan osteofit. Pasien melaporkan nyeri lutut kronis dan kekakuan. Rencana pengobatan meliputi terapi fisik untuk latihan penguatan, manajemen nyeri dengan NSAID, konseling pengurangan berat badan, dan pertimbangan untuk injeksi kortikosteroid intra-artikular. Pasien diedukasi tentang teknik perlindungan sendi. Tindak lanjut dalam 6 minggu.",
+      "status": "completed",
+      "examinationNumber": 1
+    },
+    {
+      "patientEmail": "james.brown@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-07-09T10:00:00Z",
+      "diagnosisSummary": "Penyakit Jantung - Fibrilasi Atrium",
+      "doctorNotes": "Pasien didiagnosis dengan fibrilasi atrium pada 09/07/2025. EKG mengkonfirmasi irama jantung tidak teratur. Pasien melaporkan palpitasi dan pusing sesekali. Terapi antikoagulasi dimulai untuk mencegah risiko stroke. Obat kontrol laju diresepkan. Pasien diedukasi tentang kepatuhan obat dan pencegahan stroke. Pertimbangan untuk kardioversi jika gejala bertahan. Tindak lanjut dengan EKG ulang dalam 4 minggu.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "isabella.wilson@email.com",
+      "doctorEmail": "dr.jennifer.surgery@hospital.com",
+      "examinationDate": "2025-07-15T10:45:00Z",
+      "diagnosisSummary": "Apendisitis - Tindak Lanjut Pasca-operasi",
+      "doctorNotes": "Tindak lanjut pasca-operasi pada 15/07/2025 setelah apendektomi. Luka bedah sembuh dengan baik tanpa tanda-tanda infeksi. Pasien melaporkan nyeri minimal dan mobilitas membaik. Jahitan berhasil diangkat. Pasien diizinkan untuk secara bertahap melanjutkan aktivitas normal. Disarankan untuk menghindari mengangkat beban berat selama 2 minggu lagi. Tidak ada tindak lanjut bedah lebih lanjut diperlukan kecuali timbul komplikasi. Pasien puas dengan kemajuan pemulihan.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "michael.garcia@email.com",
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "examinationDate": "2025-07-15T10:15:00Z",
+      "diagnosisSummary": "Patah Tulang Kaki - Tindak Lanjut Pasca-operasi",
+      "doctorNotes": "Tindak lanjut pasca-operasi pada 15/07/2025 setelah ORIF fraktur tibia. Rontgen menunjukkan alignment yang baik dan pembentukan kalus awal. Pasien berkembang baik dengan terapi fisik. Partial weight-bearing dimulai dengan kruk. Tidak ada tanda-tanda infeksi atau komplikasi perangkat keras. Nyeri terkontrol dengan baik. Lanjutkan terapi fisik untuk rentang gerak dan penguatan. Tindak lanjut dalam 4 minggu dengan rontgen ulang.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "ava.anderson@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-07-16T11:30:00Z",
+      "diagnosisSummary": "Serangan Jantung - Tindak Lanjut Rehabilitasi Jantung",
+      "doctorNotes": "Tindak lanjut rehabilitasi jantung pada 16/07/2025 pasca-infark miokard. Pasien menyelesaikan program latihan terawasi dengan toleransi yang baik. Obat dioptimalkan termasuk terapi antiplatelet ganda, statin, dan beta-blocker. Tekanan darah dan kadar kolesterol membaik. Pasien mematuhi diet sehat jantung dan berhenti merokok. Penyesuaian psikologis berkembang baik. Lanjutkan program rehabilitasi jantung. Tindak lanjut dalam 6 minggu.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "daniel.lee@email.com",
+      "doctorEmail": "dr.thomas.immunology@hospital.com",
+      "examinationDate": "2025-07-22T12:00:00Z",
+      "diagnosisSummary": "Reaksi Alergi - Tindak Lanjut Tes Alergi",
+      "doctorNotes": "Tindak lanjut tes alergi pada 22/07/2025. Panel alergi komprehensif selesai mengkonfirmasi alergi kacang tanah berat dan reaksi ringan terhadap kacang pohon. Pasien diedukasi tentang membaca label makanan, tindakan pencegahan saat makan di luar, dan rencana tindakan darurat. Resep EpiPen diperpanjang. Pasien mendemonstrasikan teknik EpiPen yang tepat. Gelang peringatan medis diperoleh. Anggota keluarga dilatih tentang respons darurat. Tindak lanjut dalam 6 bulan.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "john.smith@email.com",
+      "doctorEmail": "dr.michael.endocrinology@hospital.com",
+      "examinationDate": "2025-07-28T09:45:00Z",
+      "diagnosisSummary": "Diabetes Mellitus Tipe 2 - Tindak Lanjut",
+      "doctorNotes": "Tindak lanjut diabetes pada 28/07/2025. Kontrol glukosa darah membaik dengan HbA1c menurun menjadi 7,2%. Pasien mematuhi regimen insulin dan modifikasi diet. Penurunan berat badan 3kg tercapai. Log pemantauan glukosa rumah ditinjau menunjukkan kontrol yang lebih baik. Penyesuaian kecil pada dosis insulin. Pasien melaporkan tidak ada episode hipoglikemia. Lanjutkan rencana manajemen saat ini. Tindak lanjut dalam 3 bulan.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "william.johnson@email.com",
+      "doctorEmail": "dr.robert.neurology@hospital.com",
+      "examinationDate": "2025-07-30T11:15:00Z",
+      "diagnosisSummary": "Stroke - Kemajuan Rehabilitasi",
+      "doctorNotes": "Tindak lanjut rehabilitasi stroke pada 30/07/2025. Pasien menunjukkan peningkatan signifikan dalam kekuatan dan mobilitas sisi kanan. Terapi wicara berkembang baik dengan artikulasi yang membaik. Terapi okupasi membantu dengan aktivitas kehidupan sehari-hari. Pasien berjalan dengan bantuan walker. Obat untuk pencegahan stroke dilanjutkan. Dukungan pengasuh tersedia. Lanjutkan rehabilitasi intensif. Tindak lanjut dalam 4 minggu.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "olivia.martinez@email.com",
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "examinationDate": "2025-08-05T10:00:00Z",
+      "diagnosisSummary": "Kanker - Kemoterapi Pasca-bedah",
+      "doctorNotes": "Tindak lanjut pasca-bedah pada 05/08/2025. Situs lumpektomi sembuh dengan baik. Patologi mengkonfirmasi margin bersih. Pasien memulai siklus pertama kemoterapi adjuvan. Efek samping termasuk mual ringan dan kelelahan, dikelola dengan antiemetik. Pasien mentoleransi pengobatan dengan cukup baik. Dukungan psikologis berlangsung. Terapi radiasi akan mengikuti setelah penyelesaian kemoterapi. Tindak lanjut dalam 3 minggu untuk siklus kemoterapi kedua.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "ava.anderson@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-08-06T10:45:00Z",
+      "diagnosisSummary": "Serangan Jantung - Manajemen Jangka Panjang",
+      "doctorNotes": "Tindak lanjut jangka panjang pada 06/08/2025 pasca-infark miokard. Pasien menyelesaikan program rehabilitasi jantung dengan sukses. Toleransi latihan meningkat signifikan. Obat ditoleransi dengan baik. Ekokardiogram terbaru menunjukkan fungsi ventrikel kiri yang membaik. Pasien mempertahankan gaya hidup sehat jantung dengan diet dan olahraga. Tidak ada gejala angina. Lanjutkan obat saat ini. Tindak lanjut tahunan direkomendasikan.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "sophia.davis@email.com",
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "examinationDate": "2025-08-07T09:30:00Z",
+      "diagnosisSummary": "Patah Tulang Lengan - Kemajuan Penyembuhan",
+      "doctorNotes": "Tindak lanjut pada 07/08/2025 untuk fraktur radius distal. Rontgen menunjukkan penyembuhan tulang yang sangat baik dengan alignment yang baik. Gips dilepas dan mobilitas pergelangan tangan dinilai. Beberapa kekakuan dicatat yang diharapkan. Terapi fisik dimulai untuk latihan rentang gerak dan penguatan. Pasien disarankan tentang kembali bertahap ke aktivitas normal. Tidak ada komplikasi dicatat. Tindak lanjut dalam 4 minggu untuk menilai kemajuan terapi.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "james.brown@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-08-13T10:15:00Z",
+      "diagnosisSummary": "Hipertensi - Kontrol Tekanan Darah",
+      "doctorNotes": "Tindak lanjut hipertensi pada 13/08/2025. Tekanan darah terkontrol dengan baik pada 128/82 mmHg dengan obat saat ini. Pasien mematuhi modifikasi gaya hidup termasuk olahraga teratur dan diet rendah natrium. Penurunan berat badan 4kg tercapai. Pembacaan tekanan darah di rumah secara konsisten dalam rentang target. Tidak ada efek samping obat dilaporkan. Lanjutkan manajemen saat ini. Tindak lanjut dalam 6 bulan.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "isabella.wilson@email.com",
+      "doctorEmail": "dr.jennifer.surgery@hospital.com",
+      "examinationDate": "2025-08-19T11:00:00Z",
+      "diagnosisSummary": "Apendisitis - Tindak Lanjut Akhir",
+      "doctorNotes": "Tindak lanjut pasca-operasi akhir pada 19/08/2025. Pasien sepenuhnya pulih dari apendektomi dengan penyembuhan luka lengkap. Tidak ada nyeri residual atau komplikasi. Pasien melanjutkan semua aktivitas normal termasuk pekerjaan dan olahraga. Kebiasaan makan normal. Tidak ada intervensi bedah lebih lanjut diperlukan. Pasien dipulangkan dari tindak lanjut bedah. Disarankan untuk mencari perawatan jika ada gejala perut berkembang di masa depan.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "michael.garcia@email.com",
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "examinationDate": "2025-08-19T09:45:00Z",
+      "diagnosisSummary": "Patah Tulang Kaki - Kemajuan Terapi Fisik",
+      "doctorNotes": "Tindak lanjut pada 19/08/2025 untuk fraktur tibia. Rontgen menunjukkan penyembuhan tulang berlanjut dengan pembentukan kalus penghubung. Pasien berkembang baik dengan terapi fisik. Sekarang full weight-bearing dengan satu kruk. Rentang gerak lutut dan pergelangan kaki membaik. Kekuatan otot secara bertahap kembali. Lanjutkan program terapi fisik. Kembali bertahap ke aktivitas normal didorong. Tindak lanjut dalam 6 minggu.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "daniel.lee@email.com",
+      "doctorEmail": "dr.thomas.immunology@hospital.com",
+      "examinationDate": "2025-08-21T11:15:00Z",
+      "diagnosisSummary": "Reaksi Alergi - Manajemen Berkelanjutan",
+      "doctorNotes": "Tindak lanjut manajemen alergi pada 21/08/2025. Pasien berhasil menghindari alergen yang diketahui tanpa reaksi lebih lanjut. Membawa EpiPen setiap saat. Keluarga dan teman diedukasi tentang respons darurat. Pasien percaya diri dalam mengelola alergi. Dibahas potensi untuk imunoterapi oral di masa depan. Lanjutkan strategi penghindaran saat ini. Tindak lanjut dalam 6 bulan atau lebih cepat jika ada kekhawatiran.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "emma.thompson@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-08-27T10:00:00Z",
+      "diagnosisSummary": "Penyakit Jantung - Tindak Lanjut Pasca-angioplasti",
+      "doctorNotes": "Tindak lanjut pasca-angioplasti pada 27/08/2025. Pasien baik tanpa nyeri dada atau gejala jantung. Tes stres menunjukkan toleransi latihan yang baik tanpa iskemia. Obat dioptimalkan termasuk terapi antiplatelet ganda. Pasien mematuhi diet jantung dan program olahraga teratur. Modifikasi faktor risiko berlangsung. Stent berfungsi dengan baik. Lanjutkan obat saat ini. Tindak lanjut dalam 6 bulan dengan tes stres ulang.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "john.smith@email.com",
+      "doctorEmail": "dr.michael.endocrinology@hospital.com",
+      "examinationDate": "2025-09-04T09:30:00Z",
+      "diagnosisSummary": "Diabetes Mellitus Tipe 2 - Kontrol Optimal",
+      "doctorNotes": "Tindak lanjut diabetes pada 04/09/2025. HbA1c sekarang pada 6,8% menunjukkan kontrol yang sangat baik. Pasien terus mematuhi regimen insulin dan diet. Penurunan berat badan total 5kg. Tidak ada komplikasi diabetes yang terdeteksi. Pemeriksaan mata dan kaki normal. Pasien aktif berolahraga secara teratur. Lanjutkan manajemen saat ini. Tindak lanjut dalam 3 bulan.",
+      "status": "completed",
+      "examinationNumber": 4
+    },
+    {
+      "patientEmail": "william.johnson@email.com",
+      "doctorEmail": "dr.robert.neurology@hospital.com",
+      "examinationDate": "2025-09-10T10:45:00Z",
+      "diagnosisSummary": "Stroke - Pemulihan Berkelanjutan",
+      "doctorNotes": "Tindak lanjut stroke pada 10/09/2025. Pasien menunjukkan pemulihan luar biasa dengan kekuatan sisi kanan hampir normal. Berbicara jelas dengan artikulasi yang baik. Mandiri dalam sebagian besar aktivitas kehidupan sehari-hari. Berjalan tanpa bantuan. Obat pencegahan stroke dilanjutkan. Faktor risiko terkontrol dengan baik. Lanjutkan terapi pemeliharaan. Tindak lanjut dalam 3 bulan.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "olivia.martinez@email.com",
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "examinationDate": "2025-09-16T11:00:00Z",
+      "diagnosisSummary": "Kanker - Siklus Kemoterapi Ketiga",
+      "doctorNotes": "Tindak lanjut pada 16/09/2025 untuk siklus kemoterapi ketiga. Pasien mentoleransi pengobatan dengan baik. Efek samping minimal dengan manajemen yang tepat. Pemeriksaan darah menunjukkan jumlah sel darah yang dapat diterima. Tidak ada tanda-tanda perkembangan penyakit. Dukungan psikologis berlanjut. Tiga siklus kemoterapi tersisa. Terapi radiasi akan dimulai setelah kemoterapi selesai. Tindak lanjut dalam 3 minggu.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "james.brown@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-09-24T09:45:00Z",
+      "diagnosisSummary": "Penyakit Jantung - Kontrol Fibrilasi Atrium",
+      "doctorNotes": "Tindak lanjut fibrilasi atrium pada 24/09/2025. Irama jantung terkontrol dengan baik dengan obat. Pasien melaporkan tidak ada palpitasi atau pusing. Antikoagulasi dalam rentang terapeutik. Tidak ada episode perdarahan. EKG menunjukkan kontrol laju yang baik. Pasien mematuhi obat. Lanjutkan terapi saat ini. Tindak lanjut dalam 3 bulan.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "sophia.davis@email.com",
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "examinationDate": "2025-09-25T10:15:00Z",
+      "diagnosisSummary": "Patah Tulang Lengan - Pemulihan Penuh",
+      "doctorNotes": "Tindak lanjut akhir pada 25/09/2025 untuk fraktur radius distal. Pasien mencapai pemulihan penuh dengan rentang gerak pergelangan tangan normal. Kekuatan kembali ke tingkat pra-cedera. Tidak ada nyeri atau keterbatasan. Pasien kembali ke semua aktivitas termasuk olahraga. Rontgen menunjukkan penyembuhan tulang lengkap. Tidak ada tindak lanjut lebih lanjut diperlukan. Pasien dipulangkan dari perawatan ortopedi.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "ava.anderson@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-10-01T11:30:00Z",
+      "diagnosisSummary": "Serangan Jantung - Pemeriksaan Tahunan",
+      "doctorNotes": "Pemeriksaan tahunan pada 01/10/2025 pasca-infark miokard. Pasien tetap bebas gejala dengan kualitas hidup yang sangat baik. Ekokardiogram menunjukkan fungsi jantung normal. Tes stres negatif untuk iskemia. Semua faktor risiko terkontrol optimal. Pasien terus gaya hidup sehat. Obat ditoleransi dengan baik. Lanjutkan manajemen saat ini. Pemeriksaan tahunan berikutnya dalam 12 bulan.",
+      "status": "completed",
+      "examinationNumber": 4
+    },
+    {
+      "patientEmail": "michael.garcia@email.com",
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "examinationDate": "2025-10-07T10:00:00Z",
+      "diagnosisSummary": "Patah Tulang Kaki - Pemulihan Lengkap",
+      "doctorNotes": "Tindak lanjut pada 07/10/2025 untuk fraktur tibia. Rontgen menunjukkan penyatuan tulang lengkap. Pasien berjalan normal tanpa bantuan. Rentang gerak penuh di lutut dan pergelangan kaki. Kekuatan otot kembali normal. Tidak ada nyeri atau keterbatasan. Pasien kembali ke pekerjaan dan aktivitas penuh. Tidak ada tindak lanjut ortopedi lebih lanjut diperlukan. Pasien dipulangkan dari perawatan.",
+      "status": "completed",
+      "examinationNumber": 4
+    },
+    {
+      "patientEmail": "daniel.lee@email.com",
+      "doctorEmail": "dr.thomas.immunology@hospital.com",
+      "examinationDate": "2025-10-14T11:45:00Z",
+      "diagnosisSummary": "Reaksi Alergi - Pemeriksaan 6 Bulan",
+      "doctorNotes": "Pemeriksaan 6 bulan pada 14/10/2025. Pasien berhasil mengelola alergi kacang tanah tanpa insiden. Membawa EpiPen dan tahu cara menggunakannya. Keluarga terlatih dalam respons darurat. Tidak ada reaksi alergi sejak diagnosis. Pasien percaya diri dalam menghindari alergen. Diskusi tentang imunoterapi oral ditunda untuk saat ini. Lanjutkan strategi saat ini. Tindak lanjut dalam 6 bulan.",
+      "status": "completed",
+      "examinationNumber": 4
+    },
+    {
+      "patientEmail": "emma.thompson@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-10-22T09:30:00Z",
+      "diagnosisSummary": "Penyakit Jantung - Pemeriksaan 6 Bulan",
+      "doctorNotes": "Pemeriksaan 6 bulan pada 22/10/2025 pasca-angioplasti. Pasien tetap asimtomatik dengan toleransi latihan yang sangat baik. Tes stres ulang negatif untuk iskemia. Stent paten tanpa restenosis. Semua obat dilanjutkan. Faktor risiko kardiovaskular terkontrol optimal. Pasien mematuhi gaya hidup sehat jantung. Lanjutkan manajemen saat ini. Tindak lanjut dalam 6 bulan.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "olivia.martinez@email.com",
+      "doctorEmail": "dr.maria.rheumatology@hospital.com",
+      "examinationDate": "2025-10-28T10:45:00Z",
+      "diagnosisSummary": "Osteoartritis - Manajemen Nyeri",
+      "doctorNotes": "Tindak lanjut pada 28/10/2025 untuk osteoartritis lutut. Pasien melaporkan perbaikan nyeri dengan terapi fisik dan NSAID. Mobilitas meningkat. Penurunan berat badan 3kg membantu mengurangi beban sendi. Injeksi kortikosteroid intra-artikular diberikan untuk bantuan tambahan. Pasien melanjutkan latihan penguatan. Lanjutkan rencana manajemen saat ini. Tindak lanjut dalam 3 bulan.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "john.smith@email.com",
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "examinationDate": "2025-11-04T11:15:00Z",
+      "diagnosisSummary": "Kanker Prostat - Evaluasi Pasca-radiasi",
+      "doctorNotes": "Evaluasi pasca-radiasi pada 04/11/2025. Pasien menyelesaikan terapi radiasi dengan baik. Efek samping minimal dan dapat dikelola. Tingkat PSA menurun menjadi 2,1 ng/mL menunjukkan respons yang baik. Tidak ada bukti penyakit residual. Pasien akan dipantau dengan tes PSA reguler. Lanjutkan pemantauan. Tindak lanjut dalam 3 bulan dengan tes PSA.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "william.johnson@email.com",
+      "doctorEmail": "dr.james.urology@hospital.com",
+      "examinationDate": "2025-11-10T09:45:00Z",
+      "diagnosisSummary": "Batu Ginjal - Evaluasi Pasca-litotripsi",
+      "doctorNotes": "Evaluasi pasca-litotripsi pada 10/11/2025. Pencitraan menunjukkan batu berhasil dipecah dan dikeluarkan. Tidak ada fragmen batu residual. Pasien bebas nyeri. Fungsi ginjal normal. Analisis batu menunjukkan kalsium oksalat. Pasien diedukasi tentang pencegahan dengan hidrasi yang memadai dan modifikasi diet. Lanjutkan tindakan pencegahan. Tindak lanjut dalam 6 bulan.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "james.brown@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-11-19T10:15:00Z",
+      "diagnosisSummary": "Hipertensi - Kontrol Jangka Panjang",
+      "doctorNotes": "Pemeriksaan 6 bulan pada 19/11/2025. Tekanan darah tetap terkontrol dengan baik pada 125/80 mmHg. Pasien terus modifikasi gaya hidup. Penurunan berat badan total 6kg. Tidak ada efek samping obat. Pemeriksaan organ target normal. Lanjutkan manajemen saat ini. Tindak lanjut dalam 6 bulan.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "olivia.martinez@email.com",
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "examinationDate": "2025-11-25T11:00:00Z",
+      "diagnosisSummary": "Kanker - Penyelesaian Kemoterapi",
+      "doctorNotes": "Tindak lanjut pada 25/11/2025 setelah penyelesaian kemoterapi. Pasien menyelesaikan semua 6 siklus dengan baik. Pemeriksaan fisik normal. Pencitraan menunjukkan tidak ada bukti penyakit. Pasien akan memulai terapi radiasi minggu depan. Efek samping kemoterapi mereda. Dukungan psikologis berlanjut. Tindak lanjut setelah penyelesaian radiasi.",
+      "status": "completed",
+      "examinationNumber": 4
+    },
+    {
+      "patientEmail": "sophia.davis@email.com",
+      "doctorEmail": "dr.patricia.obstetrics@hospital.com",
+      "examinationDate": "2025-12-03T10:30:00Z",
+      "diagnosisSummary": "Persalinan - Pemeriksaan Postpartum 6 Bulan",
+      "doctorNotes": "Pemeriksaan postpartum 6 bulan pada 03/12/2025. Ibu dan bayi berkembang dengan baik. Menyusui berhasil. Ibu pulih sepenuhnya dari persalinan. Tidak ada masalah kesehatan. Bayi mencapai semua tonggak perkembangan. Kontrasepsi dibahas. Tidak ada tindak lanjut obstetri lebih lanjut diperlukan kecuali kehamilan baru.",
+      "status": "completed",
+      "examinationNumber": 2
+    },
+    {
+      "patientEmail": "isabella.wilson@email.com",
+      "doctorEmail": "dr.jennifer.surgery@hospital.com",
+      "examinationDate": "2025-12-04T09:45:00Z",
+      "diagnosisSummary": "Apendisitis - Pemeriksaan 6 Bulan",
+      "doctorNotes": "Pemeriksaan 6 bulan pada 04/12/2025 pasca-apendektomi. Pasien tetap bebas gejala. Tidak ada masalah gastrointestinal. Luka bedah sembuh sempurna tanpa bekas luka yang signifikan. Pasien kembali ke semua aktivitas normal. Tidak ada tindak lanjut bedah lebih lanjut diperlukan. Pasien dipulangkan dari perawatan bedah.",
+      "status": "completed",
+      "examinationNumber": 4
+    },
+    {
+      "patientEmail": "ava.anderson@email.com",
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "examinationDate": "2025-12-10T11:15:00Z",
+      "diagnosisSummary": "Serangan Jantung - Evaluasi Komprehensif",
+      "doctorNotes": "Evaluasi komprehensif pada 10/12/2025. Pasien tetap dalam kondisi kesehatan jantung yang sangat baik. Semua parameter jantung optimal. Kualitas hidup sangat baik. Pasien aktif dan produktif. Semua faktor risiko terkontrol. Obat ditoleransi dengan baik. Lanjutkan manajemen saat ini. Tindak lanjut dalam 6 bulan.",
+      "status": "completed",
+      "examinationNumber": 5
+    },
+    {
+      "patientEmail": "emma.thompson@email.com",
+      "doctorEmail": "dr.david.pulmonology@hospital.com",
+      "examinationDate": "2025-12-17T10:00:00Z",
+      "diagnosisSummary": "Infeksi Saluran Pernapasan - Resolusi Lengkap",
+      "doctorNotes": "Tindak lanjut pada 17/12/2025 untuk pneumonia. Rontgen dada menunjukkan resolusi lengkap konsolidasi. Pasien bebas gejala. Fungsi paru normal. Tidak ada komplikasi. Pasien kembali ke aktivitas normal. Tidak ada tindak lanjut pulmunologi lebih lanjut diperlukan. Pasien dipulangkan dari perawatan.",
+      "status": "completed",
+      "examinationNumber": 3
+    },
+    {
+      "patientEmail": "daniel.lee@email.com",
+      "doctorEmail": "dr.thomas.immunology@hospital.com",
+      "examinationDate": "2025-12-18T11:30:00Z",
+      "diagnosisSummary": "Reaksi Alergi - Manajemen Berkelanjutan",
+      "doctorNotes": "Tindak lanjut pada 18/12/2025. Pasien terus mengelola alergi dengan sangat baik. Tidak ada reaksi alergi dalam 6 bulan terakhir. Membawa EpiPen setiap saat. Keluarga tetap terlatih. Pasien menjalani kehidupan normal dengan tindakan pencegahan yang tepat. Lanjutkan strategi saat ini. Tindak lanjut dalam 6 bulan atau sesuai kebutuhan.",
+      "status": "completed",
+      "examinationNumber": 5
+    },
+    {
+      "patientEmail": "john.smith@email.com",
+      "doctorEmail": "dr.michael.endocrinology@hospital.com",
+      "examinationDate": "2025-12-22T09:30:00Z",
+      "diagnosisSummary": "Diabetes Mellitus Tipe 2 - Kontrol Excellent",
+      "doctorNotes": "Tindak lanjut pada 22/12/2025. HbA1c tetap pada 6,7% menunjukkan kontrol diabetes yang sangat baik. Tidak ada komplikasi diabetes. Pasien terus gaya hidup sehat. Penurunan berat badan total 7kg. Pemeriksaan komprehensif normal. Lanjutkan manajemen saat ini. Tindak lanjut dalam 3 bulan.",
+      "status": "completed",
+      "examinationNumber": 5
+    },
+    {
+      "patientEmail": "olivia.martinez@email.com",
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "examinationDate": "2025-12-23T10:45:00Z",
+      "diagnosisSummary": "Kanker - Penyelesaian Terapi Radiasi",
+      "doctorNotes": "Tindak lanjut pada 23/12/2025 setelah penyelesaian terapi radiasi. Pasien menyelesaikan semua sesi radiasi dengan baik. Efek samping kulit minimal dan sembuh. Tidak ada bukti penyakit residual pada pencitraan. Pasien akan memasuki fase pengawasan. Pemeriksaan rutin dan pencitraan dijadwalkan. Prognosis sangat baik. Tindak lanjut dalam 3 bulan.",
+      "status": "completed",
+      "examinationNumber": 5
+    }
+  ]
+}

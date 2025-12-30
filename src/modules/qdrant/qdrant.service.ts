@@ -193,7 +193,10 @@ export class QdrantService {
       if (!sparseVector || sparseVector.indices.length === 0) {
         this.logger.debug(`Dense-only search in '${collectionName}'`);
         const denseSearchParams: any = {
-          vector: denseVector,
+          vector: {
+            name: 'dense',
+            vector: denseVector,
+          },
           limit,
           score_threshold: scoreThreshold,
           with_payload: true,
@@ -216,16 +219,20 @@ export class QdrantService {
       const queryParams: any = {
         prefetch: [
           {
-            query: {
-              indices: sparseVector.indices,
-              values: sparseVector.values,
+            sparse_vector: {
+              name: 'bm25',
+              vector: {
+                indices: sparseVector.indices,
+                values: sparseVector.values,
+              },
             },
-            using: 'bm25', // BM25 sparse vector name
             limit: limit * 2,
           },
           {
-            query: denseVector,
-            using: 'dense', // Explicitly name the dense vector
+            vector: {
+              name: 'dense',
+              vector: denseVector,
+            },
             limit: limit * 2,
           },
         ],
@@ -240,6 +247,7 @@ export class QdrantService {
         queryParams.filter = queryFilter;
       }
 
+      console.log(JSON.stringify(queryParams, null, 2));
       // Use query() for hybrid search with prefetch and RRF
       const queryResult = await this.client.query(collectionName, queryParams);
 

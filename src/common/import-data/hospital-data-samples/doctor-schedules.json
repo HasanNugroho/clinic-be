@@ -1,0 +1,235 @@
+{
+  "schedules": [
+    {
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "dayOfWeek": "senin",
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "quota": 30
+    },
+    {
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "dayOfWeek": "rabu",
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "quota": 30
+    },
+    {
+      "doctorEmail": "dr.sarah.cardiology@hospital.com",
+      "dayOfWeek": "jumat",
+      "startTime": "08:00",
+      "endTime": "14:00",
+      "quota": 25
+    },
+    {
+      "doctorEmail": "dr.michael.endocrinology@hospital.com",
+      "dayOfWeek": "senin",
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "quota": 28
+    },
+    {
+      "doctorEmail": "dr.michael.endocrinology@hospital.com",
+      "dayOfWeek": "kamis",
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "quota": 30
+    },
+    {
+      "doctorEmail": "dr.michael.endocrinology@hospital.com",
+      "dayOfWeek": "sabtu",
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "quota": 20
+    },
+    {
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "dayOfWeek": "selasa",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "quota": 32
+    },
+    {
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "dayOfWeek": "kamis",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "quota": 32
+    },
+    {
+      "doctorEmail": "dr.amanda.orthopedics@hospital.com",
+      "dayOfWeek": "sabtu",
+      "startTime": "09:00",
+      "endTime": "13:00",
+      "quota": 18
+    },
+    {
+      "doctorEmail": "dr.robert.neurology@hospital.com",
+      "dayOfWeek": "senin",
+      "startTime": "08:00",
+      "endTime": "15:00",
+      "quota": 25
+    },
+    {
+      "doctorEmail": "dr.robert.neurology@hospital.com",
+      "dayOfWeek": "rabu",
+      "startTime": "08:00",
+      "endTime": "15:00",
+      "quota": 25
+    },
+    {
+      "doctorEmail": "dr.robert.neurology@hospital.com",
+      "dayOfWeek": "jumat",
+      "startTime": "09:00",
+      "endTime": "16:00",
+      "quota": 24
+    },
+    {
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "dayOfWeek": "selasa",
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "quota": 28
+    },
+    {
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "dayOfWeek": "kamis",
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "quota": 28
+    },
+    {
+      "doctorEmail": "dr.lisa.oncology@hospital.com",
+      "dayOfWeek": "sabtu",
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "quota": 18
+    },
+    {
+      "doctorEmail": "dr.david.pulmonology@hospital.com",
+      "dayOfWeek": "senin",
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "quota": 30
+    },
+    {
+      "doctorEmail": "dr.david.pulmonology@hospital.com",
+      "dayOfWeek": "rabu",
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "quota": 30
+    },
+    {
+      "doctorEmail": "dr.david.pulmonology@hospital.com",
+      "dayOfWeek": "jumat",
+      "startTime": "08:00",
+      "endTime": "14:00",
+      "quota": 22
+    },
+    {
+      "doctorEmail": "dr.jennifer.surgery@hospital.com",
+      "dayOfWeek": "selasa",
+      "startTime": "07:00",
+      "endTime": "15:00",
+      "quota": 25
+    },
+    {
+      "doctorEmail": "dr.jennifer.surgery@hospital.com",
+      "dayOfWeek": "kamis",
+      "startTime": "07:00",
+      "endTime": "15:00",
+      "quota": 25
+    },
+    {
+      "doctorEmail": "dr.jennifer.surgery@hospital.com",
+      "dayOfWeek": "sabtu",
+      "startTime": "08:00",
+      "endTime": "13:00",
+      "quota": 20
+    },
+    {
+      "doctorEmail": "dr.james.urology@hospital.com",
+      "dayOfWeek": "senin",
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "quota": 28
+    },
+    {
+      "doctorEmail": "dr.james.urology@hospital.com",
+      "dayOfWeek": "rabu",
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "quota": 28
+    },
+    {
+      "doctorEmail": "dr.james.urology@hospital.com",
+      "dayOfWeek": "jumat",
+      "startTime": "09:00",
+      "endTime": "15:00",
+      "quota": 24
+    },
+    {
+      "doctorEmail": "dr.maria.rheumatology@hospital.com",
+      "dayOfWeek": "selasa",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "quota": 32
+    },
+    {
+      "doctorEmail": "dr.maria.rheumatology@hospital.com",
+      "dayOfWeek": "kamis",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "quota": 32
+    },
+    {
+      "doctorEmail": "dr.maria.rheumatology@hospital.com",
+      "dayOfWeek": "sabtu",
+      "startTime": "08:00",
+      "endTime": "12:00",
+      "quota": 18
+    },
+    {
+      "doctorEmail": "dr.patricia.obstetrics@hospital.com",
+      "dayOfWeek": "senin",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "quota": 35
+    },
+    {
+      "doctorEmail": "dr.patricia.obstetrics@hospital.com",
+      "dayOfWeek": "rabu",
+      "startTime": "08:00",
+      "endTime": "17:00",
+      "quota": 35
+    },
+    {
+      "doctorEmail": "dr.patricia.obstetrics@hospital.com",
+      "dayOfWeek": "jumat",
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "quota": 30
+    },
+    {
+      "doctorEmail": "dr.thomas.immunology@hospital.com",
+      "dayOfWeek": "selasa",
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "quota": 28
+    },
+    {
+      "doctorEmail": "dr.thomas.immunology@hospital.com",
+      "dayOfWeek": "kamis",
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "quota": 28
+    },
+    {
+      "doctorEmail": "dr.thomas.immunology@hospital.com",
+      "dayOfWeek": "sabtu",
+      "startTime": "09:00",
+      "endTime": "13:00",
+      "quota": 20
+    }
+  ]
+}

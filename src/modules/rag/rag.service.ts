@@ -38,11 +38,11 @@ export class RagService {
   private readonly MIN_RELEVANCE_SCORE = 0.5;
 
   private readonly COLLECTION_MAPPINGS = [
-    { name: 'doctorschedules', qdrantName: 'doctor_schedules' },
-    { name: 'examinations', qdrantName: 'examinations' },
-    { name: 'registrations', qdrantName: 'registrations' },
-    { name: 'dashboards', qdrantName: 'dashboards' },
-    { name: 'clinicinfos', qdrantName: 'clinic_info' },
+    'doctorschedules',
+    'examinations',
+    'registrations',
+    'dashboards',
+    'clinicinfos',
   ];
 
   private readonly COLLECTION_KEYWORDS = {
@@ -324,7 +324,7 @@ export class RagService {
   }
 
   private getAllCollectionNames(): string[] {
-    return this.COLLECTION_MAPPINGS.map((c) => c.name);
+    return this.COLLECTION_MAPPINGS;
   }
 
   private async hybridRetrieval(
@@ -333,9 +333,7 @@ export class RagService {
     temporalInfo: TemporalInfo,
   ): Promise<RetrievalResult[]> {
     const predictedCollections = this.predictCollectionFromQuery(query);
-    const collections = this.COLLECTION_MAPPINGS.filter((c) =>
-      predictedCollections.includes(c.name),
-    );
+    const collections = this.COLLECTION_MAPPINGS.filter((c) => predictedCollections.includes(c));
 
     this.logger.debug(`Predicted collections for query: ${predictedCollections.join(', ')}`);
 
@@ -343,8 +341,7 @@ export class RagService {
 
     const searches = collections.map((collection) =>
       this.searchHybrid(
-        collection.name,
-        collection.qdrantName,
+        collection,
         hybridEmbedding.dense,
         hybridEmbedding.sparse,
         userContext,
@@ -358,7 +355,6 @@ export class RagService {
 
   private async searchHybrid(
     collection: string,
-    qdrantCollection: string,
     denseVector: number[],
     sparseVector: { indices: number[]; values: number[] },
     userContext: UserContext,
@@ -386,7 +382,7 @@ export class RagService {
       }
 
       const qdrantResults = await this.qdrantService.search(
-        qdrantCollection,
+        collection,
         denseVector,
         sparseVector,
         this.DEFAULT_SEARCH_LIMIT,
@@ -395,7 +391,7 @@ export class RagService {
       );
 
       if (!qdrantResults?.length) {
-        this.logger.debug(`No results found in Qdrant for ${qdrantCollection}`);
+        this.logger.debug(`No results found in Qdrant for ${collection}`);
         return [];
       }
 
@@ -412,7 +408,6 @@ export class RagService {
         error: error.message,
         stack: error.stack,
         collection,
-        qdrantCollection,
         role: userContext.role,
       });
       return [];

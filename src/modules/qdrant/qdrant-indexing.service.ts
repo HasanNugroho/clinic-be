@@ -18,8 +18,8 @@ export class QdrantIndexingService {
   private readonly DASHBOARD_COLLECTION = 'dashboards';
   private readonly REGISTRATION_COLLECTION = 'registrations';
   private readonly EXAMINATION_COLLECTION = 'examinations';
-  private readonly SCHEDULE_COLLECTION = 'doctor_schedules';
-  private readonly CLINIC_INFO_COLLECTION = 'clinic_info';
+  private readonly SCHEDULE_COLLECTION = 'doctorschedules';
+  private readonly CLINIC_INFO_COLLECTION = 'clinicinfos';
 
   constructor(
     @InjectModel(Dashboard.name) private dashboardModel: Model<Dashboard>,
