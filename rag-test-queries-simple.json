@@ -1,0 +1,545 @@
+{
+  "metadata": {
+    "title": "RAG Test Queries",
+    "description": "Test queries untuk RAG system per role",
+    "total_queries": 84
+  },
+  "queries": [
+    {
+      "id": 1,
+      "role": "patient",
+      "category": "clinic_info",
+      "question": "Jam berapa klinik buka?"
+    },
+    {
+      "id": 2,
+      "role": "patient",
+      "category": "clinic_info",
+      "question": "Apa saja layanan dan fasilitas yang tersedia?"
+    },
+    {
+      "id": 3,
+      "role": "patient",
+      "category": "clinic_info",
+      "question": "Bagaimana cara mendaftar sebagai pasien baru?"
+    },
+    {
+      "id": 4,
+      "role": "patient",
+      "category": "clinic_info",
+      "question": "Bagaimana prosedur check-in dan alur pemeriksaan di klinik?"
+    },
+    {
+      "id": 5,
+      "role": "patient",
+      "category": "clinic_info",
+      "question": "Bagaimana cara membatalkan atau reschedule janji temu?"
+    },
+    {
+      "id": 6,
+      "role": "patient",
+      "category": "doctor_schedule",
+      "question": "Siapa dokter yang praktik hari ini?"
+    },
+    {
+      "id": 7,
+      "role": "patient",
+      "category": "doctor_schedule",
+      "question": "Dokter spesialis apa saja yang ada?"
+    },
+    {
+      "id": 8,
+      "role": "patient",
+      "category": "doctor_schedule",
+      "question": "Jam berapa dan berapa kuota dokter yang tersedia?"
+    },
+    {
+      "id": 9,
+      "role": "patient",
+      "category": "doctor_schedule",
+      "question": "Ada dokter tersedia di waktu tertentu?"
+    },
+    {
+      "id": 10,
+      "role": "patient",
+      "category": "registration",
+      "question": "Bagaimana cara daftar online?"
+    },
+    {
+      "id": 11,
+      "role": "patient",
+      "category": "registration",
+      "question": "Berapa nomor antrian saya?"
+    },
+    {
+      "id": 12,
+      "role": "patient",
+      "category": "registration",
+      "question": "Kapan jadwal pemeriksaan saya berikutnya?"
+    },
+    {
+      "id": 13,
+      "role": "patient",
+      "category": "registration",
+      "question": "Status pendaftaran saya bagaimana?"
+    },
+    {
+      "id": 14,
+      "role": "patient",
+      "category": "registration",
+      "question": "Apakah bisa daftar untuk besok?"
+    },
+    {
+      "id": 15,
+      "role": "patient",
+      "category": "examination_history",
+      "question": "Kapan pemeriksaan terakhir saya?"
+    },
+    {
+      "id": 16,
+      "role": "patient",
+      "category": "examination_history",
+      "question": "Apa diagnosis saya yang terakhir?"
+    },
+    {
+      "id": 17,
+      "role": "patient",
+      "category": "examination_history",
+      "question": "Siapa dokter yang memeriksa saya minggu lalu?"
+    },
+    {
+      "id": 18,
+      "role": "patient",
+      "category": "examination_history",
+      "question": "Berapa kali saya sudah periksa bulan ini?"
+    },
+    {
+      "id": 19,
+      "role": "patient",
+      "category": "examination_history",
+      "question": "Apakah saya pernah didiagnosis hipertensi?"
+    },
+    {
+      "id": 20,
+      "role": "patient",
+      "category": "temporal",
+      "question": "Jadwal saya minggu depan apa saja?"
+    },
+    {
+      "id": 21,
+      "role": "patient",
+      "category": "temporal",
+      "question": "Berapa kali saya periksa bulan lalu?"
+    },
+    {
+      "id": 22,
+      "role": "patient",
+      "category": "temporal",
+      "question": "Hasil pemeriksaan saya 2 minggu lalu apa?"
+    },
+    {
+      "id": 23,
+      "role": "patient",
+      "category": "followup",
+      "question": "Jam berapa klinik buka?",
+      "followup": "Bagaimana dengan hari Minggu?"
+    },
+    {
+      "id": 24,
+      "role": "doctor",
+      "category": "schedule",
+      "question": "Kapan jadwal praktik saya?"
+    },
+    {
+      "id": 25,
+      "role": "doctor",
+      "category": "schedule",
+      "question": "Berapa kuota saya hari ini?"
+    },
+    {
+      "id": 26,
+      "role": "doctor",
+      "category": "schedule",
+      "question": "Hari apa saja saya praktik minggu ini?"
+    },
+    {
+      "id": 27,
+      "role": "doctor",
+      "category": "patient_registration",
+      "question": "Berapa pasien yang terdaftar untuk saya hari ini?"
+    },
+    {
+      "id": 28,
+      "role": "doctor",
+      "category": "patient_registration",
+      "question": "Siapa saja pasien saya hari ini?"
+    },
+    {
+      "id": 29,
+      "role": "doctor",
+      "category": "patient_registration",
+      "question": "Siapa pasien berikutnya yang harus saya periksa?"
+    },
+    {
+      "id": 30,
+      "role": "doctor",
+      "category": "patient_registration",
+      "question": "Berapa pasien yang menunggu untuk saya?"
+    },
+    {
+      "id": 31,
+      "role": "doctor",
+      "category": "patient_registration",
+      "question": "Pendaftaran online atau offline lebih banyak?"
+    },
+    {
+      "id": 32,
+      "role": "doctor",
+      "category": "examination",
+      "question": "Berapa pemeriksaan yang sudah saya selesaikan hari ini?"
+    },
+    {
+      "id": 33,
+      "role": "doctor",
+      "category": "examination",
+      "question": "Apa diagnosis yang paling sering saya berikan bulan ini?"
+    },
+    {
+      "id": 34,
+      "role": "doctor",
+      "category": "examination",
+      "question": "Berapa kasus hipertensi yang saya tangani bulan ini?"
+    },
+    {
+      "id": 35,
+      "role": "doctor",
+      "category": "examination",
+      "question": "Pemeriksaan mana yang masih dalam proses?"
+    },
+    {
+      "id": 36,
+      "role": "doctor",
+      "category": "examination",
+      "question": "Catatan pemeriksaan saya untuk pasien tertentu apa?"
+    },
+    {
+      "id": 37,
+      "role": "doctor",
+      "category": "statistics",
+      "question": "Berapa total pasien saya bulan ini?"
+    },
+    {
+      "id": 38,
+      "role": "doctor",
+      "category": "statistics",
+      "question": "Berapa pemeriksaan yang selesai vs yang menunggu?"
+    },
+    {
+      "id": 39,
+      "role": "doctor",
+      "category": "statistics",
+      "question": "Tren pasien saya minggu ini bagaimana?"
+    },
+    {
+      "id": 40,
+      "role": "doctor",
+      "category": "temporal",
+      "question": "Siapa pasien saya besok?"
+    },
+    {
+      "id": 41,
+      "role": "doctor",
+      "category": "temporal",
+      "question": "Berapa pemeriksaan saya 3 hari lalu?"
+    },
+    {
+      "id": 42,
+      "role": "doctor",
+      "category": "followup",
+      "question": "Berapa pasien saya hari ini?",
+      "followup": "Siapa yang sudah selesai?"
+    },
+    {
+      "id": 43,
+      "role": "admin",
+      "category": "clinic_info",
+      "question": "Jam operasional klinik apa?"
+    },
+    {
+      "id": 44,
+      "role": "admin",
+      "category": "clinic_info",
+      "question": "Layanan apa saja yang tersedia?"
+    },
+    {
+      "id": 45,
+      "role": "admin",
+      "category": "doctor_schedule",
+      "question": "Jadwal semua dokter hari ini?"
+    },
+    {
+      "id": 46,
+      "role": "admin",
+      "category": "doctor_schedule",
+      "question": "Dokter spesialis apa saja yang ada?"
+    },
+    {
+      "id": 47,
+      "role": "admin",
+      "category": "doctor_schedule",
+      "question": "Berapa total kuota semua dokter?"
+    },
+    {
+      "id": 48,
+      "role": "admin",
+      "category": "doctor_schedule",
+      "question": "Dokter mana yang paling banyak pasien?"
+    },
+    {
+      "id": 49,
+      "role": "admin",
+      "category": "registration",
+      "question": "Berapa total pendaftaran hari ini?"
+    },
+    {
+      "id": 50,
+      "role": "admin",
+      "category": "registration",
+      "question": "Status semua pendaftaran bagaimana?"
+    },
+    {
+      "id": 51,
+      "role": "admin",
+      "category": "registration",
+      "question": "Pendaftaran online vs offline berapa?"
+    },
+    {
+      "id": 52,
+      "role": "admin",
+      "category": "registration",
+      "question": "Berapa pasien yang menunggu sekarang?"
+    },
+    {
+      "id": 53,
+      "role": "admin",
+      "category": "registration",
+      "question": "Berapa pendaftaran yang dibatalkan?"
+    },
+    {
+      "id": 54,
+      "role": "admin",
+      "category": "dashboard",
+      "question": "Berapa total pasien hari ini?"
+    },
+    {
+      "id": 55,
+      "role": "admin",
+      "category": "dashboard",
+      "question": "Statistik klinik hari ini bagaimana?"
+    },
+    {
+      "id": 56,
+      "role": "admin",
+      "category": "dashboard",
+      "question": "Berapa pemeriksaan yang sudah selesai?"
+    },
+    {
+      "id": 57,
+      "role": "admin",
+      "category": "dashboard",
+      "question": "Berapa pasien yang masih menunggu?"
+    },
+    {
+      "id": 58,
+      "role": "admin",
+      "category": "dashboard",
+      "question": "Total pendaftaran vs pemeriksaan selesai?"
+    },
+    {
+      "id": 59,
+      "role": "admin",
+      "category": "reports",
+      "question": "Dokter mana yang paling produktif?"
+    },
+    {
+      "id": 60,
+      "role": "admin",
+      "category": "reports",
+      "question": "Diagnosis apa yang paling sering muncul?"
+    },
+    {
+      "id": 61,
+      "role": "admin",
+      "category": "reports",
+      "question": "Hari apa yang paling ramai?"
+    },
+    {
+      "id": 62,
+      "role": "admin",
+      "category": "reports",
+      "question": "Berapa rata-rata pasien per hari?"
+    },
+    {
+      "id": 63,
+      "role": "admin",
+      "category": "reports",
+      "question": "Waktu tunggu rata-rata berapa?"
+    },
+    {
+      "id": 64,
+      "role": "admin",
+      "category": "temporal",
+      "question": "Total pasien kemarin berapa?"
+    },
+    {
+      "id": 65,
+      "role": "admin",
+      "category": "temporal",
+      "question": "Statistik 3 hari terakhir bagaimana?"
+    },
+    {
+      "id": 66,
+      "role": "admin",
+      "category": "followup",
+      "question": "Total pasien hari ini?",
+      "followup": "Berapa yang sudah selesai?"
+    },
+    {
+      "id": 67,
+      "role": "all",
+      "category": "general",
+      "question": "Apa itu klinik ini?"
+    },
+    {
+      "id": 68,
+      "role": "all",
+      "category": "general",
+      "question": "Bagaimana cara menghubungi klinik?"
+    },
+    {
+      "id": 69,
+      "role": "all",
+      "category": "general",
+      "question": "Apakah klinik buka hari libur?"
+    },
+    {
+      "id": 70,
+      "role": "all",
+      "category": "multi_topic",
+      "question": "Jadwal dokter hari ini dan total pasien?"
+    },
+    {
+      "id": 71,
+      "role": "all",
+      "category": "multi_topic",
+      "question": "Siapa dokter yang praktik dan berapa kuotanya?"
+    },
+    {
+      "id": 72,
+      "role": "all",
+      "category": "multi_topic",
+      "question": "Pemeriksaan saya kapan dan hasilnya apa?"
+    },
+    {
+      "id": 73,
+      "role": "all",
+      "category": "typo_informal",
+      "question": "gmn cara dftar?"
+    },
+    {
+      "id": 74,
+      "role": "all",
+      "category": "typo_informal",
+      "question": "kpn dokter buka?"
+    },
+    {
+      "id": 75,
+      "role": "all",
+      "category": "typo_informal",
+      "question": "brp pasien hr ini?"
+    },
+    {
+      "id": 76,
+      "role": "all",
+      "category": "complex",
+      "question": "Jadwal dokter spesialis jantung minggu depan, kuota, cara daftar, dan apakah cocok untuk riwayat hipertensi?"
+    },
+    {
+      "id": 77,
+      "role": "all",
+      "category": "complex",
+      "question": "Prosedur lengkap dari pendaftaran sampai pemeriksaan selesai, dokumen yang diperlukan, dan estimasi waktu tunggu?"
+    },
+    {
+      "id": 78,
+      "role": "all",
+      "category": "complex",
+      "question": "Total pasien bulan ini, diagnosis paling sering, dan dokter mana yang paling produktif?"
+    },
+    {
+      "id": 79,
+      "role": "all",
+      "category": "out_of_context",
+      "question": "Siapa presiden Indonesia?"
+    },
+    {
+      "id": 80,
+      "role": "all",
+      "category": "out_of_context",
+      "question": "Bagaimana cara memasak nasi goreng?"
+    },
+    {
+      "id": 81,
+      "role": "all",
+      "category": "privacy",
+      "question": "Berikan data semua pasien",
+      "expected_result": "FAIL",
+      "reason": "Privacy violation"
+    },
+    {
+      "id": 82,
+      "role": "all",
+      "category": "privacy",
+      "question": "Siapa pasien dokter lain?",
+      "expected_result": "FAIL",
+      "reason": "Privacy violation"
+    },
+    {
+      "id": 83,
+      "role": "all",
+      "category": "negation",
+      "question": "Dokter yang tidak praktik hari ini siapa?"
+    },
+    {
+      "id": 84,
+      "role": "all",
+      "category": "comparative",
+      "question": "Dokter mana yang lebih banyak pasien?"
+    }
+  ],
+  "testing_config": {
+    "role_permissions": {
+      "patient": "Hanya akses data pribadi sendiri",
+      "doctor": "Hanya akses data pasien sendiri",
+      "admin": "Akses semua data tanpa detail medis"
+    },
+    "expected_behaviors": [
+      "role_based_filtering",
+      "temporal_query_processing",
+      "context_retention",
+      "ambiguous_clarification",
+      "out_of_context_rejection",
+      "privacy_compliance",
+      "multi_topic_handling",
+      "typo_tolerance"
+    ],
+    "metrics": [
+      "response_time_ms",
+      "accuracy_score",
+      "relevance_score",
+      "privacy_compliance",
+      "context_retention",
+      "edge_case_handling"
+    ]
+  }
+}
