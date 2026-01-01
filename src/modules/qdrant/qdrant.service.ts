@@ -168,7 +168,7 @@ export class QdrantService {
   async search(
     collectionName: string,
     denseVector: number[],
-    sparseVector?: { indices: number[]; values: number[] },
+    sparseVector: { indices: number[]; values: number[] },
     limit: number = 10,
     scoreThreshold: number = 0.7,
     filters?: Record<string, any>,
@@ -183,73 +183,67 @@ export class QdrantService {
       // Build filter conditions
       const queryFilter = this.buildQueryFilter(filters);
 
-      if (sparseVector) {
-        this.logger.debug(
-          `Sparse vector indices: ${sparseVector.indices.length}, values: ${sparseVector.values.length}`,
-        );
-      }
-
       // BM25 sparse vector disabled for performance
       // Always perform dense-only search
-      this.logger.debug(`Dense-only search in '${collectionName}'`);
-      const denseSearchParams: any = {
-        vector: {
-          name: 'dense',
-          vector: denseVector,
-        },
-        limit,
-        score_threshold: scoreThreshold,
-        with_payload: true,
-      };
-      if (queryFilter) {
-        denseSearchParams.filter = queryFilter;
-      }
-
-      const denseResults = await this.client.search(collectionName, denseSearchParams);
-      return denseResults.map((result) => ({
-        id: result.id.toString(),
-        score: result.score,
-        payload: result.payload,
-      }));
-
-      // Perform hybrid search using prefetch with RRF fusion
-      // this.logger.debug(`Hybrid search (sparse + dense with RRF) in '${collectionName}'`);
-      // const queryParams: any = {
-      //   prefetch: [
-      //     {
-      //       sparse_vector: {
-      //         name: 'bm25',
-      //         vector: {
-      //           indices: sparseVector.indices,
-      //           values: sparseVector.values,
-      //         },
-      //       },
-      //       limit: limit * 2,
-      //     },
-      //     {
-      //       vector: {
-      //         name: 'dense',
-      //         vector: denseVector,
-      //       },
-      //       limit: limit * 2,
-      //     },
-      //   ],
-      //   query: {
-      //     fusion: 'rrf',
+      // this.logger.debug(`Dense-only search in '${collectionName}'`);
+      // const denseSearchParams: any = {
+      //   vector: {
+      //     name: 'dense',
+      //     vector: denseVector,
       //   },
       //   limit,
+      //   score_threshold: scoreThreshold,
       //   with_payload: true,
       // };
       // if (queryFilter) {
-      //   queryParams.filter = queryFilter;
+      //   denseSearchParams.filter = queryFilter;
       // }
-      // const queryResult = await this.client.query(collectionName, queryParams);
-      // const results = queryResult.points || [];
-      // return results.map((result) => ({
+
+      // const denseResults = await this.client.search(collectionName, denseSearchParams);
+      // return denseResults.map((result) => ({
       //   id: result.id.toString(),
       //   score: result.score,
       //   payload: result.payload,
       // }));
+
+      // Perform hybrid search using prefetch with RRF fusion
+      this.logger.debug(`Hybrid search (sparse + dense with RRF) in '${collectionName}'`);
+      const queryParams: any = {
+        prefetch: [
+          {
+            sparse_vector: {
+              name: 'bm25',
+              vector: {
+                indices: sparseVector.indices,
+                values: sparseVector.values,
+              },
+            },
+            limit: limit * 2,
+          },
+          {
+            vector: {
+              name: 'dense',
+              vector: denseVector,
+            },
+            limit: limit * 2,
+          },
+        ],
+        query: {
+          fusion: 'rrf',
+        },
+        limit,
+        with_payload: true,
+      };
+      if (queryFilter) {
+        queryParams.filter = queryFilter;
+      }
+      const queryResult = await this.client.query(collectionName, queryParams);
+      const results = queryResult.points || [];
+      return results.map((result) => ({
+        id: result.id.toString(),
+        score: result.score,
+        payload: result.payload,
+      }));
     } catch (error) {
       this.logger.error(`Error searching in '${collectionName}':`, error);
       throw error;

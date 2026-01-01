@@ -183,7 +183,7 @@ export class RagService {
       const response = this.buildResponse(
         query,
         llmPayload,
-        rankedResults,
+        limitedResults,
         effectiveSessionId,
         startTime,
       );
@@ -240,7 +240,7 @@ export class RagService {
     return {
       query,
       answer: this.sanitizeAnswer(llmPayload.answer || 'No response generated.'),
-      sources: filteredSources,
+      sources: rankedResults,
       processingTimeMs: Date.now() - startTime,
       followUpQuestion: llmPayload.followUpQuestion,
       needsMoreInfo: llmPayload.needsMoreInfo,
