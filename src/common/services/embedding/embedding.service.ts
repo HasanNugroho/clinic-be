@@ -79,19 +79,24 @@ export class EmbeddingService {
 
       this.logger.debug(`Generated dense embedding with ${dense.length} dimensions`);
 
-      // Initialize BM25 model if not already done
-      if (!this.bm25Model) {
-        this.bm25Model = buildBM25([truncatedText]);
-      }
+      // // Generate sparse embedding using BM25
+      // // BM25 model must be initialized via initializeBM25Corpus() during app startup
+      // if (!this.bm25Model) {
+      //   this.logger.warn(
+      //     'BM25 model not initialized. Call initializeBM25Corpus() during app startup. Using empty sparse vector.',
+      //   );
+      //   return { dense, sparse: { indices: [], values: [] } };
+      // }
 
-      // Generate sparse embedding using BM25
-      const sparse = bm25QueryVector(this.bm25Model, truncatedText);
+      // const sparse = bm25QueryVector(this.bm25Model, truncatedText);
 
-      this.logger.debug(
-        `Generated BM25 sparse embedding with ${sparse.indices.length} non-zero elements`,
-      );
+      // this.logger.debug(
+      //   `Generated BM25 sparse embedding with ${sparse.indices.length} non-zero elements`,
+      // );
 
-      return { dense, sparse };
+      return {
+        dense, sparse: { indices: [], values: [] }
+      };
     } catch (error) {
       this.logger.error(`Failed to generate hybrid embedding: ${error.message}`, error.stack);
       throw error;
