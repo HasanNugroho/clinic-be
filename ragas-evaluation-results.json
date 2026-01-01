@@ -1,0 +1,1475 @@
+{
+  "evaluations": [
+    {
+      "query": "Jam berapa klinik buka?",
+      "metrics": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.25,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 6286,
+        "source_count": 1,
+        "session_id": "51333fe3-bd96-40b0-b6be-55750a3b5c01",
+        "timestamp": "2026-01-01T14:15:57.440Z"
+      },
+      "overall_score": 0.588
+    },
+    {
+      "query": "Apa saja layanan dan fasilitas yang tersedia?",
+      "metrics": {
+        "faithfulness": 0.667,
+        "answer_relevancy": 0.286,
+        "context_precision": 1.0,
+        "context_recall": 0.2
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 9963,
+        "source_count": 2,
+        "session_id": "0395ccb0-f43e-4b19-8331-f77efb5cc448",
+        "timestamp": "2026-01-01T14:16:08.496Z"
+      },
+      "overall_score": 0.538
+    },
+    {
+      "query": "Bagaimana cara mendaftar sebagai pasien baru?",
+      "metrics": {
+        "faithfulness": 0.895,
+        "answer_relevancy": 0.5,
+        "context_precision": 1.0,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 8419,
+        "source_count": 10,
+        "session_id": "6f392928-a0e3-441e-a039-7277ca1c1509",
+        "timestamp": "2026-01-01T14:16:19.258Z"
+      },
+      "overall_score": 0.849
+    },
+    {
+      "query": "Bagaimana prosedur check-in dan alur pemeriksaan di klinik?",
+      "metrics": {
+        "faithfulness": 0.843,
+        "answer_relevancy": 0.75,
+        "context_precision": 1.0,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 8046,
+        "source_count": 10,
+        "session_id": "a5cdf013-ccf0-4d4e-a201-f1c3bb1f9c26",
+        "timestamp": "2026-01-01T14:16:28.485Z"
+      },
+      "overall_score": 0.898
+    },
+    {
+      "query": "Bagaimana cara membatalkan atau reschedule janji temu?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.429,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 5688,
+        "source_count": 0,
+        "session_id": "018c48fe-7ebb-4b44-afee-e8bb257e9db3",
+        "timestamp": "2026-01-01T14:16:35.344Z"
+      },
+      "overall_score": 0.107
+    },
+    {
+      "query": "Siapa dokter yang praktik hari ini?",
+      "metrics": {
+        "faithfulness": 0.609,
+        "answer_relevancy": 0.667,
+        "context_precision": 0.438,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 6410,
+        "source_count": 1,
+        "session_id": "93f7e651-eb1b-40c6-b74a-08a13a941665",
+        "timestamp": "2026-01-01T14:16:42.896Z"
+      },
+      "overall_score": 0.454
+    },
+    {
+      "query": "Dokter spesialis apa saja yang ada?",
+      "metrics": {
+        "faithfulness": 0.941,
+        "answer_relevancy": 0.5,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3855,
+        "source_count": 1,
+        "session_id": "3164aedb-86e7-4fda-ae55-9e11efd09b8d",
+        "timestamp": "2026-01-01T14:16:47.939Z"
+      },
+      "overall_score": 0.635
+    },
+    {
+      "query": "Jam berapa dan berapa kuota dokter yang tersedia?",
+      "metrics": {
+        "faithfulness": 0.255,
+        "answer_relevancy": 0.571,
+        "context_precision": 0.445,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 11079,
+        "source_count": 25,
+        "session_id": "76173bfc-50a8-48c2-aabf-8d3810a764ba",
+        "timestamp": "2026-01-01T14:16:59.904Z"
+      },
+      "overall_score": 0.568
+    },
+    {
+      "query": "Ada dokter tersedia di waktu tertentu?",
+      "metrics": {
+        "faithfulness": 0.354,
+        "answer_relevancy": 0.667,
+        "context_precision": 0.444,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 5048,
+        "source_count": 25,
+        "session_id": "e168121c-a2ef-4fcf-905b-aa2e35b34419",
+        "timestamp": "2026-01-01T14:17:06.145Z"
+      },
+      "overall_score": 0.616
+    },
+    {
+      "query": "Bagaimana cara daftar online?",
+      "metrics": {
+        "faithfulness": 0.763,
+        "answer_relevancy": 0.0,
+        "context_precision": 1.0,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 5448,
+        "source_count": 10,
+        "session_id": "ad686390-123c-4ebd-affb-59cc24434b43",
+        "timestamp": "2026-01-01T14:17:12.695Z"
+      },
+      "overall_score": 0.691
+    },
+    {
+      "query": "Berapa nomor antrian saya?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 5046,
+        "source_count": 0,
+        "session_id": "b34c1bf2-79ce-472c-8894-a298da40036c",
+        "timestamp": "2026-01-01T14:17:18.938Z"
+      },
+      "overall_score": 0.125
+    },
+    {
+      "query": "Kapan jadwal pemeriksaan saya berikutnya?",
+      "metrics": {
+        "faithfulness": 0.588,
+        "answer_relevancy": 0.4,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4497,
+        "source_count": 1,
+        "session_id": "12da9c34-614b-4087-83fc-6e991b5b398d",
+        "timestamp": "2026-01-01T14:17:24.568Z"
+      },
+      "overall_score": 0.522
+    },
+    {
+      "query": "Status pendaftaran saya bagaimana?",
+      "metrics": {
+        "faithfulness": 0.536,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.529,
+        "context_recall": 0.6
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 5167,
+        "source_count": 6,
+        "session_id": "68279223-165b-41bf-bf24-82295b75f311",
+        "timestamp": "2026-01-01T14:17:30.916Z"
+      },
+      "overall_score": 0.541
+    },
+    {
+      "query": "Apakah bisa daftar untuk besok?",
+      "metrics": {
+        "faithfulness": 0.24,
+        "answer_relevancy": 0.2,
+        "context_precision": 0.529,
+        "context_recall": 0.6
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4456,
+        "source_count": 6,
+        "session_id": "d4b767c5-e305-4386-a7d3-3cc8b8b091f2",
+        "timestamp": "2026-01-01T14:17:36.548Z"
+      },
+      "overall_score": 0.392
+    },
+    {
+      "query": "Kapan pemeriksaan terakhir saya?",
+      "metrics": {
+        "faithfulness": 0.667,
+        "answer_relevancy": 0.5,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 2882,
+        "source_count": 1,
+        "session_id": "a5e6ccfb-b129-43c6-9c64-60b265569652",
+        "timestamp": "2026-01-01T14:17:40.541Z"
+      },
+      "overall_score": 0.567
+    },
+    {
+      "query": "Apa diagnosis saya yang terakhir?",
+      "metrics": {
+        "faithfulness": 0.75,
+        "answer_relevancy": 0.4,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3971,
+        "source_count": 1,
+        "session_id": "7a9a2a97-aa28-4312-8c95-fbf1f523892c",
+        "timestamp": "2026-01-01T14:17:45.660Z"
+      },
+      "overall_score": 0.562
+    },
+    {
+      "query": "Siapa dokter yang memeriksa saya minggu lalu?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.714,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3762,
+        "source_count": 0,
+        "session_id": "a7fdcf9e-7f64-49e0-b42a-9d9bd66db0e7",
+        "timestamp": "2026-01-01T14:17:50.575Z"
+      },
+      "overall_score": 0.178
+    },
+    {
+      "query": "Berapa kali saya sudah periksa bulan ini?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.286,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4163,
+        "source_count": 0,
+        "session_id": "d22c7641-e31f-4818-b04a-45e2c548ec1d",
+        "timestamp": "2026-01-01T14:17:55.867Z"
+      },
+      "overall_score": 0.071
+    },
+    {
+      "query": "Apakah saya pernah didiagnosis hipertensi?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.8,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3527,
+        "source_count": 0,
+        "session_id": "27691881-525b-48b0-9081-9a9dbad23da2",
+        "timestamp": "2026-01-01T14:18:00.510Z"
+      },
+      "overall_score": 0.2
+    },
+    {
+      "query": "Jadwal saya minggu depan apa saja?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.333,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3087,
+        "source_count": 0,
+        "session_id": "e016c274-be85-471e-91ef-d6913a12b523",
+        "timestamp": "2026-01-01T14:18:04.709Z"
+      },
+      "overall_score": 0.083
+    },
+    {
+      "query": "Berapa kali saya periksa bulan lalu?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.667,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4395,
+        "source_count": 0,
+        "session_id": "714f0c7d-fca9-45e9-ad1d-9e320a43d609",
+        "timestamp": "2026-01-01T14:18:10.240Z"
+      },
+      "overall_score": 0.167
+    },
+    {
+      "query": "Hasil pemeriksaan saya 2 minggu lalu apa?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.429,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4210,
+        "source_count": 0,
+        "session_id": "5d63e953-740b-4fec-a9b6-4ec7bd9dbb5a",
+        "timestamp": "2026-01-01T14:18:15.566Z"
+      },
+      "overall_score": 0.107
+    },
+    {
+      "query": "Jam berapa klinik buka?",
+      "metrics": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.25,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3252,
+        "source_count": 1,
+        "session_id": "44ad6ded-f56d-4f41-b489-560bcc3fb648",
+        "timestamp": "2026-01-01T14:18:19.906Z"
+      },
+      "overall_score": 0.588
+    },
+    {
+      "query": "Kapan jadwal praktik saya?",
+      "metrics": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.442,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 5228,
+        "source_count": 1,
+        "session_id": "48bd2179-fa2b-4156-a732-ede48b457e34",
+        "timestamp": "2026-01-01T14:18:26.227Z"
+      },
+      "overall_score": 0.386
+    },
+    {
+      "query": "Berapa kuota saya hari ini?",
+      "metrics": {
+        "faithfulness": 0.846,
+        "answer_relevancy": 0.4,
+        "context_precision": 0.442,
+        "context_recall": 0.2
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 3575,
+        "source_count": 2,
+        "session_id": "9181519b-fd70-4c1f-b4e0-b5001b5ffc17",
+        "timestamp": "2026-01-01T14:18:30.929Z"
+      },
+      "overall_score": 0.472
+    },
+    {
+      "query": "Hari apa saja saya praktik minggu ini?",
+      "metrics": {
+        "faithfulness": 0.4,
+        "answer_relevancy": 0.429,
+        "context_precision": 0.442,
+        "context_recall": 0.2
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 4942,
+        "source_count": 2,
+        "session_id": "31f6c95b-849d-43d5-ad01-5045526f3937",
+        "timestamp": "2026-01-01T14:18:36.972Z"
+      },
+      "overall_score": 0.368
+    },
+    {
+      "query": "Berapa pasien yang terdaftar untuk saya hari ini?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.75,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 4458,
+        "source_count": 0,
+        "session_id": "09e8d94d-51b3-4c6c-b523-7e8e98b7ed90",
+        "timestamp": "2026-01-01T14:18:42.606Z"
+      },
+      "overall_score": 0.188
+    },
+    {
+      "query": "Siapa saja pasien saya hari ini?",
+      "metrics": {
+        "faithfulness": 0.333,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.445,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 3206,
+        "source_count": 25,
+        "session_id": "d17b8ff1-4556-4875-be88-c407f8b0ff4c",
+        "timestamp": "2026-01-01T14:18:47.009Z"
+      },
+      "overall_score": 0.57
+    },
+    {
+      "query": "Siapa pasien berikutnya yang harus saya periksa?",
+      "metrics": {
+        "faithfulness": 0.625,
+        "answer_relevancy": 0.286,
+        "context_precision": 0.761,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 4498,
+        "source_count": 62,
+        "session_id": "f6a6f3f8-f8cd-4889-be44-48f895ced81a",
+        "timestamp": "2026-01-01T14:18:52.628Z"
+      },
+      "overall_score": 0.668
+    },
+    {
+      "query": "Berapa pasien yang menunggu untuk saya?",
+      "metrics": {
+        "faithfulness": 0.462,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.533,
+        "context_recall": 0.3
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 3799,
+        "source_count": 3,
+        "session_id": "2958492c-c34a-454e-bbc4-2e3b53c69dfa",
+        "timestamp": "2026-01-01T14:18:57.557Z"
+      },
+      "overall_score": 0.449
+    },
+    {
+      "query": "Pendaftaran online atau offline lebih banyak?",
+      "metrics": {
+        "faithfulness": 0.176,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.532,
+        "context_recall": 0.4
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 8512,
+        "source_count": 4,
+        "session_id": "88a58ade-8232-474d-ada2-0f32e26f7266",
+        "timestamp": "2026-01-01T14:19:07.182Z"
+      },
+      "overall_score": 0.402
+    },
+    {
+      "query": "Berapa pemeriksaan yang sudah saya selesaikan hari ini?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.625,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 8875,
+        "source_count": 0,
+        "session_id": "021b1740-bc49-42a0-9a0a-14b07c49fd9c",
+        "timestamp": "2026-01-01T14:19:17.217Z"
+      },
+      "overall_score": 0.156
+    },
+    {
+      "query": "Apa diagnosis yang paling sering saya berikan bulan ini?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.778,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 3860,
+        "source_count": 0,
+        "session_id": "c7adfc73-e69c-4e66-9460-8fefcd3ae1e4",
+        "timestamp": "2026-01-01T14:19:22.164Z"
+      },
+      "overall_score": 0.195
+    },
+    {
+      "query": "Berapa kasus hipertensi yang saya tangani bulan ini?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.75,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 3403,
+        "source_count": 0,
+        "session_id": "de827c19-0e73-48b7-a502-77a3aec59916",
+        "timestamp": "2026-01-01T14:19:26.741Z"
+      },
+      "overall_score": 0.188
+    },
+    {
+      "query": "Pemeriksaan mana yang masih dalam proses?",
+      "metrics": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.667,
+        "context_precision": 1.0,
+        "context_recall": 0.4
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 5235,
+        "source_count": 4,
+        "session_id": "f0874fd3-1500-46d5-9d66-95573f9c43d2",
+        "timestamp": "2026-01-01T14:19:33.092Z"
+      },
+      "overall_score": 0.642
+    },
+    {
+      "query": "Catatan pemeriksaan saya untuk pasien tertentu apa?",
+      "metrics": {
+        "faithfulness": 0.635,
+        "answer_relevancy": 0.571,
+        "context_precision": 1.0,
+        "context_recall": 0.4
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 7165,
+        "source_count": 4,
+        "session_id": "6db8d49a-deba-43e2-abe5-fa987d2ed96e",
+        "timestamp": "2026-01-01T14:19:41.387Z"
+      },
+      "overall_score": 0.651
+    },
+    {
+      "query": "Berapa total pasien saya bulan ini?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.667,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 3657,
+        "source_count": 0,
+        "session_id": "7e6e2150-b880-4246-8ae0-eb90f7d5a9e4",
+        "timestamp": "2026-01-01T14:19:46.131Z"
+      },
+      "overall_score": 0.167
+    },
+    {
+      "query": "Berapa pemeriksaan yang selesai vs yang menunggu?",
+      "metrics": {
+        "faithfulness": 0.529,
+        "answer_relevancy": 0.333,
+        "context_precision": 1.0,
+        "context_recall": 0.4
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 4023,
+        "source_count": 4,
+        "session_id": "8799f23d-4cac-4959-9da6-c4e83c3ef536",
+        "timestamp": "2026-01-01T14:19:51.320Z"
+      },
+      "overall_score": 0.566
+    },
+    {
+      "query": "Tren pasien saya minggu ini bagaimana?",
+      "metrics": {
+        "faithfulness": 0.229,
+        "answer_relevancy": 0.833,
+        "context_precision": 0.442,
+        "context_recall": 0.2
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 6916,
+        "source_count": 2,
+        "session_id": "bd3c41a1-2498-41a2-a680-0797d46915d2",
+        "timestamp": "2026-01-01T14:19:59.409Z"
+      },
+      "overall_score": 0.426
+    },
+    {
+      "query": "Siapa pasien saya besok?",
+      "metrics": {
+        "faithfulness": 0.576,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.442,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 4993,
+        "source_count": 1,
+        "session_id": "88f71314-0b11-473e-899e-a222af6a331b",
+        "timestamp": "2026-01-01T14:20:05.490Z"
+      },
+      "overall_score": 0.404
+    },
+    {
+      "query": "Berapa pemeriksaan saya 3 hari lalu?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.667,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 3345,
+        "source_count": 0,
+        "session_id": "f0699238-91fa-4cb7-a56a-d1dc75f2bcee",
+        "timestamp": "2026-01-01T14:20:09.959Z"
+      },
+      "overall_score": 0.167
+    },
+    {
+      "query": "Berapa pasien saya hari ini?",
+      "metrics": {
+        "faithfulness": 0.875,
+        "answer_relevancy": 0.4,
+        "context_precision": 0.442,
+        "context_recall": 0.2
+      },
+      "metadata": {
+        "user_role": "doctor",
+        "processing_time_ms": 5377,
+        "source_count": 2,
+        "session_id": "99a5218b-9780-41f8-90c5-cf3b732a8d81",
+        "timestamp": "2026-01-01T14:20:16.513Z"
+      },
+      "overall_score": 0.479
+    },
+    {
+      "query": "Jam operasional klinik apa?",
+      "metrics": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.25,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 4777,
+        "source_count": 1,
+        "session_id": "14b67fec-ee4e-45fb-91b6-738a0950bca7",
+        "timestamp": "2026-01-01T14:20:22.452Z"
+      },
+      "overall_score": 0.588
+    },
+    {
+      "query": "Layanan apa saja yang tersedia?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.4,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 3828,
+        "source_count": 0,
+        "session_id": "49159fe7-f664-481e-ad64-b1bff01d9e91",
+        "timestamp": "2026-01-01T14:20:27.471Z"
+      },
+      "overall_score": 0.1
+    },
+    {
+      "query": "Jadwal semua dokter hari ini?",
+      "metrics": {
+        "faithfulness": 0.357,
+        "answer_relevancy": 0.6,
+        "context_precision": 0.445,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 3526,
+        "source_count": 25,
+        "session_id": "ba107ddd-282c-4dbd-8a65-d13e97914df7",
+        "timestamp": "2026-01-01T14:20:32.182Z"
+      },
+      "overall_score": 0.601
+    },
+    {
+      "query": "Dokter spesialis apa saja yang ada?",
+      "metrics": {
+        "faithfulness": 0.882,
+        "answer_relevancy": 0.333,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 3780,
+        "source_count": 1,
+        "session_id": "c17a2fda-471a-49fd-bb90-b178fb3ef535",
+        "timestamp": "2026-01-01T14:20:37.097Z"
+      },
+      "overall_score": 0.579
+    },
+    {
+      "query": "Berapa total kuota semua dokter?",
+      "metrics": {
+        "faithfulness": 0.571,
+        "answer_relevancy": 0.6,
+        "context_precision": 0.443,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 8374,
+        "source_count": 21,
+        "session_id": "986d9a1f-e913-451a-b123-adf952070ff5",
+        "timestamp": "2026-01-01T14:20:46.621Z"
+      },
+      "overall_score": 0.653
+    },
+    {
+      "query": "Dokter mana yang paling banyak pasien?",
+      "metrics": {
+        "faithfulness": 0.833,
+        "answer_relevancy": 0.167,
+        "context_precision": 0.856,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 6457,
+        "source_count": 104,
+        "session_id": "62e9539d-f30f-4f2f-a249-dbc882cbed98",
+        "timestamp": "2026-01-01T14:20:54.230Z"
+      },
+      "overall_score": 0.714
+    },
+    {
+      "query": "Berapa total pendaftaran hari ini?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.6,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 4334,
+        "source_count": 0,
+        "session_id": "4cfea76c-2a34-4597-aa70-a05f9e52eaad",
+        "timestamp": "2026-01-01T14:20:59.731Z"
+      },
+      "overall_score": 0.15
+    },
+    {
+      "query": "Status semua pendaftaran bagaimana?",
+      "metrics": {
+        "faithfulness": 0.318,
+        "answer_relevancy": 0.75,
+        "context_precision": 0.534,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 10555,
+        "source_count": 24,
+        "session_id": "464f939f-5568-447a-9520-45f5a07c4e9c",
+        "timestamp": "2026-01-01T14:21:11.405Z"
+      },
+      "overall_score": 0.65
+    },
+    {
+      "query": "Pendaftaran online vs offline berapa?",
+      "metrics": {
+        "faithfulness": 0.385,
+        "answer_relevancy": 0.4,
+        "context_precision": 0.534,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 10612,
+        "source_count": 25,
+        "session_id": "2e85234e-91cc-47f7-bf4a-91e174e75a62",
+        "timestamp": "2026-01-01T14:21:23.182Z"
+      },
+      "overall_score": 0.58
+    },
+    {
+      "query": "Berapa pasien yang menunggu sekarang?",
+      "metrics": {
+        "faithfulness": 0.625,
+        "answer_relevancy": 0.4,
+        "context_precision": 0.856,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 3716,
+        "source_count": 104,
+        "session_id": "1f4c5b3d-c80e-41fa-943a-03077c15aa43",
+        "timestamp": "2026-01-01T14:21:28.459Z"
+      },
+      "overall_score": 0.72
+    },
+    {
+      "query": "Berapa pendaftaran yang dibatalkan?",
+      "metrics": {
+        "faithfulness": 0.286,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.534,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 3850,
+        "source_count": 25,
+        "session_id": "4adcbd08-649c-4f22-9944-d2c15f4efb72",
+        "timestamp": "2026-01-01T14:21:33.423Z"
+      },
+      "overall_score": 0.58
+    },
+    {
+      "query": "Berapa total pasien hari ini?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.6,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 4229,
+        "source_count": 0,
+        "session_id": "8dc09260-79a4-46d5-bfef-80365846c115",
+        "timestamp": "2026-01-01T14:21:38.747Z"
+      },
+      "overall_score": 0.15
+    },
+    {
+      "query": "Statistik klinik hari ini bagaimana?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.8,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 4451,
+        "source_count": 0,
+        "session_id": "5c0f18ab-e79f-4c4e-987d-c6355b00f5e9",
+        "timestamp": "2026-01-01T14:21:44.380Z"
+      },
+      "overall_score": 0.2
+    },
+    {
+      "query": "Berapa pemeriksaan yang sudah selesai?",
+      "metrics": {
+        "faithfulness": 0.667,
+        "answer_relevancy": 0.6,
+        "context_precision": 1.0,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 3514,
+        "source_count": 25,
+        "session_id": "51e8f9b7-fe57-441d-9b6a-985b23f37004",
+        "timestamp": "2026-01-01T14:21:49.091Z"
+      },
+      "overall_score": 0.817
+    },
+    {
+      "query": "Berapa pasien yang masih menunggu?",
+      "metrics": {
+        "faithfulness": 0.529,
+        "answer_relevancy": 0.6,
+        "context_precision": 0.676,
+        "context_recall": 0.5
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 4511,
+        "source_count": 5,
+        "session_id": "c9bf15d7-9228-4efd-9da0-b80418a0a659",
+        "timestamp": "2026-01-01T14:21:54.722Z"
+      },
+      "overall_score": 0.576
+    },
+    {
+      "query": "Total pendaftaran vs pemeriksaan selesai?",
+      "metrics": {
+        "faithfulness": 0.5,
+        "answer_relevancy": 0.6,
+        "context_precision": 0.676,
+        "context_recall": 0.6
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 5625,
+        "source_count": 6,
+        "session_id": "0b369916-c268-4454-a735-6eae602b43bb",
+        "timestamp": "2026-01-01T14:22:01.482Z"
+      },
+      "overall_score": 0.594
+    },
+    {
+      "query": "Dokter mana yang paling produktif?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.8,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 5671,
+        "source_count": 0,
+        "session_id": "12d78a20-3b53-4d91-a766-e5515f994ac6",
+        "timestamp": "2026-01-01T14:22:08.344Z"
+      },
+      "overall_score": 0.2
+    },
+    {
+      "query": "Diagnosis apa yang paling sering muncul?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.167,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 4112,
+        "source_count": 0,
+        "session_id": "a4cf509b-a551-41bd-8cff-6f697139b541",
+        "timestamp": "2026-01-01T14:22:13.542Z"
+      },
+      "overall_score": 0.042
+    },
+    {
+      "query": "Hari apa yang paling ramai?",
+      "metrics": {
+        "faithfulness": 0.385,
+        "answer_relevancy": 0.6,
+        "context_precision": 0.676,
+        "context_recall": 0.6
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 6899,
+        "source_count": 6,
+        "session_id": "f030eaf6-a81f-4617-ae5c-c27b3af70c29",
+        "timestamp": "2026-01-01T14:22:21.531Z"
+      },
+      "overall_score": 0.565
+    },
+    {
+      "query": "Berapa rata-rata pasien per hari?",
+      "metrics": {
+        "faithfulness": 0.316,
+        "answer_relevancy": 0.6,
+        "context_precision": 0.676,
+        "context_recall": 0.6
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 6231,
+        "source_count": 6,
+        "session_id": "749561f6-51be-47a2-b3c2-537ad1eac532",
+        "timestamp": "2026-01-01T14:22:28.850Z"
+      },
+      "overall_score": 0.548
+    },
+    {
+      "query": "Waktu tunggu rata-rata berapa?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.75,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 3461,
+        "source_count": 0,
+        "session_id": "2d40c776-7089-4721-aaf5-b1afdf909a9d",
+        "timestamp": "2026-01-01T14:22:33.433Z"
+      },
+      "overall_score": 0.188
+    },
+    {
+      "query": "Total pasien kemarin berapa?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.75,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 3503,
+        "source_count": 0,
+        "session_id": "ce97e441-82b2-4848-8014-1c2ceb8e477d",
+        "timestamp": "2026-01-01T14:22:38.042Z"
+      },
+      "overall_score": 0.188
+    },
+    {
+      "query": "Statistik 3 hari terakhir bagaimana?",
+      "metrics": {
+        "faithfulness": 0.395,
+        "answer_relevancy": 0.4,
+        "context_precision": 0.675,
+        "context_recall": 0.2
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 5851,
+        "source_count": 2,
+        "session_id": "d24e3622-323b-4a49-87fa-9e75f1ab1218",
+        "timestamp": "2026-01-01T14:22:45.004Z"
+      },
+      "overall_score": 0.418
+    },
+    {
+      "query": "Total pasien hari ini?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 1.0,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "admin",
+        "processing_time_ms": 5318,
+        "source_count": 0,
+        "session_id": "83444b91-9e61-482b-80c5-4b74adaa13ab",
+        "timestamp": "2026-01-01T14:22:51.456Z"
+      },
+      "overall_score": 0.25
+    },
+    {
+      "query": "Apa itu klinik ini?",
+      "metrics": {
+        "faithfulness": 0.824,
+        "answer_relevancy": 0.25,
+        "context_precision": 0.773,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4378,
+        "source_count": 66,
+        "session_id": "83a775a9-8c15-4685-8170-3485720fcd70",
+        "timestamp": "2026-01-01T14:22:56.930Z"
+      },
+      "overall_score": 0.712
+    },
+    {
+      "query": "Bagaimana cara menghubungi klinik?",
+      "metrics": {
+        "faithfulness": 0.742,
+        "answer_relevancy": 0.25,
+        "context_precision": 1.0,
+        "context_recall": 0.4
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 6086,
+        "source_count": 4,
+        "session_id": "e4437aeb-4d21-4c4b-b189-1942b7b51d82",
+        "timestamp": "2026-01-01T14:23:04.155Z"
+      },
+      "overall_score": 0.598
+    },
+    {
+      "query": "Apakah klinik buka hari libur?",
+      "metrics": {
+        "faithfulness": 1.0,
+        "answer_relevancy": 0.4,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 2892,
+        "source_count": 1,
+        "session_id": "dbf8ebdd-ec51-49d7-9783-cdb33a138aed",
+        "timestamp": "2026-01-01T14:23:08.149Z"
+      },
+      "overall_score": 0.625
+    },
+    {
+      "query": "Jadwal dokter hari ini dan total pasien?",
+      "metrics": {
+        "faithfulness": 0.321,
+        "answer_relevancy": 0.857,
+        "context_precision": 0.45,
+        "context_recall": 0.3
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 7561,
+        "source_count": 3,
+        "session_id": "497c656f-2ce2-4429-9629-f613ac0994d8",
+        "timestamp": "2026-01-01T14:23:16.798Z"
+      },
+      "overall_score": 0.482
+    },
+    {
+      "query": "Siapa dokter yang praktik dan berapa kuotanya?",
+      "metrics": {
+        "faithfulness": 0.283,
+        "answer_relevancy": 0.571,
+        "context_precision": 0.445,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 15313,
+        "source_count": 25,
+        "session_id": "b5e74548-bcc7-4d82-b712-bc7af10bb47b",
+        "timestamp": "2026-01-01T14:23:33.033Z"
+      },
+      "overall_score": 0.575
+    },
+    {
+      "query": "Pemeriksaan saya kapan dan hasilnya apa?",
+      "metrics": {
+        "faithfulness": 0.673,
+        "answer_relevancy": 0.5,
+        "context_precision": 1.0,
+        "context_recall": 0.1
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4753,
+        "source_count": 1,
+        "session_id": "2882162a-7ac2-4142-904d-bd249faa3e71",
+        "timestamp": "2026-01-01T14:23:38.972Z"
+      },
+      "overall_score": 0.568
+    },
+    {
+      "query": "gmn cara dftar?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.0,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4090,
+        "source_count": 0,
+        "session_id": "83d35e4b-3d98-456b-8788-1b8e7efdb559",
+        "timestamp": "2026-01-01T14:23:44.195Z"
+      },
+      "overall_score": 0.0
+    },
+    {
+      "query": "kpn dokter buka?",
+      "metrics": {
+        "faithfulness": 0.467,
+        "answer_relevancy": 0.333,
+        "context_precision": 0.44,
+        "context_recall": 0.5
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4865,
+        "source_count": 5,
+        "session_id": "73ac21b0-5608-40dc-9d28-45400f8aab73",
+        "timestamp": "2026-01-01T14:23:50.238Z"
+      },
+      "overall_score": 0.435
+    },
+    {
+      "query": "brp pasien hr ini?",
+      "metrics": {
+        "faithfulness": 0.583,
+        "answer_relevancy": 0.25,
+        "context_precision": 0.676,
+        "context_recall": 0.5
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3852,
+        "source_count": 5,
+        "session_id": "2dcf2265-4b57-478c-8335-f0bed4e1d410",
+        "timestamp": "2026-01-01T14:23:55.255Z"
+      },
+      "overall_score": 0.502
+    },
+    {
+      "query": "Jadwal dokter spesialis jantung minggu depan, kuota, cara daftar, dan apakah cocok untuk riwayat hipertensi?",
+      "metrics": {
+        "faithfulness": 0.165,
+        "answer_relevancy": 0.467,
+        "context_precision": 0.438,
+        "context_recall": 0.2
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 5791,
+        "source_count": 2,
+        "session_id": "501e9154-d940-46db-84c3-8114186b872b",
+        "timestamp": "2026-01-01T14:24:02.220Z"
+      },
+      "overall_score": 0.318
+    },
+    {
+      "query": "Prosedur lengkap dari pendaftaran sampai pemeriksaan selesai, dokumen yang diperlukan, dan estimasi waktu tunggu?",
+      "metrics": {
+        "faithfulness": 0.797,
+        "answer_relevancy": 0.5,
+        "context_precision": 1.0,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 9964,
+        "source_count": 16,
+        "session_id": "4f53555e-1ab3-404b-9146-9346f6e52830",
+        "timestamp": "2026-01-01T14:24:13.275Z"
+      },
+      "overall_score": 0.824
+    },
+    {
+      "query": "Total pasien bulan ini, diagnosis paling sering, dan dokter mana yang paling produktif?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.333,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3744,
+        "source_count": 0,
+        "session_id": "d8521cb4-eee2-4e4f-9389-18bf46cef1c3",
+        "timestamp": "2026-01-01T14:24:18.145Z"
+      },
+      "overall_score": 0.083
+    },
+    {
+      "query": "Siapa presiden Indonesia?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.333,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 2893,
+        "source_count": 0,
+        "session_id": "704b02c7-9246-48a8-aa51-80040bfa924f",
+        "timestamp": "2026-01-01T14:24:22.187Z"
+      },
+      "overall_score": 0.083
+    },
+    {
+      "query": "Bagaimana cara memasak nasi goreng?",
+      "metrics": {
+        "faithfulness": 0.0,
+        "answer_relevancy": 0.4,
+        "context_precision": 0.0,
+        "context_recall": 0.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 2966,
+        "source_count": 0,
+        "session_id": "ef9c3631-2a22-4763-a8db-82c68fb69068",
+        "timestamp": "2026-01-01T14:24:26.283Z"
+      },
+      "overall_score": 0.1
+    },
+    {
+      "query": "Berikan data semua pasien",
+      "metrics": {
+        "faithfulness": 0.56,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.773,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4256,
+        "source_count": 66,
+        "session_id": "a1f62bf2-5c6d-4874-958d-002f04394792",
+        "timestamp": "2026-01-01T14:24:31.713Z"
+      },
+      "overall_score": 0.708
+    },
+    {
+      "query": "Siapa pasien dokter lain?",
+      "metrics": {
+        "faithfulness": 0.682,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.773,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3385,
+        "source_count": 66,
+        "session_id": "73e3e76d-3d01-4354-92cd-6b980aa19d89",
+        "timestamp": "2026-01-01T14:24:36.202Z"
+      },
+      "overall_score": 0.739
+    },
+    {
+      "query": "Dokter yang tidak praktik hari ini siapa?",
+      "metrics": {
+        "faithfulness": 0.821,
+        "answer_relevancy": 0.857,
+        "context_precision": 0.445,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 4391,
+        "source_count": 25,
+        "session_id": "68437a90-f5e5-40cd-a420-3a0fc2c992e0",
+        "timestamp": "2026-01-01T14:24:41.748Z"
+      },
+      "overall_score": 0.781
+    },
+    {
+      "query": "Dokter mana yang lebih banyak pasien?",
+      "metrics": {
+        "faithfulness": 0.75,
+        "answer_relevancy": 0.5,
+        "context_precision": 0.773,
+        "context_recall": 1.0
+      },
+      "metadata": {
+        "user_role": "patient",
+        "processing_time_ms": 3519,
+        "source_count": 66,
+        "session_id": "6561cb1f-7c51-4ec1-82cf-20c637aa7c01",
+        "timestamp": "2026-01-01T14:24:46.459Z"
+      },
+      "overall_score": 0.756
+    }
+  ],
+  "aggregate_metrics": {
+    "total_evaluations": 84,
+    "timestamp": "2026-01-01T21:44:22.945346",
+    "overall_metrics": {
+      "faithfulness": 0.399,
+      "answer_relevancy": 0.504,
+      "context_precision": 0.487,
+      "context_recall": 0.379,
+      "overall_score": 0.442
+    },
+    "by_role": {
+      "patient": {
+        "count": 41,
+        "faithfulness": 0.458,
+        "answer_relevancy": 0.449,
+        "context_precision": 0.546,
+        "context_recall": 0.395,
+        "overall_score": 0.462
+      },
+      "doctor": {
+        "count": 19,
+        "faithfulness": 0.352,
+        "answer_relevancy": 0.561,
+        "context_precision": 0.417,
+        "context_recall": 0.258,
+        "overall_score": 0.397
+      },
+      "admin": {
+        "count": 24,
+        "faithfulness": 0.335,
+        "answer_relevancy": 0.553,
+        "context_precision": 0.441,
+        "context_recall": 0.446,
+        "overall_score": 0.444
+      }
+    }
+  },
+  "metadata": {
+    "framework": "Ragas",
+    "evaluation_date": "2026-01-01T21:44:22.946175",
+    "source_file": "rag-test-results.json",
+    "total_results_evaluated": 84
+  }
+}

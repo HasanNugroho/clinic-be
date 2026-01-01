@@ -1,0 +1,85 @@
+Query,User Role,Faithfulness,Answer Relevancy,Context Precision,Context Recall,Overall Score,Processing Time (ms),Source Count,Timestamp
+Jam berapa klinik buka?,patient,1.0,0.25,1.0,0.1,0.588,6286,1,2026-01-01T14:15:57.440Z
+Apa saja layanan dan fasilitas yang tersedia?,patient,0.667,0.286,1.0,0.2,0.538,9963,2,2026-01-01T14:16:08.496Z
+Bagaimana cara mendaftar sebagai pasien baru?,patient,0.895,0.5,1.0,1.0,0.849,8419,10,2026-01-01T14:16:19.258Z
+Bagaimana prosedur check-in dan alur pemeriksaan di klinik?,patient,0.843,0.75,1.0,1.0,0.898,8046,10,2026-01-01T14:16:28.485Z
+Bagaimana cara membatalkan atau reschedule janji temu?,patient,0.0,0.429,0.0,0.0,0.107,5688,0,2026-01-01T14:16:35.344Z
+Siapa dokter yang praktik hari ini?,patient,0.609,0.667,0.438,0.1,0.454,6410,1,2026-01-01T14:16:42.896Z
+Dokter spesialis apa saja yang ada?,patient,0.941,0.5,1.0,0.1,0.635,3855,1,2026-01-01T14:16:47.939Z
+Jam berapa dan berapa kuota dokter yang tersedia?,patient,0.255,0.571,0.445,1.0,0.568,11079,25,2026-01-01T14:16:59.904Z
+Ada dokter tersedia di waktu tertentu?,patient,0.354,0.667,0.444,1.0,0.616,5048,25,2026-01-01T14:17:06.145Z
+Bagaimana cara daftar online?,patient,0.763,0.0,1.0,1.0,0.691,5448,10,2026-01-01T14:17:12.695Z
+Berapa nomor antrian saya?,patient,0.0,0.5,0.0,0.0,0.125,5046,0,2026-01-01T14:17:18.938Z
+Kapan jadwal pemeriksaan saya berikutnya?,patient,0.588,0.4,1.0,0.1,0.522,4497,1,2026-01-01T14:17:24.568Z
+Status pendaftaran saya bagaimana?,patient,0.536,0.5,0.529,0.6,0.541,5167,6,2026-01-01T14:17:30.916Z
+Apakah bisa daftar untuk besok?,patient,0.24,0.2,0.529,0.6,0.392,4456,6,2026-01-01T14:17:36.548Z
+Kapan pemeriksaan terakhir saya?,patient,0.667,0.5,1.0,0.1,0.567,2882,1,2026-01-01T14:17:40.541Z
+Apa diagnosis saya yang terakhir?,patient,0.75,0.4,1.0,0.1,0.562,3971,1,2026-01-01T14:17:45.660Z
+Siapa dokter yang memeriksa saya minggu lalu?,patient,0.0,0.714,0.0,0.0,0.178,3762,0,2026-01-01T14:17:50.575Z
+Berapa kali saya sudah periksa bulan ini?,patient,0.0,0.286,0.0,0.0,0.071,4163,0,2026-01-01T14:17:55.867Z
+Apakah saya pernah didiagnosis hipertensi?,patient,0.0,0.8,0.0,0.0,0.2,3527,0,2026-01-01T14:18:00.510Z
+Jadwal saya minggu depan apa saja?,patient,0.0,0.333,0.0,0.0,0.083,3087,0,2026-01-01T14:18:04.709Z
+Berapa kali saya periksa bulan lalu?,patient,0.0,0.667,0.0,0.0,0.167,4395,0,2026-01-01T14:18:10.240Z
+Hasil pemeriksaan saya 2 minggu lalu apa?,patient,0.0,0.429,0.0,0.0,0.107,4210,0,2026-01-01T14:18:15.566Z
+Jam berapa klinik buka?,patient,1.0,0.25,1.0,0.1,0.588,3252,1,2026-01-01T14:18:19.906Z
+Kapan jadwal praktik saya?,doctor,0.5,0.5,0.442,0.1,0.386,5228,1,2026-01-01T14:18:26.227Z
+Berapa kuota saya hari ini?,doctor,0.846,0.4,0.442,0.2,0.472,3575,2,2026-01-01T14:18:30.929Z
+Hari apa saja saya praktik minggu ini?,doctor,0.4,0.429,0.442,0.2,0.368,4942,2,2026-01-01T14:18:36.972Z
+Berapa pasien yang terdaftar untuk saya hari ini?,doctor,0.0,0.75,0.0,0.0,0.188,4458,0,2026-01-01T14:18:42.606Z
+Siapa saja pasien saya hari ini?,doctor,0.333,0.5,0.445,1.0,0.57,3206,25,2026-01-01T14:18:47.009Z
+Siapa pasien berikutnya yang harus saya periksa?,doctor,0.625,0.286,0.761,1.0,0.668,4498,62,2026-01-01T14:18:52.628Z
+Berapa pasien yang menunggu untuk saya?,doctor,0.462,0.5,0.533,0.3,0.449,3799,3,2026-01-01T14:18:57.557Z
+Pendaftaran online atau offline lebih banyak?,doctor,0.176,0.5,0.532,0.4,0.402,8512,4,2026-01-01T14:19:07.182Z
+Berapa pemeriksaan yang sudah saya selesaikan hari ini?,doctor,0.0,0.625,0.0,0.0,0.156,8875,0,2026-01-01T14:19:17.217Z
+Apa diagnosis yang paling sering saya berikan bulan ini?,doctor,0.0,0.778,0.0,0.0,0.195,3860,0,2026-01-01T14:19:22.164Z
+Berapa kasus hipertensi yang saya tangani bulan ini?,doctor,0.0,0.75,0.0,0.0,0.188,3403,0,2026-01-01T14:19:26.741Z
+Pemeriksaan mana yang masih dalam proses?,doctor,0.5,0.667,1.0,0.4,0.642,5235,4,2026-01-01T14:19:33.092Z
+Catatan pemeriksaan saya untuk pasien tertentu apa?,doctor,0.635,0.571,1.0,0.4,0.651,7165,4,2026-01-01T14:19:41.387Z
+Berapa total pasien saya bulan ini?,doctor,0.0,0.667,0.0,0.0,0.167,3657,0,2026-01-01T14:19:46.131Z
+Berapa pemeriksaan yang selesai vs yang menunggu?,doctor,0.529,0.333,1.0,0.4,0.566,4023,4,2026-01-01T14:19:51.320Z
+Tren pasien saya minggu ini bagaimana?,doctor,0.229,0.833,0.442,0.2,0.426,6916,2,2026-01-01T14:19:59.409Z
+Siapa pasien saya besok?,doctor,0.576,0.5,0.442,0.1,0.404,4993,1,2026-01-01T14:20:05.490Z
+Berapa pemeriksaan saya 3 hari lalu?,doctor,0.0,0.667,0.0,0.0,0.167,3345,0,2026-01-01T14:20:09.959Z
+Berapa pasien saya hari ini?,doctor,0.875,0.4,0.442,0.2,0.479,5377,2,2026-01-01T14:20:16.513Z
+Jam operasional klinik apa?,admin,1.0,0.25,1.0,0.1,0.588,4777,1,2026-01-01T14:20:22.452Z
+Layanan apa saja yang tersedia?,admin,0.0,0.4,0.0,0.0,0.1,3828,0,2026-01-01T14:20:27.471Z
+Jadwal semua dokter hari ini?,admin,0.357,0.6,0.445,1.0,0.601,3526,25,2026-01-01T14:20:32.182Z
+Dokter spesialis apa saja yang ada?,admin,0.882,0.333,1.0,0.1,0.579,3780,1,2026-01-01T14:20:37.097Z
+Berapa total kuota semua dokter?,admin,0.571,0.6,0.443,1.0,0.653,8374,21,2026-01-01T14:20:46.621Z
+Dokter mana yang paling banyak pasien?,admin,0.833,0.167,0.856,1.0,0.714,6457,104,2026-01-01T14:20:54.230Z
+Berapa total pendaftaran hari ini?,admin,0.0,0.6,0.0,0.0,0.15,4334,0,2026-01-01T14:20:59.731Z
+Status semua pendaftaran bagaimana?,admin,0.318,0.75,0.534,1.0,0.65,10555,24,2026-01-01T14:21:11.405Z
+Pendaftaran online vs offline berapa?,admin,0.385,0.4,0.534,1.0,0.58,10612,25,2026-01-01T14:21:23.182Z
+Berapa pasien yang menunggu sekarang?,admin,0.625,0.4,0.856,1.0,0.72,3716,104,2026-01-01T14:21:28.459Z
+Berapa pendaftaran yang dibatalkan?,admin,0.286,0.5,0.534,1.0,0.58,3850,25,2026-01-01T14:21:33.423Z
+Berapa total pasien hari ini?,admin,0.0,0.6,0.0,0.0,0.15,4229,0,2026-01-01T14:21:38.747Z
+Statistik klinik hari ini bagaimana?,admin,0.0,0.8,0.0,0.0,0.2,4451,0,2026-01-01T14:21:44.380Z
+Berapa pemeriksaan yang sudah selesai?,admin,0.667,0.6,1.0,1.0,0.817,3514,25,2026-01-01T14:21:49.091Z
+Berapa pasien yang masih menunggu?,admin,0.529,0.6,0.676,0.5,0.576,4511,5,2026-01-01T14:21:54.722Z
+Total pendaftaran vs pemeriksaan selesai?,admin,0.5,0.6,0.676,0.6,0.594,5625,6,2026-01-01T14:22:01.482Z
+Dokter mana yang paling produktif?,admin,0.0,0.8,0.0,0.0,0.2,5671,0,2026-01-01T14:22:08.344Z
+Diagnosis apa yang paling sering muncul?,admin,0.0,0.167,0.0,0.0,0.042,4112,0,2026-01-01T14:22:13.542Z
+Hari apa yang paling ramai?,admin,0.385,0.6,0.676,0.6,0.565,6899,6,2026-01-01T14:22:21.531Z
+Berapa rata-rata pasien per hari?,admin,0.316,0.6,0.676,0.6,0.548,6231,6,2026-01-01T14:22:28.850Z
+Waktu tunggu rata-rata berapa?,admin,0.0,0.75,0.0,0.0,0.188,3461,0,2026-01-01T14:22:33.433Z
+Total pasien kemarin berapa?,admin,0.0,0.75,0.0,0.0,0.188,3503,0,2026-01-01T14:22:38.042Z
+Statistik 3 hari terakhir bagaimana?,admin,0.395,0.4,0.675,0.2,0.418,5851,2,2026-01-01T14:22:45.004Z
+Total pasien hari ini?,admin,0.0,1.0,0.0,0.0,0.25,5318,0,2026-01-01T14:22:51.456Z
+Apa itu klinik ini?,patient,0.824,0.25,0.773,1.0,0.712,4378,66,2026-01-01T14:22:56.930Z
+Bagaimana cara menghubungi klinik?,patient,0.742,0.25,1.0,0.4,0.598,6086,4,2026-01-01T14:23:04.155Z
+Apakah klinik buka hari libur?,patient,1.0,0.4,1.0,0.1,0.625,2892,1,2026-01-01T14:23:08.149Z
+Jadwal dokter hari ini dan total pasien?,patient,0.321,0.857,0.45,0.3,0.482,7561,3,2026-01-01T14:23:16.798Z
+Siapa dokter yang praktik dan berapa kuotanya?,patient,0.283,0.571,0.445,1.0,0.575,15313,25,2026-01-01T14:23:33.033Z
+Pemeriksaan saya kapan dan hasilnya apa?,patient,0.673,0.5,1.0,0.1,0.568,4753,1,2026-01-01T14:23:38.972Z
+gmn cara dftar?,patient,0.0,0.0,0.0,0.0,0.0,4090,0,2026-01-01T14:23:44.195Z
+kpn dokter buka?,patient,0.467,0.333,0.44,0.5,0.435,4865,5,2026-01-01T14:23:50.238Z
+brp pasien hr ini?,patient,0.583,0.25,0.676,0.5,0.502,3852,5,2026-01-01T14:23:55.255Z
+"Jadwal dokter spesialis jantung minggu depan, kuota, cara daftar, dan apakah cocok untuk riwayat hipertensi?",patient,0.165,0.467,0.438,0.2,0.318,5791,2,2026-01-01T14:24:02.220Z
+"Prosedur lengkap dari pendaftaran sampai pemeriksaan selesai, dokumen yang diperlukan, dan estimasi waktu tunggu?",patient,0.797,0.5,1.0,1.0,0.824,9964,16,2026-01-01T14:24:13.275Z
+"Total pasien bulan ini, diagnosis paling sering, dan dokter mana yang paling produktif?",patient,0.0,0.333,0.0,0.0,0.083,3744,0,2026-01-01T14:24:18.145Z
+Siapa presiden Indonesia?,patient,0.0,0.333,0.0,0.0,0.083,2893,0,2026-01-01T14:24:22.187Z
+Bagaimana cara memasak nasi goreng?,patient,0.0,0.4,0.0,0.0,0.1,2966,0,2026-01-01T14:24:26.283Z
+Berikan data semua pasien,patient,0.56,0.5,0.773,1.0,0.708,4256,66,2026-01-01T14:24:31.713Z
+Siapa pasien dokter lain?,patient,0.682,0.5,0.773,1.0,0.739,3385,66,2026-01-01T14:24:36.202Z
+Dokter yang tidak praktik hari ini siapa?,patient,0.821,0.857,0.445,1.0,0.781,4391,25,2026-01-01T14:24:41.748Z
+Dokter mana yang lebih banyak pasien?,patient,0.75,0.5,0.773,1.0,0.756,3519,66,2026-01-01T14:24:46.459Z
