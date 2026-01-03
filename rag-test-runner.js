@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const API_BASE_URL = process.env.API_URL || 'https://klinikpro.click/api';
+const API_BASE_URL = 'https://klinikpro.click';
 const TEST_QUERIES_FILE = './rag-test-queries-simple.json';
 const RESULTS_OUTPUT_FILE = './rag-test-results.json';
 
@@ -13,19 +13,19 @@ const userContexts = {
     userId: '6952597adb00a3e327576de3',
     role: 'patient',
     token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG4uc21pdGhAZW1haWwuY29tIiwic3ViIjoiNjk1MjU5N2FkYjAwYTNlMzI3NTc2ZGUzIiwicm9sZSI6InBhdGllbnQiLCJ1c2VySWQiOiI2OTUyNTk3YWRiMDBhM2UzMjc1NzZkZTMiLCJmdWxsTmFtZSI6IkpvaG4gU21pdGgiLCJpYXQiOjE3NjcxOTY4NDh9.-L6xGEJpXL-1vGdsqRN6fLyJc7ahchZ0686cLZLkeb8',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG4uc21pdGhAZW1haWwuY29tIiwic3ViIjoiNjk1MjU5N2FkYjAwYTNlMzI3NTc2ZGUzIiwicm9sZSI6InBhdGllbnQiLCJ1c2VySWQiOiI2OTUyNTk3YWRiMDBhM2UzMjc1NzZkZTMiLCJmdWxsTmFtZSI6IkpvaG4gU21pdGgiLCJpYXQiOjE3NjcyNzY2NjV9.p8A1T_NeB1tbrKh3wqKEq0pv7X-AtOOIQuQ4AK8MzHA',
   },
   doctor: {
     userId: '69525976db00a3e327576dbf',
     role: 'doctor',
     token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRyLm1pY2hhZWwuZW5kb2NyaW5vbG9neUBob3NwaXRhbC5jb20iLCJzdWIiOiI2OTUyNTk3NmRiMDBhM2UzMjc1NzZkYmYiLCJyb2xlIjoiZG9jdG9yIiwidXNlcklkIjoiNjk1MjU5NzZkYjAwYTNlMzI3NTc2ZGJmIiwiZnVsbE5hbWUiOiJEci4gTWljaGFlbCBDaGVuIiwiaWF0IjoxNzY3MTk2Nzk4fQ.F2dn3udxgh3bc5QV5Khgyq99doRJnz7SdFSZDA-qkV4',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRyLm1pY2hhZWwuZW5kb2NyaW5vbG9neUBob3NwaXRhbC5jb20iLCJzdWIiOiI2OTUyNTk3NmRiMDBhM2UzMjc1NzZkYmYiLCJyb2xlIjoiZG9jdG9yIiwidXNlcklkIjoiNjk1MjU5NzZkYjAwYTNlMzI3NTc2ZGJmIiwiZnVsbE5hbWUiOiJEci4gTWljaGFlbCBDaGVuIiwiaWF0IjoxNzY3Mjc2NjE3fQ.05YGgyBiEBXk1wLjV-xNmJH-2cS1uFCPNc5J_mSAK_c',
   },
   admin: {
     userId: '69525954db00a3e327576db8',
     role: 'admin',
     token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGNsaW5pYy5jb20iLCJzdWIiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJyb2xlIjoiYWRtaW4iLCJ1c2VySWQiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJmdWxsTmFtZSI6IkFkbWluIiwiaWF0IjoxNzY3MTk2NzI3fQ.v3HxdUevr_SZ1h6jGMnze1yFpZvEkVMtgIOkYkNj_9g',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGNsaW5pYy5jb20iLCJzdWIiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJyb2xlIjoiYWRtaW4iLCJ1c2VySWQiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJmdWxsTmFtZSI6IkFkbWluIiwiaWF0IjoxNzY3Mjc2NTc5fQ.HB0XQobclEV-bft270_iwmt1ioAUOOQWwHDvAY8JBe4',
   },
 };
 
@@ -222,13 +222,13 @@ async function runTests() {
       console.log(`Testing [${testQuery.id}] ${role.toUpperCase()}: "${testQuery.question}"`);
 
       const ragResponse = await client.query(testQuery.question);
-      const testResult = mapRagResponseToTestResult(testQuery.question, ragResponse, role);
+      const testResult = mapRagResponseToTestResult(testQuery.question, ragResponse.data, role);
 
       collector.addResult(testResult);
       successCount++;
 
       console.log(
-        `  ✅ Success (${ragResponse.processingTimeMs}ms, ${ragResponse.sources?.length || 0} sources)\n`,
+        `  ✅ Success (${ragResponse.data.processingTimeMs}ms, ${ragResponse.data.sources?.length || 0} sources)\n`,
       );
     } catch (error) {
       console.log(`  ❌ Failed: ${error.message}\n`);
