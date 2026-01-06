@@ -139,11 +139,9 @@ export class RagService {
 
   /**
    * Query RAG system with vector similarity search
-   * @param query - User query string
-   * @param userRole - Role of the user making the query
-   * @param userId - ID of the user making the query
-   * @param limit - Number of results to return
-   * @returns Array of relevant documents
+   * @param input - RagQueryDto object containing user query and session ID
+   * @param userContext - User context object containing user role and ID
+   * @returns AiAssistantResponse
    */
   async query(input: RagQueryDto, userContext: UserContext): Promise<AiAssistantResponse> {
     const { query, sessionId } = input;
@@ -782,6 +780,17 @@ export class RagService {
     }
   }
 
+  private async loadTopic(sessionId: string): Promise<string> {
+    try {
+      const key = this.buildTopicKey(sessionId);
+      const topic = await this.redisService.get(key);
+      return topic || '';
+    } catch (error) {
+      this.logger.warn(`Failed to load topic for ${sessionId}: ${error.message}`);
+      return '';
+    }
+  }
+
   private async saveHistory(
     sessionId: string,
     history: Array<{ role: 'user' | 'assistant'; content: string }>,
@@ -810,17 +819,6 @@ export class RagService {
         stack: error.stack,
         sessionId,
       });
-    }
-  }
-
-  private async loadTopic(sessionId: string): Promise<string> {
-    try {
-      const key = this.buildTopicKey(sessionId);
-      const topic = await this.redisService.get(key);
-      return topic || '';
-    } catch (error) {
-      this.logger.warn(`Failed to load topic for ${sessionId}: ${error.message}`);
-      return '';
     }
   }
 

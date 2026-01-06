@@ -219,19 +219,19 @@ export class QdrantService {
       const queryParams: any = {
         prefetch: [
           {
+            vector: {
+              name: 'dense',
+              vector: denseVector,
+            },
+            limit: limit * 2,
+          },
+          {
             sparse_vector: {
               name: 'bm25',
               vector: {
                 indices: sparseVector.indices,
                 values: sparseVector.values,
               },
-            },
-            limit: limit * 2,
-          },
-          {
-            vector: {
-              name: 'dense',
-              vector: denseVector,
             },
             limit: limit * 2,
           },
@@ -247,11 +247,8 @@ export class QdrantService {
         queryParams.filter = queryFilter;
       }
 
-      console.log(JSON.stringify(queryParams, null, 2));
-      // Use query() for hybrid search with prefetch and RRF
       const queryResult = await this.client.query(collectionName, queryParams);
 
-      // Extract points from query result
       const results = queryResult.points || [];
 
       this.logger.debug(

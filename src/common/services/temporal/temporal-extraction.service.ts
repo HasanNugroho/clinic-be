@@ -31,7 +31,7 @@ export class TemporalExtractionService {
       earliest: /\b(paling awal|pertama|tertua|awal|oldest|earliest|first)\b/i,
 
       // Today
-      today: /\b(hari ini|today)\b/i,
+      today: /\b(hari ini|today|sekarang)\b/i,
 
       // Yesterday
       yesterday: /\b(kemarin|yesterday)\b/i,
