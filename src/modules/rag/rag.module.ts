@@ -20,4 +20,4 @@ import { TemporalExtractionService } from '../../common/services/temporal/tempor
   ],
   exports: [RagService],
 })
-export class RagModule {}
+export class RagModule { }

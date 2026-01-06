@@ -32,7 +32,7 @@ export class RagService {
   private readonly TOPIC_KEY_PREFIX = 'ai:assistant:topic:';
   private readonly LAST_QUERY_KEY_PREFIX = 'rag:last_query:';
   private readonly DEFAULT_SEARCH_LIMIT = 25;
-  private readonly DEFAULT_SCORE_THRESHOLD = 0.5;
+  private readonly DEFAULT_SCORE_THRESHOLD = 0.7;
   private readonly DEFAULT_DATABASE_SCORE = 1.0;
   private readonly MAX_CONTEXT_SOURCES = 25;
   private readonly MIN_RELEVANCE_SCORE = 0.5;
@@ -165,12 +165,12 @@ export class RagService {
         ? retrievalResults
         : this.reRankResults(retrievalResults);
 
-      // const limitedResults = this.limitSourcesByScore(rankedResults);
+      const limitedResults = this.limitSourcesByScore(rankedResults);
 
       const history = await this.loadHistory(effectiveSessionId);
       const messages = this.messageBuilderService.buildMessages(
         query,
-        rankedResults,
+        limitedResults,
         userContext,
         history,
         previousTopic,
@@ -181,7 +181,7 @@ export class RagService {
       const response = this.buildResponse(
         query,
         llmPayload,
-        rankedResults,
+        limitedResults,
         effectiveSessionId,
         startTime,
       );
@@ -238,7 +238,7 @@ export class RagService {
     return {
       query,
       answer: this.sanitizeAnswer(llmPayload.answer || 'No response generated.'),
-      sources: filteredSources,
+      sources: rankedResults,
       processingTimeMs: Date.now() - startTime,
       followUpQuestion: llmPayload.followUpQuestion,
       needsMoreInfo: llmPayload.needsMoreInfo,
@@ -748,7 +748,7 @@ export class RagService {
     if (limitedResults.length < results.length) {
       this.logger.debug(
         `Limited sources from ${results.length} to ${limitedResults.length} ` +
-          `(score threshold: ${this.MIN_RELEVANCE_SCORE}, max: ${this.MAX_CONTEXT_SOURCES})`,
+        `(score threshold: ${this.MIN_RELEVANCE_SCORE}, max: ${this.MAX_CONTEXT_SOURCES})`,
       );
     }
 
