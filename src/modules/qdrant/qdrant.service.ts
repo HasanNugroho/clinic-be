@@ -162,15 +162,13 @@ export class QdrantService {
    * @param denseVector - Query dense vector for semantic search
    * @param sparseVector - Query sparse vector for keyword/lexical search (optional)
    * @param limit - Maximum number of results
-   * @param scoreThreshold - Minimum similarity score
    * @param filters - Optional Qdrant filter for payload filtering
    */
   async search(
     collectionName: string,
     denseVector: number[],
-    sparseVector?: { indices: number[]; values: number[] },
+    sparseVector: { indices: number[]; values: number[] },
     limit: number = 10,
-    scoreThreshold: number = 0.5,
     filters?: Record<string, any>,
   ): Promise<QdrantSearchResponse[]> {
     try {
@@ -183,41 +181,17 @@ export class QdrantService {
       // Build filter conditions
       const queryFilter = this.buildQueryFilter(filters);
 
-      if (sparseVector) {
-        this.logger.debug(
-          `Sparse vector indices: ${sparseVector.indices.length}, values: ${sparseVector.values.length}`,
-        );
-      }
-
-      // If no sparse vector or empty sparse vector, perform dense-only search
-      if (!sparseVector || sparseVector.indices.length === 0) {
-        this.logger.debug(`Dense-only search in '${collectionName}'`);
-        const denseSearchParams: any = {
-          vector: {
-            name: 'dense',
-            vector: denseVector,
-          },
-          limit,
-          score_threshold: scoreThreshold,
-          with_payload: true,
-        };
-        if (queryFilter) {
-          denseSearchParams.filter = queryFilter;
-        }
-
-        const denseResults = await this.client.search(collectionName, denseSearchParams);
-        return denseResults.map((result) => ({
-          id: result.id.toString(),
-          score: result.score,
-          payload: result.payload,
-        }));
-      }
-
       // Perform hybrid search using prefetch with RRF fusion
       this.logger.debug(`Hybrid search (sparse + dense with RRF) in '${collectionName}'`);
-
       const queryParams: any = {
         prefetch: [
+          {
+            vector: {
+              name: 'dense',
+              vector: denseVector,
+            },
+            limit: limit * 2,
+          },
           {
             sparse_vector: {
               name: 'bm25',
@@ -225,13 +199,6 @@ export class QdrantService {
                 indices: sparseVector.indices,
                 values: sparseVector.values,
               },
-            },
-            limit: limit * 2,
-          },
-          {
-            vector: {
-              name: 'dense',
-              vector: denseVector,
             },
             limit: limit * 2,
           },
@@ -247,17 +214,9 @@ export class QdrantService {
         queryParams.filter = queryFilter;
       }
 
-      console.log(JSON.stringify(queryParams, null, 2));
-      // Use query() for hybrid search with prefetch and RRF
       const queryResult = await this.client.query(collectionName, queryParams);
 
-      // Extract points from query result
       const results = queryResult.points || [];
-
-      this.logger.debug(
-        `Hybrid RRF search completed: ${results.length} results in '${collectionName}'`,
-      );
-
       return results.map((result) => ({
         id: result.id.toString(),
         score: result.score,

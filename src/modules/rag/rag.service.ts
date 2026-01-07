@@ -32,7 +32,7 @@ export class RagService {
   private readonly TOPIC_KEY_PREFIX = 'ai:assistant:topic:';
   private readonly LAST_QUERY_KEY_PREFIX = 'rag:last_query:';
   private readonly DEFAULT_SEARCH_LIMIT = 25;
-  private readonly DEFAULT_SCORE_THRESHOLD = 0.5;
+  private readonly DEFAULT_SCORE_THRESHOLD = 0.7;
   private readonly DEFAULT_DATABASE_SCORE = 1.0;
   private readonly MAX_CONTEXT_SOURCES = 25;
   private readonly MIN_RELEVANCE_SCORE = 0.5;
@@ -139,11 +139,9 @@ export class RagService {
 
   /**
    * Query RAG system with vector similarity search
-   * @param query - User query string
-   * @param userRole - Role of the user making the query
-   * @param userId - ID of the user making the query
-   * @param limit - Number of results to return
-   * @returns Array of relevant documents
+   * @param input - RagQueryDto object containing user query and session ID
+   * @param userContext - User context object containing user role and ID
+   * @returns AiAssistantResponse
    */
   async query(input: RagQueryDto, userContext: UserContext): Promise<AiAssistantResponse> {
     const { query, sessionId } = input;
@@ -167,12 +165,12 @@ export class RagService {
         ? retrievalResults
         : this.reRankResults(retrievalResults);
 
-      // const limitedResults = this.limitSourcesByScore(rankedResults);
+      const limitedResults = this.limitSourcesByScore(rankedResults);
 
       const history = await this.loadHistory(effectiveSessionId);
       const messages = this.messageBuilderService.buildMessages(
         query,
-        rankedResults,
+        limitedResults,
         userContext,
         history,
         previousTopic,
@@ -183,7 +181,7 @@ export class RagService {
       const response = this.buildResponse(
         query,
         llmPayload,
-        rankedResults,
+        limitedResults,
         effectiveSessionId,
         startTime,
       );
@@ -240,7 +238,7 @@ export class RagService {
     return {
       query,
       answer: this.sanitizeAnswer(llmPayload.answer || 'No response generated.'),
-      sources: filteredSources,
+      sources: rankedResults,
       processingTimeMs: Date.now() - startTime,
       followUpQuestion: llmPayload.followUpQuestion,
       needsMoreInfo: llmPayload.needsMoreInfo,
@@ -386,7 +384,6 @@ export class RagService {
         denseVector,
         sparseVector,
         this.DEFAULT_SEARCH_LIMIT,
-        this.DEFAULT_SCORE_THRESHOLD,
         mongoFilters,
       );
 
@@ -782,6 +779,17 @@ export class RagService {
     }
   }
 
+  private async loadTopic(sessionId: string): Promise<string> {
+    try {
+      const key = this.buildTopicKey(sessionId);
+      const topic = await this.redisService.get(key);
+      return topic || '';
+    } catch (error) {
+      this.logger.warn(`Failed to load topic for ${sessionId}: ${error.message}`);
+      return '';
+    }
+  }
+
   private async saveHistory(
     sessionId: string,
     history: Array<{ role: 'user' | 'assistant'; content: string }>,
@@ -810,17 +818,6 @@ export class RagService {
         stack: error.stack,
         sessionId,
       });
-    }
-  }
-
-  private async loadTopic(sessionId: string): Promise<string> {
-    try {
-      const key = this.buildTopicKey(sessionId);
-      const topic = await this.redisService.get(key);
-      return topic || '';
-    } catch (error) {
-      this.logger.warn(`Failed to load topic for ${sessionId}: ${error.message}`);
-      return '';
     }
   }
 
