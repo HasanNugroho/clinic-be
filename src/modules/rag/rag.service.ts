@@ -384,7 +384,6 @@ export class RagService {
         denseVector,
         sparseVector,
         this.DEFAULT_SEARCH_LIMIT,
-        this.DEFAULT_SCORE_THRESHOLD,
         mongoFilters,
       );
 
@@ -748,7 +747,7 @@ export class RagService {
     if (limitedResults.length < results.length) {
       this.logger.debug(
         `Limited sources from ${results.length} to ${limitedResults.length} ` +
-        `(score threshold: ${this.MIN_RELEVANCE_SCORE}, max: ${this.MAX_CONTEXT_SOURCES})`,
+          `(score threshold: ${this.MIN_RELEVANCE_SCORE}, max: ${this.MAX_CONTEXT_SOURCES})`,
       );
     }
 

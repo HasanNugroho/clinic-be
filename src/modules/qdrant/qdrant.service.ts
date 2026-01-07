@@ -162,7 +162,6 @@ export class QdrantService {
    * @param denseVector - Query dense vector for semantic search
    * @param sparseVector - Query sparse vector for keyword/lexical search (optional)
    * @param limit - Maximum number of results
-   * @param scoreThreshold - Minimum similarity score
    * @param filters - Optional Qdrant filter for payload filtering
    */
   async search(
@@ -170,7 +169,6 @@ export class QdrantService {
     denseVector: number[],
     sparseVector: { indices: number[]; values: number[] },
     limit: number = 10,
-    scoreThreshold: number = 0.7,
     filters?: Record<string, any>,
   ): Promise<QdrantSearchResponse[]> {
     try {
@@ -182,29 +180,6 @@ export class QdrantService {
 
       // Build filter conditions
       const queryFilter = this.buildQueryFilter(filters);
-
-      // BM25 sparse vector disabled for performance
-      // Always perform dense-only search
-      // this.logger.debug(`Dense-only search in '${collectionName}'`);
-      // const denseSearchParams: any = {
-      //   vector: {
-      //     name: 'dense',
-      //     vector: denseVector,
-      //   },
-      //   limit,
-      //   score_threshold: scoreThreshold,
-      //   with_payload: true,
-      // };
-      // if (queryFilter) {
-      //   denseSearchParams.filter = queryFilter;
-      // }
-
-      // const denseResults = await this.client.search(collectionName, denseSearchParams);
-      // return denseResults.map((result) => ({
-      //   id: result.id.toString(),
-      //   score: result.score,
-      //   payload: result.payload,
-      // }));
 
       // Perform hybrid search using prefetch with RRF fusion
       this.logger.debug(`Hybrid search (sparse + dense with RRF) in '${collectionName}'`);
@@ -234,16 +209,13 @@ export class QdrantService {
         limit,
         with_payload: true,
       };
+
       if (queryFilter) {
         queryParams.filter = queryFilter;
       }
-<<<<<<< HEAD
 
       const queryResult = await this.client.query(collectionName, queryParams);
 
-=======
-      const queryResult = await this.client.query(collectionName, queryParams);
->>>>>>> 0c2287dc53533eaff88518785a3959472344dbcd
       const results = queryResult.points || [];
       return results.map((result) => ({
         id: result.id.toString(),
