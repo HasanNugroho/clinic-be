@@ -4,8 +4,15 @@ const path = require('path');
 
 // Configuration
 const API_BASE_URL = 'https://klinikpro.click';
-const TEST_QUERIES_FILE = './rag-test-queries-simple.json';
+const TEST_QUERIES_FILE = './sample-question.json';
 const RESULTS_OUTPUT_FILE = './rag-test-results.json';
+
+// Map role names from sample-question.json to internal role names
+const roleMapping = {
+  'Pasien': 'patient',
+  'Dokter': 'doctor',
+  'Admin': 'admin',
+};
 
 // Mock user contexts for different roles
 const userContexts = {
@@ -13,19 +20,18 @@ const userContexts = {
     userId: '6952597adb00a3e327576de3',
     role: 'patient',
     token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG4uc21pdGhAZW1haWwuY29tIiwic3ViIjoiNjk1MjU5N2FkYjAwYTNlMzI3NTc2ZGUzIiwicm9sZSI6InBhdGllbnQiLCJ1c2VySWQiOiI2OTUyNTk3YWRiMDBhM2UzMjc1NzZkZTMiLCJmdWxsTmFtZSI6IkpvaG4gU21pdGgiLCJpYXQiOjE3NjcyNzY2NjV9.p8A1T_NeB1tbrKh3wqKEq0pv7X-AtOOIQuQ4AK8MzHA',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG4uc21pdGhAZW1haWwuY29tIiwic3ViIjoiNjk1MjU5N2FkYjAwYTNlMzI3NTc2ZGUzIiwicm9sZSI6InBhdGllbnQiLCJ1c2VySWQiOiI2OTUyNTk3YWRiMDBhM2UzMjc1NzZkZTMiLCJmdWxsTmFtZSI6IkpvaG4gU21pdGgiLCJpYXQiOjE3Njc3NTczODF9.nVmOJz_R13ZHltBlNyqdSNMGLtwZx0EHlTH1bfFKgr0'
   },
   doctor: {
     userId: '69525976db00a3e327576dbf',
     role: 'doctor',
-    token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRyLm1pY2hhZWwuZW5kb2NyaW5vbG9neUBob3NwaXRhbC5jb20iLCJzdWIiOiI2OTUyNTk3NmRiMDBhM2UzMjc1NzZkYmYiLCJyb2xlIjoiZG9jdG9yIiwidXNlcklkIjoiNjk1MjU5NzZkYjAwYTNlMzI3NTc2ZGJmIiwiZnVsbE5hbWUiOiJEci4gTWljaGFlbCBDaGVuIiwiaWF0IjoxNzY3Mjc2NjE3fQ.05YGgyBiEBXk1wLjV-xNmJH-2cS1uFCPNc5J_mSAK_c',
+    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRyLm1pY2hhZWwuZW5kb2NyaW5vbG9neUBob3NwaXRhbC5jb20iLCJzdWIiOiI2OTUyNTk3NmRiMDBhM2UzMjc1NzZkYmYiLCJyb2xlIjoiZG9jdG9yIiwidXNlcklkIjoiNjk1MjU5NzZkYjAwYTNlMzI3NTc2ZGJmIiwiZnVsbE5hbWUiOiJEci4gTWljaGFlbCBDaGVuIiwiaWF0IjoxNzY3NzU3NDM0fQ.L93kaSyHQw1YAn_3FlxkFYv24uV719atGtTgSt3Vqlw'
   },
   admin: {
     userId: '69525954db00a3e327576db8',
     role: 'admin',
     token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGNsaW5pYy5jb20iLCJzdWIiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJyb2xlIjoiYWRtaW4iLCJ1c2VySWQiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJmdWxsTmFtZSI6IkFkbWluIiwiaWF0IjoxNzY3Mjc2NTc5fQ.HB0XQobclEV-bft270_iwmt1ioAUOOQWwHDvAY8JBe4',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGNsaW5pYy5jb20iLCJzdWIiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJyb2xlIjoiYWRtaW4iLCJ1c2VySWQiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJmdWxsTmFtZSI6IkFkbWluIiwiaWF0IjoxNzY3NzU3MzEzfQ.54AK5X0gsvnzn5_U9kPMP6Ct2rynr9UfOBhrQhdy9Oo'
   },
 };
 
@@ -112,20 +118,26 @@ class RagTestResultCollector {
     }
 
     const headers = [
+      'Question ID',
+      'Category',
       'Query',
       'Generated Response',
       'Retrieved Documents Count',
       'Processing Time (ms)',
       'User Role',
+      'Expected Behavior',
       'Timestamp',
     ];
 
     const rows = this.results.map((result) => [
+      result.metadata?.questionId || '',
+      result.metadata?.category || '',
       `"${result.query.replace(/"/g, '""')}"`,
       `"${result.generated_response.replace(/"/g, '""')}"`,
       result.retrieved_documents.length,
       result.metadata?.processingTimeMs || 0,
       result.metadata?.userRole || 'unknown',
+      `"${(result.metadata?.expectedBehavior || '').replace(/"/g, '""')}"`,
       result.metadata?.timestamp || '',
     ]);
 
@@ -161,7 +173,7 @@ class RagApiClient {
 }
 
 // Map RAG response to test result format
-function mapRagResponseToTestResult(query, ragResponse, userRole) {
+function mapRagResponseToTestResult(query, ragResponse, userRole, questionId, category, expectedBehavior) {
   const retrievedDocuments = ragResponse.sources
     ? ragResponse.sources.map((source) => source.snippet).filter((s) => s)
     : [];
@@ -175,6 +187,9 @@ function mapRagResponseToTestResult(query, ragResponse, userRole) {
       sourceCount: ragResponse.sources?.length || 0,
       sessionId: ragResponse.sessionId,
       userRole,
+      questionId,
+      category,
+      expectedBehavior,
       timestamp: new Date().toISOString(),
     },
   };
@@ -184,13 +199,19 @@ function mapRagResponseToTestResult(query, ragResponse, userRole) {
 async function runTests() {
   console.log('🚀 Starting RAG Test Runner...\n');
 
-  // Load test queries
-  let testQueries = [];
+  // Load test queries from sample-question.json
+  let testGroups = [];
+  let totalQuestions = 0;
   try {
     const fileContent = fs.readFileSync(TEST_QUERIES_FILE, 'utf-8');
-    const testData = JSON.parse(fileContent);
-    testQueries = testData.queries;
-    console.log(`✅ Loaded ${testQueries.length} test queries\n`);
+    testGroups = JSON.parse(fileContent);
+    
+    // Count total questions
+    testGroups.forEach((group) => {
+      totalQuestions += group.questions.length;
+    });
+    
+    console.log(`✅ Loaded ${testGroups.length} test groups with ${totalQuestions} total questions\n`);
   } catch (error) {
     console.error(`❌ Failed to load test queries: ${error.message}`);
     process.exit(1);
@@ -208,45 +229,61 @@ async function runTests() {
   let successCount = 0;
   let failureCount = 0;
 
-  for (const testQuery of testQueries) {
-    const role = testQuery.role === 'all' ? 'patient' : testQuery.role;
-    const client = clients[role];
+  // Iterate through test groups
+  for (const group of testGroups) {
+    const roleLabel = group.role;
+    const internalRole = roleMapping[roleLabel] || roleLabel.toLowerCase();
+    const client = clients[internalRole];
 
     if (!client) {
-      console.warn(`⚠️  No client for role: ${role}`);
-      failureCount++;
+      console.warn(`⚠️  No client for role: ${internalRole} (${roleLabel})`);
+      failureCount += group.questions.length;
       continue;
     }
 
-    try {
-      console.log(`Testing [${testQuery.id}] ${role.toUpperCase()}: "${testQuery.question}"`);
+    console.log(`\n📋 Testing ${roleLabel} - ${group.category}`);
+    console.log('-'.repeat(60));
 
-      const ragResponse = await client.query(testQuery.question);
-      const testResult = mapRagResponseToTestResult(testQuery.question, ragResponse.data, role);
+    // Run questions in this group
+    for (const question of group.questions) {
+      try {
+        console.log(`[${question.id}] "${question.question}"`);
+        console.log(`   Expected: ${question.expected_behavior}`);
 
-      collector.addResult(testResult);
-      successCount++;
+        const ragResponse = await client.query(question.question);
+        const testResult = mapRagResponseToTestResult(
+          question.question,
+          ragResponse.data,
+          internalRole,
+          question.id,
+          group.category,
+          question.expected_behavior
+        );
 
-      console.log(
-        `  ✅ Success (${ragResponse.data.processingTimeMs}ms, ${ragResponse.data.sources?.length || 0} sources)\n`,
-      );
-    } catch (error) {
-      console.log(`  ❌ Failed: ${error.message}\n`);
-      failureCount++;
+        collector.addResult(testResult);
+        successCount++;
+
+        console.log(
+          `   ✅ Success (${ragResponse.data.processingTimeMs}ms, ${ragResponse.data.sources?.length || 0} sources)\n`,
+        );
+      } catch (error) {
+        console.log(`   ❌ Failed: ${error.message}\n`);
+        failureCount++;
+      }
+
+      // Add delay between requests to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
-
-    // Add delay between requests to avoid rate limiting
-    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 
   // Print summary
   console.log('\n' + '='.repeat(60));
   console.log('📊 TEST SUMMARY');
   console.log('='.repeat(60));
-  console.log(`Total Queries: ${testQueries.length}`);
+  console.log(`Total Queries: ${totalQuestions}`);
   console.log(`✅ Success: ${successCount}`);
   console.log(`❌ Failed: ${failureCount}`);
-  console.log(`Success Rate: ${((successCount / testQueries.length) * 100).toFixed(2)}%\n`);
+  console.log(`Success Rate: ${((successCount / totalQuestions) * 100).toFixed(2)}%\n`);
 
   // Print statistics
   const stats = collector.getStatistics();
