@@ -80,6 +80,11 @@ export class RagService {
       'dokter tersedia',
       'dokter praktik',
       'dokter buka',
+      'jam operasional',
+      'jam buka',
+      'jam tutup',
+      'jam istirahat',
+      'jam',
     ],
     dashboards: [
       'dashboard',
@@ -747,7 +752,7 @@ export class RagService {
     if (limitedResults.length < results.length) {
       this.logger.debug(
         `Limited sources from ${results.length} to ${limitedResults.length} ` +
-          `(score threshold: ${this.MIN_RELEVANCE_SCORE}, max: ${this.MAX_CONTEXT_SOURCES})`,
+        `(score threshold: ${this.MIN_RELEVANCE_SCORE}, max: ${this.MAX_CONTEXT_SOURCES})`,
       );
     }
 
