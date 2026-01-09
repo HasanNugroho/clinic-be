@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { QdrantController } from './qdrant.controller';
 import { QdrantIndexingService } from 'src/modules/qdrant/qdrant-indexing.service';
-import { EmbeddingModule } from 'src/common/services/embedding/embedding.modul';
+import { EmbeddingModule } from 'src/common/services/embedding/embedding.module';
 import { DatabaseModule } from 'src/common/services/database.module';
 import { QdrantService } from './qdrant.service';
 import { EmbeddingTextBuilderService } from '../rag/services/embedding-text-builder.service';

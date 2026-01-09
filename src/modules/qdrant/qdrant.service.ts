@@ -186,19 +186,19 @@ export class QdrantService {
       const queryParams: any = {
         prefetch: [
           {
-            vector: {
-              name: 'dense',
-              vector: denseVector,
-            },
-            limit: limit * 3,
-          },
-          {
             sparse_vector: {
               name: 'bm25',
               vector: {
                 indices: sparseVector.indices,
-                values: sparseVector.values.map((v) => v * 2.5),
+                values: sparseVector.values,
               },
+            },
+            limit: limit * 3,
+          },
+          {
+            vector: {
+              name: 'dense',
+              vector: denseVector,
             },
             limit: limit * 3,
           },
@@ -227,6 +227,136 @@ export class QdrantService {
       throw error;
     }
   }
+  // async search(
+  //   collectionName: string,
+  //   denseVector: number[],
+  //   sparseVector: { indices: number[]; values: number[] },
+  //   limit: number = 10,
+  //   filters?: Record<string, any>,
+  // ): Promise<QdrantSearchResponse[]> {
+  //   try {
+  //     if (!denseVector || denseVector.length === 0) {
+  //       throw new Error(`Dense vector cannot be empty`);
+  //     }
+
+  //     const queryFilter = this.buildQueryFilter(filters);
+
+  //     // Search sparse first (prioritize exact matches)
+  //     const sparseResults = await this.client.query(collectionName, {
+  //       sparse_vector: {
+  //         name: 'bm25',
+  //         vector: {
+  //           indices: sparseVector.indices,
+  //           values: sparseVector.values,
+  //         },
+  //       },
+  //       limit: limit * 2,
+  //       with_payload: true,
+  //       ...(queryFilter && { filter: queryFilter }),
+  //     });
+
+  //     // Search dense
+  //     const denseResults = await this.client.query(collectionName, {
+  //       vector: {
+  //         name: 'dense',
+  //         vector: denseVector,
+  //       },
+  //       limit: limit * 2,
+  //       with_payload: true,
+  //       ...(queryFilter && { filter: queryFilter }),
+  //     });
+
+  //     // Manual fusion dengan weight
+  //     const sparseWeight = 0.7; // Prioritize sparse untuk exact match
+  //     const denseWeight = 0.3;
+
+  //     const scoreMap = new Map<string, { score: number; payload: any }>();
+
+  //     // Add sparse scores
+  //     for (const point of sparseResults.points || []) {
+  //       const id = point.id.toString();
+  //       scoreMap.set(id, {
+  //         score: point.score * sparseWeight,
+  //         payload: point.payload,
+  //       });
+  //     }
+
+  //     // Add dense scores
+  //     for (const point of denseResults.points || []) {
+  //       const id = point.id.toString();
+  //       const existing = scoreMap.get(id);
+  //       if (existing) {
+  //         existing.score += point.score * denseWeight;
+  //       } else {
+  //         scoreMap.set(id, {
+  //           score: point.score * denseWeight,
+  //           payload: point.payload,
+  //         });
+  //       }
+  //     }
+
+  //     // Sort by combined score
+  //     const results = Array.from(scoreMap.entries())
+  //       .map(([id, data]) => ({
+  //         id,
+  //         score: data.score,
+  //         payload: data.payload,
+  //       }))
+  //       .sort((a, b) => b.score - a.score)
+  //       .slice(0, limit);
+
+  //     return results;
+  //   } catch (error) {
+  //     this.logger.error(`Error searching in '${collectionName}':`, error);
+  //     throw error;
+  //   }
+  // }
+  /**
+   * Pure dense semantic search (no BM25, no RRF)
+   */
+  // async search(
+  //   collectionName: string,
+  //   denseVector: number[],
+  //   sparseVector: { indices: number[]; values: number[] },
+  //   limit: number = 10,
+  //   filters?: Record<string, any>,
+  // ): Promise<QdrantSearchResponse[]> {
+  //   try {
+  //     if (!denseVector || denseVector.length === 0) {
+  //       this.logger.error(`Dense vector is empty for collection '${collectionName}'`);
+  //       throw new Error(`Dense vector cannot be empty`);
+  //     }
+
+  //     const queryFilter = this.buildQueryFilter(filters);
+
+  //     this.logger.debug(`Dense-only semantic search in '${collectionName}'`);
+
+  //     const queryParams: any = {
+  //       vector: {
+  //         name: 'dense',
+  //         vector: denseVector,
+  //       },
+  //       limit,
+  //       with_payload: true,
+  //     };
+
+  //     if (queryFilter) {
+  //       queryParams.filter = queryFilter;
+  //     }
+
+  //     const queryResult = await this.client.query(collectionName, queryParams);
+
+  //     const results = queryResult.points || [];
+  //     return results.map((result) => ({
+  //       id: result.id.toString(),
+  //       score: result.score,
+  //       payload: result.payload,
+  //     }));
+  //   } catch (error) {
+  //     this.logger.error(`Error searching in '${collectionName}':`, error);
+  //     throw error;
+  //   }
+  // }
 
   /**
    * Build Qdrant query filter from MongoDB filters

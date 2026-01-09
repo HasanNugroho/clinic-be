@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { RagController } from './rag.controller';
 import { RagService } from './rag.service';
-import { EmbeddingModule } from '../../common/services/embedding/embedding.modul';
+import { EmbeddingModule } from '../../common/services/embedding/embedding.module';
 import { RedisModule } from 'src/common/services/redis/redis.modul';
 import { QdrantModule } from '../qdrant/qdrant.module';
 import { MessageBuilderService } from './services/message-builder.service';
@@ -20,4 +20,4 @@ import { TemporalExtractionService } from '../../common/services/temporal/tempor
   ],
   exports: [RagService],
 })
-export class RagModule { }
+export class RagModule {}

@@ -47,7 +47,8 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "socket.io": "^4.7.2"
+    "socket.io": "^4.7.2",
+    "wink-bm25-text-search": "^3.1.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
