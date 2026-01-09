@@ -302,8 +302,18 @@ export class EmbeddingTextBuilderService {
       neurology: 'neurology, neurologi, ahli saraf, dokter saraf, spesialis saraf',
       pediatri: 'pediatri, dokter anak, spesialis anak, ahli kesehatan anak',
       pediatrics: 'pediatrics, pediatri, dokter anak, spesialis anak',
-      obstetri: 'obstetri, dokter kandungan, spesialis kandungan, ahli kebidanan',
-      obstetrics: 'obstetrics, obstetri, dokter kandungan, spesialis kandungan, gynecology',
+      'obstetrics and gynecology':
+        'obstetrics and gynecology, obstetri dan ginekologi, dokter kandungan, spesialis kandungan, ahli kebidanan, dokter obgyn, spesialis obgyn, kandungan, kebidanan, ginekologi, gynecology',
+      'obstetri dan ginekologi':
+        'obstetri dan ginekologi, obstetrics and gynecology, dokter kandungan, spesialis kandungan, ahli kebidanan, kandungan, kebidanan',
+      obstetri: 'obstetri, dokter kandungan, spesialis kandungan, ahli kebidanan, kandungan',
+      obstetrics:
+        'obstetrics, obstetri, dokter kandungan, spesialis kandungan, gynecology, kandungan',
+      gynecology:
+        'gynecology, ginekologi, dokter kandungan, spesialis kandungan, ahli kebidanan, kandungan',
+      ginekologi: 'ginekologi, gynecology, dokter kandungan, spesialis kandungan, kandungan',
+      kandungan:
+        'kandungan, dokter kandungan, spesialis kandungan, obstetri, gynecology, kebidanan',
       dermatologi: 'dermatologi, dokter kulit, spesialis kulit, ahli penyakit kulit',
       dermatology: 'dermatology, dermatologi, dokter kulit, spesialis kulit',
       oftalmologi: 'oftalmologi, dokter mata, spesialis mata, ahli penyakit mata',
