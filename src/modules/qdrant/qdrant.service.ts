@@ -204,8 +204,7 @@ export class QdrantService {
           },
         ],
         query: {
-          // fusion: 'rrf',
-          fusion: 'dbf',
+          fusion: 'rrf',
         },
         limit,
         with_payload: true,
