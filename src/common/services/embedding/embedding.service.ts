@@ -1,20 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
-import { bm25QueryVector, buildBM25, BM25State } from '../../../common/utils/bm25.util';
 
 export interface SparseVector {
   indices: number[];
   values: number[];
 }
-
-export interface BM25EncoderOptions {
-  dim?: number;       // hashing dimension
-  k1?: number;        // BM25 k1 (optional, default TF)
-  b?: number;         // not used (Qdrant handles length norm)
-  seed?: number;
-}
-
 
 export interface HybridEmbedding {
   dense: number[];
@@ -25,28 +16,20 @@ export interface HybridEmbedding {
 export class EmbeddingService {
   private readonly logger = new Logger(EmbeddingService.name);
   private openai: OpenAI;
-  private readonly model = 'text-embedding-3-small'; // 1536 dimensions, $0.02/1M tokens
-  private readonly maxTokens = 8000; // Safe limit for embedding input
-  private readonly vocabularySize = 30000; // Vocabulary size for sparse vectors
-  private bm25Model: BM25State | null = null; // BM25 model for sparse embeddings
-  private readonly bm25Dim = 1_000_000; // hashing space
+  private readonly model = 'text-embedding-3-small';
+  private readonly maxTokens = 8000;
+  private readonly bm25Dim = 10000;
   private readonly bm25K1 = 1.2;
   private readonly bm25Seed = 0;
-
 
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
-      throw new Error('OPENAI_API_KEY is not configured in environment variables');
+      throw new Error('OPENAI_API_KEY is not configured');
     }
     this.openai = new OpenAI({ apiKey });
   }
 
-  /**
-   * Generate embedding for a single text
-   * @param text - Text to embed
-   * @returns 1536-dimensional embedding vector
-   */
   async generateEmbedding(text: string): Promise<number[]> {
     try {
       const normalizedText = this.normalizeText(text);
@@ -59,16 +42,11 @@ export class EmbeddingService {
 
       return response.data[0].embedding;
     } catch (error) {
-      this.logger.error(`Failed to generate embedding: ${error.message}`, error.stack);
+      this.logger.error(`Failed to generate embedding: ${error.message}`);
       throw error;
     }
   }
 
-  /**
-   * Generate hybrid embedding (dense + sparse) for a single text
-   * @param text - Text to embed
-   * @returns Hybrid embedding with dense vector and sparse vector
-   */
   async generateHybridEmbedding(text: string): Promise<HybridEmbedding> {
     try {
       const normalizedText = this.normalizeText(text);
@@ -81,58 +59,168 @@ export class EmbeddingService {
       });
       const dense = response.data[0].embedding;
 
-      // Validate dense embedding
       if (!dense || dense.length === 0) {
-        this.logger.error(
-          `OpenAI API returned empty dense embedding for text: ${truncatedText.substring(0, 100)}`,
-        );
         throw new Error(`Dense embedding is empty from OpenAI API`);
       }
 
-      this.logger.debug(`Generated dense embedding with ${dense.length} dimensions`);
-
-      const sparse = this.encodeBM25(truncatedText);
+      // Generate BM25 dengan dynamic term extraction
+      const sparse = this.encodeBM25Dynamic(truncatedText);
 
       this.logger.debug(
-        `Generated BM25 sparse embedding with ${sparse.indices.length} terms`,
+        `Hybrid embedding: dense=${dense.length}D, sparse=${sparse.indices.length} terms`,
       );
 
-      return {
-        dense,
-        sparse,
-      };
+      return { dense, sparse };
     } catch (error) {
-      this.logger.error(`Failed to generate hybrid embedding: ${error.message}`, error.stack);
+      this.logger.error(`Failed to generate hybrid embedding: ${error.message}`);
       throw error;
     }
   }
 
-  private encodeBM25(text: string): SparseVector {
+  /**
+   * Dynamic BM25 encoding dengan multi-gram support
+   * Extracts unigrams, bigrams, dan trigrams untuk better matching
+   */
+  private encodeBM25Dynamic(text: string): SparseVector {
     const tokens = this.tokenize(text);
-    const tf = new Map<number, number>();
+    const tf = new Map<number, { count: number; term: string }>();
 
-    for (const token of tokens) {
-      const hash =
-        this.murmurhash3(token, this.bm25Seed) % this.bm25Dim;
-      tf.set(hash, (tf.get(hash) ?? 0) + 1);
+    // Extract n-grams (unigrams, bigrams, trigrams)
+    const ngrams = this.extractNGrams(tokens, 3);
+
+    // Calculate term frequency dengan weight berdasarkan n-gram order
+    for (const { gram, weight } of ngrams) {
+      const hash = this.murmurhash3(gram, this.bm25Seed) % this.bm25Dim;
+      const current = tf.get(hash);
+
+      if (current) {
+        // Collision detected - boost the score
+        tf.set(hash, {
+          count: current.count + weight,
+          term: current.term, // Keep first term
+        });
+      } else {
+        tf.set(hash, { count: weight, term: gram });
+      }
     }
 
     const indices: number[] = [];
     const values: number[] = [];
 
-    for (const [idx, freq] of tf.entries()) {
-      // BM25 TF normalization (IDF handled by Qdrant)
-      const score =
-        (freq * (this.bm25K1 + 1)) / (freq + this.bm25K1);
-
+    for (const [idx, { count }] of tf.entries()) {
+      // BM25 TF scoring dengan saturation
+      const score = (count * (this.bm25K1 + 1)) / (count + this.bm25K1);
       indices.push(idx);
       values.push(score);
     }
 
-    return { indices, values };
+    // Sort by value descending untuk prioritas term penting
+    const sorted = indices.map((idx, i) => ({ idx, val: values[i] })).sort((a, b) => b.val - a.val);
+
+    return {
+      indices: sorted.map((s) => s.idx),
+      values: sorted.map((s) => s.val),
+    };
   }
 
+  /**
+   * Extract n-grams dari token array
+   * Unigrams: weight 1.0
+   * Bigrams: weight 1.5 (lebih penting untuk phrase matching)
+   * Trigrams: weight 2.0 (paling penting untuk specific phrase)
+   */
+  private extractNGrams(
+    tokens: string[],
+    maxN: number = 3,
+  ): Array<{ gram: string; weight: number }> {
+    const ngrams: Array<{ gram: string; weight: number }> = [];
 
+    // Unigrams
+    for (const token of tokens) {
+      ngrams.push({ gram: token, weight: 1.0 });
+    }
+
+    // Bigrams (jika ada minimal 2 tokens)
+    if (tokens.length >= 2) {
+      for (let i = 0; i < tokens.length - 1; i++) {
+        const bigram = `${tokens[i]}_${tokens[i + 1]}`;
+        ngrams.push({ gram: bigram, weight: 1.5 });
+      }
+    }
+
+    // Trigrams (jika ada minimal 3 tokens)
+    if (maxN >= 3 && tokens.length >= 3) {
+      for (let i = 0; i < tokens.length - 2; i++) {
+        const trigram = `${tokens[i]}_${tokens[i + 1]}_${tokens[i + 2]}`;
+        ngrams.push({ gram: trigram, weight: 2.0 });
+      }
+    }
+
+    return ngrams;
+  }
+
+  /**
+   * Improved tokenization dengan:
+   * - Stopword removal yang lebih selektif
+   * - Better stemming untuk medical terms
+   * - Preserve important short terms
+   */
+  tokenize(text: string): string[] {
+    // Stopwords yang benar-benar tidak penting
+    const stopwords = new Set([
+      'yang',
+      'pada',
+      'dari',
+      'untuk',
+      'ini',
+      'adalah',
+      'dengan',
+      'tersedia',
+      'dapat',
+      'orang',
+    ]);
+
+    return text
+      .toLowerCase()
+      .normalize('NFKC')
+      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+      .split(/\s+/)
+      .filter((t) => t.length > 0 && !stopwords.has(t))
+      .map((t) => this.stemDynamic(t));
+  }
+
+  /**
+   * Dynamic stemming dengan medical term preservation
+   */
+  private stemDynamic(word: string): string {
+    // Preserve medical terms
+    const medicalTerms = new Set([
+      'endocrinology',
+      'endokrinologi',
+      'orthopedics',
+      'orthopedi',
+      'neurology',
+      'neurologi',
+      'obstetrics',
+      'obstetri',
+      'gynecology',
+      'kandungan',
+      'kebidanan',
+      'rheumatology',
+      'reumatologi',
+    ]);
+
+    if (medicalTerms.has(word)) {
+      return word;
+    }
+
+    // Remove common Indonesian affixes
+    return word.replace(/^(di|ke|se|mem|men|meng|ter|ber|per)/, '').replace(/(kan|an|i|nya)$/, '');
+  }
+
+  /**
+   * Murmur hash implementation
+   */
   murmurhash3(key: string, seed = 0): number {
     let h1 = seed ^ key.length;
     let i = 0;
@@ -179,37 +267,16 @@ export class EmbeddingService {
     return h1 >>> 0;
   }
 
-  tokenize(text: string): string[] {
-    return text
-      .toLowerCase()
-      .normalize('NFKC')
-      .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-      .split(/\s+/)
-      .filter(t => t.length > 1); // buang noise
-  }
-
-
-  /**
-   * Normalize text for consistent embeddings
-   * @param text - Raw text
-   * @returns Normalized text
-   */
   normalizeText(text: string): string {
     if (!text) return '';
 
     return text
       .toLowerCase()
-      .replace(/\s+/g, ' ') // Collapse multiple spaces
-      .replace(/[^\w\s\-.,!?]/g, '') // Remove special chars except basic punctuation
+      .replace(/\s+/g, ' ')
+      .replace(/[^\w\s\-.,!?]/g, '')
       .trim();
   }
 
-  /**
-   * Truncate text to approximate token limit
-   * @param text - Text to truncate
-   * @param maxChars - Maximum characters (rough approximation of tokens)
-   * @returns Truncated text
-   */
   truncateText(text: string, maxChars: number): string {
     if (text.length <= maxChars) {
       return text;
@@ -217,12 +284,6 @@ export class EmbeddingService {
     return text.substring(0, maxChars) + '...';
   }
 
-  /**
-   * Build embedding text from object fields
-   * @param fields - Object with field values
-   * @param separator - Separator between fields
-   * @returns Concatenated text
-   */
   buildEmbeddingText(fields: Record<string, any>, separator = ' | '): string {
     return Object.entries(fields)
       .filter(([_, value]) => value !== null && value !== undefined && value !== '')

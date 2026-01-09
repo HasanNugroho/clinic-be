@@ -190,21 +190,22 @@ export class QdrantService {
               name: 'dense',
               vector: denseVector,
             },
-            limit: limit * 2,
+            limit: limit * 3,
           },
           {
             sparse_vector: {
               name: 'bm25',
               vector: {
                 indices: sparseVector.indices,
-                values: sparseVector.values,
+                values: sparseVector.values.map((v) => v * 2.5),
               },
             },
-            limit: limit * 2,
+            limit: limit * 3,
           },
         ],
         query: {
-          fusion: 'rrf',
+          // fusion: 'rrf',
+          fusion: 'dbf',
         },
         limit,
         with_payload: true,
