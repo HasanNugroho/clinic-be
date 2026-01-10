@@ -7,6 +7,6 @@ RUN pip install --no-cache-dir fastapi uvicorn fastembed
 
 COPY bm25_service.py .
 
-EXPOSE 8001
+EXPOSE 8002
 
-CMD ["uvicorn", "bm25_service:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["uvicorn", "bm25_service:app", "--host", "0.0.0.0", "--port", "8002"]
