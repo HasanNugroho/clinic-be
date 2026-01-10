@@ -9,7 +9,9 @@ export class BM25Service {
 
     constructor(
         private configService: ConfigService) {
-        this.embedServiceUrl = this.configService.get<string>('EMBED_SERVICE_URL') || 'http://localhost:8001';
+        const embedServiceUrl = this.configService.get<string>('EMBED_SERVICE_URL');
+
+        this.embedServiceUrl = embedServiceUrl || 'http://embedd-service:8002';
     }
 
     async generateBM25(text: string) {
