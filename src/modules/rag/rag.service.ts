@@ -35,7 +35,7 @@ export class RagService {
   private readonly DEFAULT_SCORE_THRESHOLD = 0.7;
   private readonly DEFAULT_DATABASE_SCORE = 1.0;
   private readonly MAX_CONTEXT_SOURCES = 25;
-  private readonly MIN_RELEVANCE_SCORE = 0.1;
+  private readonly MIN_RELEVANCE_SCORE = 0.5;
 
   private readonly COLLECTION_MAPPINGS = [
     'doctorschedules',
@@ -745,16 +745,23 @@ export class RagService {
   }
 
   private limitSourcesByScore(results: RetrievalResult[]): RetrievalResult[] {
-    const filteredByScore = results.filter((result) => result.score >= this.MIN_RELEVANCE_SCORE);
+    if (results.length === 0) return [];
+
+    // Calculate mean score
+    const meanScore = results.reduce((sum, r) => sum + r.score, 0) / results.length;
+
+    // Use dynamic threshold: greater than mean score
+    const dynamicThreshold = Math.max(meanScore, this.MIN_RELEVANCE_SCORE);
+
+    const filteredByScore = results.filter((result) => result.score > dynamicThreshold);
 
     const limitedResults = filteredByScore.slice(0, this.MAX_CONTEXT_SOURCES);
 
-    if (limitedResults.length < results.length) {
-      this.logger.debug(
-        `Limited sources from ${results.length} to ${limitedResults.length} ` +
-          `(score threshold: ${this.MIN_RELEVANCE_SCORE}, max: ${this.MAX_CONTEXT_SOURCES})`,
-      );
-    }
+    this.logger.debug(
+      `Limited sources: total=${results.length}, mean_score=${meanScore.toFixed(3)}, ` +
+      `threshold=${dynamicThreshold.toFixed(3)}, filtered=${filteredByScore.length}, ` +
+      `limited=${limitedResults.length}`,
+    );
 
     return limitedResults;
   }

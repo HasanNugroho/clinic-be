@@ -95,7 +95,7 @@ export class QdrantService {
       const formattedPoint = {
         id: typeof point.id === 'string' ? this.stringToId(point.id) : point.id,
         vector: {
-          '': point.vector[''],
+          dense: point.vector[''],
           bm25: point.vector.bm25 ?? { indices: [], values: [] },
         },
         payload: point.payload,
@@ -186,26 +186,20 @@ export class QdrantService {
       const queryParams: any = {
         prefetch: [
           {
-            sparse_vector: {
-              name: 'bm25',
-              vector: {
-                indices: sparseVector.indices,
-                values: sparseVector.values,
-              },
+            using: 'bm25',
+            query: {
+              indices: sparseVector.indices,
+              values: sparseVector.values,
             },
             limit: limit * 3,
           },
           {
-            vector: {
-              name: 'dense',
-              vector: denseVector,
-            },
+            using: 'dense',
+            query: denseVector,
             limit: limit * 3,
           },
         ],
-        query: {
-          fusion: 'rrf',
-        },
+        query: { fusion: 'rrf' },
         limit,
         with_payload: true,
       };

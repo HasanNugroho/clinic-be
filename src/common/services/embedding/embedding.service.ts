@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import { TokenizerService } from './tokenizer.service';
+import { BM25Service } from './bm25.service';
 
 export interface SparseVector {
   indices: number[];
@@ -27,8 +28,11 @@ export class EmbeddingService {
   constructor(
     private configService: ConfigService,
     private tokenizerService: TokenizerService,
+    private bm25Service: BM25Service,
+
   ) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
+
     if (!apiKey) {
       throw new Error('OPENAI_API_KEY is not configured');
     }
@@ -57,7 +61,6 @@ export class EmbeddingService {
       const normalizedText = this.normalizeText(text);
       const truncatedText = this.truncateText(normalizedText, this.maxTokens);
 
-      // Generate dense embedding
       const response = await this.openai.embeddings.create({
         model: this.model,
         input: truncatedText,
@@ -68,8 +71,14 @@ export class EmbeddingService {
         throw new Error(`Dense embedding is empty from OpenAI API`);
       }
 
-      // Generate BM25 sparse embedding using wink-bm25-text-search
-      const sparse = this.encodeBM25(truncatedText);
+      // 2️⃣ BM25 sparse embedding (external service)
+      const sparse = await this.bm25Service.generateBM25(truncatedText);
+
+      if (!sparse || !sparse.indices || !sparse.indices.length) {
+        this.logger.warn(
+          `BM25 sparse embedding is empty (text="${truncatedText}")`,
+        );
+      }
 
       this.logger.debug(
         `Hybrid embedding: dense=${dense.length}D, sparse=${sparse.indices.length} terms`,
@@ -77,7 +86,10 @@ export class EmbeddingService {
 
       return { dense, sparse };
     } catch (error) {
-      this.logger.error(`Failed to generate hybrid embedding: ${error.message}`);
+      this.logger.error(
+        `Failed to generate hybrid embedding: ${error.message}`,
+        error.stack,
+      );
       throw error;
     }
   }
