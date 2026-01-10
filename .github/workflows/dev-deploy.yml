@@ -77,4 +77,5 @@ jobs:
             docker compose -f docker-compose.yml up -d
             # Ensure qdrant stays active
             docker compose -f docker-compose.qdrant.yml up -d
+            docker compose -f docker-compose.embedd.yml up -d
             docker image prune -af
