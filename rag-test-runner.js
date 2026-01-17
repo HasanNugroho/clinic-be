@@ -3,15 +3,15 @@ const fs = require('fs');
 const path = require('path');
 
 // Configuration
-const API_BASE_URL = 'https://klinikpro.click';
-const TEST_QUERIES_FILE = './sample-question.json';
+const API_BASE_URL = 'https://api.klinikpro.click';
+const TEST_QUERIES_FILE = './question.json';
 const RESULTS_OUTPUT_FILE = './rag-test-results.json';
 
-// Map role names from sample-question.json to internal role names
+// Role mapping is now direct from question.json
 const roleMapping = {
-  'Pasien': 'patient',
-  'Dokter': 'doctor',
-  'Admin': 'admin',
+  patient: 'patient',
+  doctor: 'doctor',
+  admin: 'admin',
 };
 
 // Mock user contexts for different roles
@@ -20,18 +20,19 @@ const userContexts = {
     userId: '6952597adb00a3e327576de3',
     role: 'patient',
     token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG4uc21pdGhAZW1haWwuY29tIiwic3ViIjoiNjk1MjU5N2FkYjAwYTNlMzI3NTc2ZGUzIiwicm9sZSI6InBhdGllbnQiLCJ1c2VySWQiOiI2OTUyNTk3YWRiMDBhM2UzMjc1NzZkZTMiLCJmdWxsTmFtZSI6IkpvaG4gU21pdGgiLCJpYXQiOjE3Njc3NTczODF9.nVmOJz_R13ZHltBlNyqdSNMGLtwZx0EHlTH1bfFKgr0'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImpvaG4uc21pdGhAZW1haWwuY29tIiwic3ViIjoiNjk1MjU5N2FkYjAwYTNlMzI3NTc2ZGUzIiwicm9sZSI6InBhdGllbnQiLCJ1c2VySWQiOiI2OTUyNTk3YWRiMDBhM2UzMjc1NzZkZTMiLCJmdWxsTmFtZSI6IkpvaG4gU21pdGgiLCJpYXQiOjE3Njg2NTU0NjN9.0mSSbVvnNDcH7UopOvzW8Lngn0gnX6E7xVPhbSxB6jM',
   },
   doctor: {
     userId: '69525976db00a3e327576dbf',
     role: 'doctor',
-    token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRyLm1pY2hhZWwuZW5kb2NyaW5vbG9neUBob3NwaXRhbC5jb20iLCJzdWIiOiI2OTUyNTk3NmRiMDBhM2UzMjc1NzZkYmYiLCJyb2xlIjoiZG9jdG9yIiwidXNlcklkIjoiNjk1MjU5NzZkYjAwYTNlMzI3NTc2ZGJmIiwiZnVsbE5hbWUiOiJEci4gTWljaGFlbCBDaGVuIiwiaWF0IjoxNzY3NzU3NDM0fQ.L93kaSyHQw1YAn_3FlxkFYv24uV719atGtTgSt3Vqlw'
+    token:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImRyLm1pY2hhZWwuZW5kb2NyaW5vbG9neUBob3NwaXRhbC5jb20iLCJzdWIiOiI2OTUyNTk3NmRiMDBhM2UzMjc1NzZkYmYiLCJyb2xlIjoiZG9jdG9yIiwidXNlcklkIjoiNjk1MjU5NzZkYjAwYTNlMzI3NTc2ZGJmIiwiZnVsbE5hbWUiOiJEci4gTWljaGFlbCBDaGVuIiwiaWF0IjoxNzY4NjU1NDMyfQ.CY52RC3LO8LDDWqCw5QaRfoodWbwShsUEq_nemQ0D-8',
   },
   admin: {
     userId: '69525954db00a3e327576db8',
     role: 'admin',
     token:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGNsaW5pYy5jb20iLCJzdWIiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJyb2xlIjoiYWRtaW4iLCJ1c2VySWQiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJmdWxsTmFtZSI6IkFkbWluIiwiaWF0IjoxNzY3NzU3MzEzfQ.54AK5X0gsvnzn5_U9kPMP6Ct2rynr9UfOBhrQhdy9Oo'
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGNsaW5pYy5jb20iLCJzdWIiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJyb2xlIjoiYWRtaW4iLCJ1c2VySWQiOiI2OTUyNTk1NGRiMDBhM2UzMjc1NzZkYjgiLCJmdWxsTmFtZSI6IkFkbWluIiwiaWF0IjoxNzY4NjU1MTg2fQ.v5yLBTZvfZI7wmb3zpslJvG3ZSXv7Eua6xH2anq-Psw',
   },
 };
 
@@ -118,26 +119,32 @@ class RagTestResultCollector {
     }
 
     const headers = [
-      'Question ID',
+      'Scenario ID',
+      'Turn',
       'Category',
       'Query',
       'Generated Response',
       'Retrieved Documents Count',
+      'Response Time (ms)',
       'Processing Time (ms)',
       'User Role',
       'Expected Behavior',
+      'Session ID',
       'Timestamp',
     ];
 
     const rows = this.results.map((result) => [
-      result.metadata?.questionId || '',
+      result.metadata?.scenarioId || '',
+      result.metadata?.turn || '',
       result.metadata?.category || '',
       `"${result.query.replace(/"/g, '""')}"`,
       `"${result.generated_response.replace(/"/g, '""')}"`,
       result.retrieved_documents.length,
+      result.metadata?.responseTimeMs || 0,
       result.metadata?.processingTimeMs || 0,
       result.metadata?.userRole || 'unknown',
       `"${(result.metadata?.expectedBehavior || '').replace(/"/g, '""')}"`,
+      result.metadata?.sessionId || '',
       result.metadata?.timestamp || '',
     ]);
 
@@ -160,11 +167,13 @@ class RagApiClient {
 
   async query(question, sessionId) {
     try {
+      const startTime = Date.now();
       const response = await this.client.post('/rag/query', {
         query: question,
         sessionId,
       });
-      return response.data;
+      const responseTimeMs = Date.now() - startTime;
+      return { data: response.data, responseTimeMs };
     } catch (error) {
       console.error(`API Error: ${error.message}`);
       throw error;
@@ -173,22 +182,34 @@ class RagApiClient {
 }
 
 // Map RAG response to test result format
-function mapRagResponseToTestResult(query, ragResponse, userRole, questionId, category, expectedBehavior) {
-  const retrievedDocuments = ragResponse.sources
-    ? ragResponse.sources.map((source) => source.snippet).filter((s) => s)
+function mapRagResponseToTestResult(
+  query,
+  ragResponse,
+  userRole,
+  scenarioId,
+  turn,
+  category,
+  expectedBehavior,
+  responseTimeMs,
+) {
+  const responseData = ragResponse.data || ragResponse;
+  const retrievedDocuments = responseData.sources
+    ? responseData.sources.map((source) => source.snippet).filter((s) => s)
     : [];
 
   return {
     query,
-    generated_response: ragResponse.answer,
+    generated_response: responseData.answer,
     retrieved_documents: retrievedDocuments,
     metadata: {
-      processingTimeMs: ragResponse.processingTimeMs,
-      sourceCount: ragResponse.sources?.length || 0,
-      sessionId: ragResponse.sessionId,
+      processingTimeMs: responseData.processingTimeMs,
+      responseTimeMs,
+      sourceCount: responseData.sources?.length || 0,
+      sessionId: responseData.sessionId,
       userRole,
-      questionId,
-      category,
+      scenarioId,
+      turn,
+      category: category.join(', '),
       expectedBehavior,
       timestamp: new Date().toISOString(),
     },
@@ -199,19 +220,22 @@ function mapRagResponseToTestResult(query, ragResponse, userRole, questionId, ca
 async function runTests() {
   console.log('🚀 Starting RAG Test Runner...\n');
 
-  // Load test queries from sample-question.json
-  let testGroups = [];
+  // Load test scenarios from question.json
+  let testData = null;
   let totalQuestions = 0;
   try {
     const fileContent = fs.readFileSync(TEST_QUERIES_FILE, 'utf-8');
-    testGroups = JSON.parse(fileContent);
-    
+    testData = JSON.parse(fileContent);
+    const scenarios = testData.test_scenarios;
+
     // Count total questions
-    testGroups.forEach((group) => {
-      totalQuestions += group.questions.length;
+    scenarios.forEach((scenario) => {
+      totalQuestions += scenario.questions.length;
     });
-    
-    console.log(`✅ Loaded ${testGroups.length} test groups with ${totalQuestions} total questions\n`);
+
+    console.log(
+      `✅ Loaded ${scenarios.length} test scenarios with ${totalQuestions} total questions\n`,
+    );
   } catch (error) {
     console.error(`❌ Failed to load test queries: ${error.message}`);
     process.exit(1);
@@ -229,42 +253,49 @@ async function runTests() {
   let successCount = 0;
   let failureCount = 0;
 
-  // Iterate through test groups
-  for (const group of testGroups) {
-    const roleLabel = group.role;
+  // Iterate through test scenarios
+  for (const scenario of testData.test_scenarios) {
+    const roleLabel = Array.isArray(scenario.role) ? scenario.role[0] : scenario.role;
     const internalRole = roleMapping[roleLabel] || roleLabel.toLowerCase();
     const client = clients[internalRole];
 
     if (!client) {
       console.warn(`⚠️  No client for role: ${internalRole} (${roleLabel})`);
-      failureCount += group.questions.length;
+      failureCount += scenario.questions.length;
       continue;
     }
 
-    console.log(`\n📋 Testing ${roleLabel} - ${group.category}`);
+    console.log(`\n📋 Scenario ${scenario.scenario_id}: ${scenario.scenario_name}`);
+    console.log(`   Role: ${roleLabel} | Categories: ${scenario.categories.join(', ')}`);
     console.log('-'.repeat(60));
 
-    // Run questions in this group
-    for (const question of group.questions) {
+    // Use a unique session ID for each scenario to maintain conversation context
+    const sessionId = `test-${scenario.scenario_id}-${Date.now()}`;
+
+    // Run questions in this scenario sequentially to maintain context
+    for (const question of scenario.questions) {
       try {
-        console.log(`[${question.id}] "${question.question}"`);
+        console.log(`[Turn ${question.turn}] "${question.input}"`);
         console.log(`   Expected: ${question.expected_behavior}`);
 
-        const ragResponse = await client.query(question.question);
+        const { data: apiResponse, responseTimeMs } = await client.query(question.input, sessionId);
+        const ragResponse = apiResponse.data || apiResponse;
         const testResult = mapRagResponseToTestResult(
-          question.question,
-          ragResponse.data,
+          question.input,
+          ragResponse,
           internalRole,
-          question.id,
-          group.category,
-          question.expected_behavior
+          scenario.scenario_id,
+          question.turn,
+          scenario.categories,
+          question.expected_behavior,
+          responseTimeMs,
         );
 
         collector.addResult(testResult);
         successCount++;
 
         console.log(
-          `   ✅ Success (${ragResponse.data.processingTimeMs}ms, ${ragResponse.data.sources?.length || 0} sources)\n`,
+          `   ✅ Success (Response: ${responseTimeMs}ms, Processing: ${ragResponse.processingTimeMs}ms, ${ragResponse.sources?.length || 0} sources)\n`,
         );
       } catch (error) {
         console.log(`   ❌ Failed: ${error.message}\n`);
@@ -272,8 +303,11 @@ async function runTests() {
       }
 
       // Add delay between requests to avoid rate limiting
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
+
+    // Longer delay between scenarios
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 
   // Print summary

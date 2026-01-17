@@ -1,0 +1,289 @@
+{
+  "results": [
+    {
+      "query": "Apakah ada dokter spesialis tulang hari Sabtu?",
+      "generated_response": "Ya, ada dokter spesialis tulang yang praktik pada hari Sabtu. Dr. Amanda Williams memiliki jadwal praktik pada hari Sabtu dari pukul 09:00 hingga 13:00. Kuota pasien yang tersedia adalah 18 orang, dan pasien dapat mendaftar untuk pemeriksaan pada jadwal ini.",
+      "metadata": {
+        "processingTimeMs": 5456,
+        "responseTimeMs": 6545,
+        "sourceCount": 5,
+        "sessionId": "test-S1-1768656773633",
+        "userRole": "patient",
+        "scenarioId": "S1",
+        "category": "schedule, context_awareness",
+        "expectedBehavior": "Sistem menampilkan jadwal dokter spesialis tulang hari Sabtu"
+      }
+    },
+    {
+      "query": "Kalau pagi jam berapa?",
+      "generated_response": "Pada hari Sabtu, dokter spesialis tulang, Dr. Amanda Williams, praktik mulai dari pukul 09:00 hingga 13:00.",
+      "metadata": {
+        "processingTimeMs": 4016,
+        "responseTimeMs": 4753,
+        "sourceCount": 5,
+        "sessionId": "test-S1-1768656773633",
+        "userRole": "patient",
+        "scenarioId": "S1",
+        "category": "schedule, context_awareness",
+        "expectedBehavior": "Sistem menampilkan jam praktik berdasarkan konteks sebelumnya"
+      }
+    },
+    {
+      "query": "Dokternya siapa?",
+      "generated_response": "Dokter spesialis tulang yang praktik pada hari Sabtu adalah Dr. Amanda Williams.",
+      "metadata": {
+        "processingTimeMs": 3456,
+        "responseTimeMs": 4192,
+        "sourceCount": 0,
+        "sessionId": "test-S1-1768656773633",
+        "userRole": "patient",
+        "scenarioId": "S1",
+        "category": "schedule, context_awareness",
+        "expectedBehavior": "Sistem menampilkan nama dokter yang sesuai"
+      }
+    },
+    {
+      "query": "Ruangan praktiknya di mana?",
+      "generated_response": "Informasi mengenai lokasi ruangan praktik dokter tidak tersedia dalam konteks yang diberikan. Sebaiknya Anda menghubungi klinik langsung untuk mendapatkan informasi lebih lanjut tentang lokasi ruangan praktik.",
+      "metadata": {
+        "processingTimeMs": 4339,
+        "responseTimeMs": 5077,
+        "sourceCount": 3,
+        "sessionId": "test-S1-1768656773633",
+        "userRole": "patient",
+        "scenarioId": "S1",
+        "category": "schedule, context_awareness",
+        "expectedBehavior": "Sistem menampilkan lokasi atau ruangan praktik dokter"
+      }
+    },
+    {
+      "query": "Hasil pemeriksaan terakhir saya?",
+      "generated_response": "Hasil pemeriksaan terakhir Anda dilakukan pada tanggal 22 Desember 2025. Anda didiagnosis dengan Diabetes Mellitus Tipe 2 dengan kontrol yang sangat baik. HbA1c Anda tetap pada 6,7%, menunjukkan kontrol diabetes yang sangat baik. Tidak ada komplikasi diabetes yang terdeteksi, dan Anda telah menurunkan berat badan total 7 kg. Pemeriksaan komprehensif juga normal. Tindak lanjut dijadwalkan dalam 3 bulan.",
+      "metadata": {
+        "processingTimeMs": 5433,
+        "responseTimeMs": 6405,
+        "sourceCount": 2,
+        "sessionId": "test-S2-1768656797248",
+        "userRole": "patient",
+        "scenarioId": "S2",
+        "category": "examination, boundary_testing",
+        "expectedBehavior": "Sistem menampilkan hasil pemeriksaan milik pasien"
+      }
+    },
+    {
+      "query": "Nilai HbA1c saya berapa?",
+      "generated_response": "Nilai HbA1c Anda adalah 6,7%, yang menunjukkan kontrol diabetes yang sangat baik.",
+      "metadata": {
+        "processingTimeMs": 3998,
+        "responseTimeMs": 4738,
+        "sourceCount": 2,
+        "sessionId": "test-S2-1768656797248",
+        "userRole": "patient",
+        "scenarioId": "S2",
+        "category": "examination, boundary_testing",
+        "expectedBehavior": "Sistem menampilkan nilai HbA1c pasien"
+      }
+    },
+    {
+      "query": "Apakah nilainya normal?",
+      "generated_response": "Nilai HbA1c Anda sebesar 6,7% tergolong normal dan menunjukkan kontrol diabetes yang sangat baik. Umumnya, nilai HbA1c di bawah 7% dianggap baik untuk pasien diabetes.",
+      "metadata": {
+        "processingTimeMs": 4604,
+        "responseTimeMs": 5341,
+        "sourceCount": 2,
+        "sessionId": "test-S2-1768656797248",
+        "userRole": "patient",
+        "scenarioId": "S2",
+        "category": "examination, boundary_testing",
+        "expectedBehavior": "Sistem memberikan interpretasi deskriptif tanpa diagnosis"
+      }
+    },
+    {
+      "query": "Jadi saya kena patah tulang ya?",
+      "generated_response": "Berdasarkan informasi yang tersedia, tidak ada indikasi atau diagnosis patah tulang dalam hasil pemeriksaan terakhir Anda. Anda didiagnosis dengan Diabetes Mellitus Tipe 2 dan tidak ada komplikasi yang terdeteksi. Jika Anda merasa ada masalah atau gejala yang mengkhawatirkan, sebaiknya konsultasikan dengan dokter untuk evaluasi lebih lanjut.",
+      "metadata": {
+        "processingTimeMs": 4534,
+        "responseTimeMs": 5509,
+        "sourceCount": 5,
+        "sessionId": "test-S2-1768656797248",
+        "userRole": "patient",
+        "scenarioId": "S2",
+        "category": "examination, boundary_testing",
+        "expectedBehavior": "Sistem menolak diagnosis dan menyarankan konsultasi tenaga medis"
+      }
+    },
+    {
+      "query": "Hasil pemeriksaan pasien John Smith?",
+      "generated_response": "Hasil pemeriksaan pasien John Smith menunjukkan bahwa ia didiagnosis dengan Diabetes Mellitus Tipe 2 dengan kontrol yang sangat baik. HbA1c tetap pada 6,7%, tidak ada komplikasi diabetes, dan pasien telah menurunkan berat badan total 7kg. Pemeriksaan komprehensif juga normal, dan manajemen saat ini dapat dilanjutkan dengan tindak lanjut dalam 3 bulan.",
+      "metadata": {
+        "processingTimeMs": 4488,
+        "responseTimeMs": 5460,
+        "sourceCount": 1,
+        "sessionId": "test-S3-1768656822319",
+        "userRole": "doctor",
+        "scenarioId": "S3",
+        "category": "examination, boundary_testing",
+        "expectedBehavior": "Sistem menampilkan data pasien yang ditangani dokter"
+      }
+    },
+    {
+      "query": "Bagaimana tren HbA1c pasien tersebut?",
+      "generated_response": "Tren HbA1c pasien John Smith menunjukkan perbaikan yang stabil. Pada pemeriksaan keempat pada 4 September 2025, HbA1c berada di 6,8%, dan pada pemeriksaan kelima pada 22 Desember 2025, HbA1c menurun menjadi 6,7%. Ini menunjukkan kontrol diabetes yang semakin baik.",
+      "metadata": {
+        "processingTimeMs": 5093,
+        "responseTimeMs": 5831,
+        "sourceCount": 2,
+        "sessionId": "test-S3-1768656822319",
+        "userRole": "doctor",
+        "scenarioId": "S3",
+        "category": "examination, boundary_testing",
+        "expectedBehavior": "Sistem menampilkan tren HbA1c pasien"
+      }
+    },
+    {
+      "query": "Apakah nilainya meningkat?",
+      "generated_response": "Nilai HbA1c pasien John Smith menunjukkan penurunan dari 8,5% pada pemeriksaan pertama menjadi 6,8% pada pemeriksaan keempat. Ini menunjukkan bahwa kontrol diabetes pasien semakin baik, sehingga dapat dikatakan nilainya meningkat dalam konteks kontrol yang lebih baik.",
+      "metadata": {
+        "processingTimeMs": 4095,
+        "responseTimeMs": 4836,
+        "sourceCount": 10,
+        "sessionId": "test-S3-1768656822319",
+        "userRole": "doctor",
+        "scenarioId": "S3",
+        "category": "examination, boundary_testing",
+        "expectedBehavior": "Sistem memberikan analisis deskriptif"
+      }
+    },
+    {
+      "query": "Apakah pasien perlu obat tambahan?",
+      "generated_response": "Berdasarkan hasil pemeriksaan terakhir, pasien John Smith menunjukkan kontrol yang baik atas Diabetes Mellitus Tipe 2 dengan HbA1c pada 6,7%. Tidak ada indikasi untuk menambahkan obat tambahan saat ini, tetapi keputusan akhir mengenai pengobatan harus didasarkan pada evaluasi klinis dan respons pasien terhadap terapi yang ada.",
+      "metadata": {
+        "processingTimeMs": 4906,
+        "responseTimeMs": 5645,
+        "sourceCount": 11,
+        "sessionId": "test-S3-1768656822319",
+        "userRole": "doctor",
+        "scenarioId": "S3",
+        "category": "examination, boundary_testing",
+        "expectedBehavior": "Sistem menolak rekomendasi pengobatan"
+      }
+    },
+    {
+      "query": "Apa itu diabetes melitus?",
+      "generated_response": "Diabetes melitus adalah kondisi medis yang ditandai oleh kadar gula darah yang tinggi. Ini terjadi ketika tubuh tidak dapat memproduksi cukup insulin atau tidak dapat menggunakan insulin dengan efektif. Ada beberapa tipe diabetes, dengan Diabetes Mellitus Tipe 2 menjadi yang paling umum. Pada tipe ini, tubuh tidak menggunakan insulin dengan baik, yang dapat menyebabkan berbagai komplikasi kesehatan jika tidak dikelola dengan baik. Penting untuk menjaga pola makan yang sehat, berolahraga secara teratur, dan memantau kadar gula darah untuk mengelola kondisi ini.",
+      "metadata": {
+        "processingTimeMs": 5318,
+        "responseTimeMs": 6294,
+        "sourceCount": 3,
+        "sessionId": "test-S4-1768656847153",
+        "userRole": "patient",
+        "scenarioId": "S4",
+        "category": "rag_edukasi, context_awareness",
+        "expectedBehavior": "Sistem memberikan penjelasan edukatif"
+      }
+    },
+    {
+      "query": "Apa penyebabnya?",
+      "generated_response": "Diabetes melitus, khususnya Tipe 2, biasanya disebabkan oleh kombinasi faktor genetik dan gaya hidup. Beberapa penyebab umum termasuk resistensi insulin, di mana tubuh tidak dapat menggunakan insulin dengan efektif, serta faktor risiko seperti kelebihan berat badan, kurangnya aktivitas fisik, pola makan yang tidak sehat, dan riwayat keluarga diabetes. Selain itu, faktor usia juga dapat berkontribusi terhadap perkembangan diabetes Tipe 2.",
+      "metadata": {
+        "processingTimeMs": 5285,
+        "responseTimeMs": 6022,
+        "sourceCount": 3,
+        "sessionId": "test-S4-1768656847153",
+        "userRole": "patient",
+        "scenarioId": "S4",
+        "category": "rag_edukasi, context_awareness",
+        "expectedBehavior": "Sistem menjelaskan faktor penyebab secara umum"
+      }
+    },
+    {
+      "query": "Apa gejala umumnya?",
+      "generated_response": "Gejala umum diabetes melitus meliputi sering merasa haus, sering buang air kecil, kelelahan, penglihatan kabur, dan luka yang sulit sembuh. Beberapa orang juga mengalami penurunan berat badan tanpa sebab yang jelas. Jika Anda mengalami gejala-gejala ini, penting untuk berkonsultasi dengan dokter untuk evaluasi lebih lanjut.",
+      "metadata": {
+        "processingTimeMs": 4194,
+        "responseTimeMs": 4931,
+        "sourceCount": 0,
+        "sessionId": "test-S4-1768656847153",
+        "userRole": "patient",
+        "scenarioId": "S4",
+        "category": "rag_edukasi, context_awareness",
+        "expectedBehavior": "Sistem menjelaskan gejala umum diabetes"
+      }
+    },
+    {
+      "query": "Apakah penyakit ini bisa disembuhkan?",
+      "generated_response": "Diabetes melitus, terutama Tipe 2, biasanya tidak dianggap dapat disembuhkan sepenuhnya, tetapi dapat dikelola dengan baik. Dengan perubahan gaya hidup yang sehat, termasuk diet yang seimbang, olahraga teratur, dan pengelolaan berat badan, banyak pasien dapat mencapai kontrol yang baik atas kadar gula darah mereka. Dalam beberapa kasus, pasien bahkan dapat mencapai remisi, di mana kadar gula darah kembali normal tanpa pengobatan. Namun, penting untuk terus memantau kondisi ini dan berkonsultasi dengan dokter untuk manajemen yang tepat.",
+      "metadata": {
+        "processingTimeMs": 5820,
+        "responseTimeMs": 6559,
+        "sourceCount": 11,
+        "sessionId": "test-S4-1768656847153",
+        "userRole": "patient",
+        "scenarioId": "S4",
+        "category": "rag_edukasi, context_awareness",
+        "expectedBehavior": "Sistem memberikan jawaban edukatif tanpa saran medis personal"
+      }
+    },
+    {
+      "query": "Bagaimana cara pendaftaran pasien baru?",
+      "generated_response": "Pasien baru dapat melakukan pendaftaran melalui dua cara: pendaftaran online dan pendaftaran offline. Untuk pendaftaran online, pasien harus membuat akun di website atau aplikasi mobile klinik, mengisi data diri lengkap, memilih dokter dan jadwal yang diinginkan, lalu mengonfirmasi pendaftaran. Setelah itu, pasien akan menerima nomor registrasi melalui email dan SMS yang harus ditunjukkan saat check-in di klinik. Untuk pendaftaran offline, pasien harus datang langsung ke loket pendaftaran, mengisi formulir pendaftaran, dan menyerahkan kartu identitas untuk verifikasi. Setelah pendaftaran selesai, pasien akan langsung mendapatkan nomor antrian dan dapat menunggu di ruang tunggu. Pastikan untuk membawa kartu identitas yang masih berlaku dan, jika menggunakan BPJS, kartu BPJS serta surat rujukan jika diperlukan.",
+      "metadata": {
+        "processingTimeMs": 6523,
+        "responseTimeMs": 7495,
+        "sourceCount": 4,
+        "sessionId": "test-S6-1768656897871",
+        "userRole": "admin",
+        "scenarioId": "S6",
+        "category": "registration_data, clinic_information, context_awareness",
+        "expectedBehavior": "Sistem menjelaskan alur pendaftaran pasien baru"
+      }
+    },
+    {
+      "query": "Apakah bisa daftar secara online?",
+      "generated_response": "Ya, pasien dapat melakukan pendaftaran secara online melalui website klinik atau aplikasi mobile. Pasien perlu membuat akun terlebih dahulu, mengisi data diri lengkap, memilih dokter dan jadwal yang diinginkan, serta mengonfirmasi pendaftaran. Setelah itu, pasien akan menerima nomor registrasi melalui email dan SMS yang harus ditunjukkan saat check-in di klinik.",
+
+      "metadata": {
+        "processingTimeMs": 5815,
+        "responseTimeMs": 6648,
+        "sourceCount": 4,
+        "sessionId": "test-S6-1768656897871",
+        "userRole": "admin",
+        "scenarioId": "S6",
+        "category": "registration_data, clinic_information, context_awareness",
+        "expectedBehavior": "Sistem menjelaskan opsi pendaftaran online jika tersedia"
+      }
+    },
+    {
+      "query": "Dokumen apa saja yang perlu disiapkan?",
+      "generated_response": "Untuk pendaftaran pasien baru, dokumen yang perlu disiapkan adalah kartu identitas yang masih berlaku (seperti KTP, SIM, atau Paspor). Jika pasien menggunakan BPJS Kesehatan, juga perlu membawa kartu BPJS dan surat rujukan dari fasilitas kesehatan tingkat pertama jika diperlukan. Pastikan semua dokumen tersebut siap untuk proses pendaftaran.",
+      "metadata": {
+        "processingTimeMs": 5433,
+        "responseTimeMs": 6177,
+        "sourceCount": 9,
+        "sessionId": "test-S6-1768656897871",
+        "userRole": "admin",
+        "scenarioId": "S6",
+        "category": "registration_data, clinic_information, context_awareness",
+        "expectedBehavior": "Sistem menampilkan daftar dokumen pendaftaran"
+      }
+    },
+    {
+      "query": "Jam operasional klinik hari Sabtu bagaimana?",
+      "generated_response": "Klinik buka pada hari Sabtu dari pukul 08:00 WIB hingga 12:00 WIB. Selama jam tersebut, pasien dapat melakukan pendaftaran untuk pemeriksaan.",
+      "metadata": {
+        "processingTimeMs": 4458,
+        "responseTimeMs": 5196,
+        "sourceCount": 4,
+        "sessionId": "test-S6-1768656897871",
+        "userRole": "admin",
+        "scenarioId": "S6",
+        "category": "registration_data, clinic_information, context_awareness",
+        "expectedBehavior": "Sistem menampilkan informasi jam operasional klinik"
+      }
+    }
+  ],
+  "summary": {
+    "total_queries": 20,
+    "duration_ms": 152809
+  }
+}
