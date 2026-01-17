@@ -120,6 +120,8 @@ export class RagService {
       'bagaimana daftar',
     ],
   };
+  private readonly PERSONAL_PRONOUN_PATTERN =
+    /\b(aku|saya|diriku|diri\s+saya|diri\s+aku|milik\s+saya|punyaku)\b|(\w+?)ku\b/gi;
 
   constructor(
     @InjectModel(Registration.name)
@@ -202,9 +204,6 @@ export class RagService {
     }
   }
 
-  private readonly PERSONAL_PRONOUN_PATTERN =
-    /\b(ku|aku|saya|diriku|diri saya|diri aku|diri ku|milik saya|punyaku)\b/i;
-
   private buildSearchQuery(
     query: string,
     previousTopic: string,
@@ -212,7 +211,7 @@ export class RagService {
     userContext: UserContext,
   ): string {
     if (!previousQuery) {
-      return query;
+      return this.replacePersonalPronoun(query, userContext);
     }
 
     if (this.shouldUsePreviousQueryContext(query)) {
@@ -220,15 +219,9 @@ export class RagService {
       query = `${previousQuery} ${query}`;
     }
 
-    if (this.hasPersonalPronoun(query)) {
-      query = `${query} ${userContext.fullName}`;
-    }
+    query = this.replacePersonalPronoun(query, userContext);
 
     return query;
-  }
-
-  private hasPersonalPronoun(query: string): boolean {
-    return this.PERSONAL_PRONOUN_PATTERN.test(query);
   }
 
   private shouldUsePreviousQueryContext(query: string): boolean {
@@ -877,6 +870,18 @@ export class RagService {
     } catch (error) {
       this.logger.warn(`Failed to save last query for ${sessionId}: ${error.message}`);
     }
+  }
+
+  private replacePersonalPronoun(query: string, userContext: UserContext): string {
+    const replacementName = `dr. ${userContext.fullName}`;
+
+    return query.replace(this.PERSONAL_PRONOUN_PATTERN, (match, wordWithKu) => {
+      if (wordWithKu) {
+        return `${wordWithKu} ${replacementName}`;
+      }
+
+      return replacementName;
+    });
   }
 
   private sanitizeAnswer(answer: string): string {
