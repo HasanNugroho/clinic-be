@@ -34,7 +34,7 @@ export class RagService {
   private readonly DEFAULT_SEARCH_LIMIT = 25;
   private readonly DEFAULT_SCORE_THRESHOLD = 0.7;
   private readonly DEFAULT_DATABASE_SCORE = 1.0;
-  private readonly MAX_CONTEXT_SOURCES = 25;
+  private readonly MAX_CONTEXT_SOURCES = 15;
   private readonly MIN_RELEVANCE_SCORE = 0.5;
 
   private readonly COLLECTION_MAPPINGS = [
@@ -161,7 +161,7 @@ export class RagService {
       const temporalInfo = this.temporalExtractionService.extractTemporalInfo(query);
       this.logger.debug(`Temporal info: ${JSON.stringify(temporalInfo)}`);
 
-      const searchQuery = this.buildSearchQuery(query, previousTopic, previousQuery);
+      const searchQuery = this.buildSearchQuery(query, previousTopic, previousQuery, userContext);
       this.logger.debug(`Search query: ${searchQuery}`);
 
       const retrievalResults = await this.hybridRetrieval(searchQuery, userContext, temporalInfo);
@@ -202,28 +202,45 @@ export class RagService {
     }
   }
 
-  private buildSearchQuery(query: string, previousTopic: string, previousQuery: string): string {
+  private readonly PERSONAL_PRONOUN_PATTERN =
+    /\b(ku|aku|saya|diriku|diri saya|diri aku|diri ku|milik saya|punyaku)\b/i;
+
+  private buildSearchQuery(
+    query: string,
+    previousTopic: string,
+    previousQuery: string,
+    userContext: UserContext,
+  ): string {
     if (!previousQuery) {
       return query;
     }
 
-    const shouldUsePreviousQuery = this.shouldUsePreviousQueryContext(query, previousQuery);
-
-    if (shouldUsePreviousQuery) {
+    if (this.shouldUsePreviousQueryContext(query)) {
       this.logger.debug('Using previous query for context continuity');
-      return `${previousQuery} ${query}`;
+      query = `${previousQuery} ${query}`;
+    }
+
+    if (this.hasPersonalPronoun(query)) {
+      query = `${query} ${userContext.fullName}`;
     }
 
     return query;
   }
 
-  private shouldUsePreviousQueryContext(query: string, previousQuery: string): boolean {
+  private hasPersonalPronoun(query: string): boolean {
+    return this.PERSONAL_PRONOUN_PATTERN.test(query);
+  }
+
+  private shouldUsePreviousQueryContext(query: string): boolean {
     const queryWords = query.toLowerCase().trim().split(/\s+/);
     const isShortQuery = queryWords.length <= 5;
 
     const hasQuestionMark = query.includes('?');
 
-    const hasPronouns = /\b(nya|dia|mereka|itu|ini|tersebut|ada|lain)\b/i.test(query);
+    const hasPronouns =
+      /\b(nya|dia|mereka|itu|ini|tersebut|ada|lain|selain|saya|aku|ku|milik saya|punyaku)\b/i.test(
+        query,
+      );
 
     return (isShortQuery && hasQuestionMark) || hasPronouns;
   }
@@ -759,8 +776,8 @@ export class RagService {
 
     this.logger.debug(
       `Limited sources: total=${results.length}, mean_score=${meanScore.toFixed(3)}, ` +
-      `threshold=${dynamicThreshold.toFixed(3)}, filtered=${filteredByScore.length}, ` +
-      `limited=${limitedResults.length}`,
+        `threshold=${dynamicThreshold.toFixed(3)}, filtered=${filteredByScore.length}, ` +
+        `limited=${limitedResults.length}`,
     );
 
     return limitedResults;
