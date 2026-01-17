@@ -873,7 +873,7 @@ export class RagService {
   }
 
   private replacePersonalPronoun(query: string, userContext: UserContext): string {
-    const replacementName = `dr. ${userContext.fullName}`;
+    const replacementName = userContext.fullName;
 
     return query.replace(this.PERSONAL_PRONOUN_PATTERN, (match, wordWithKu) => {
       if (wordWithKu) {
